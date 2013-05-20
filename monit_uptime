@@ -1,5 +1,6 @@
 #!/bin/bash
 
+. $MUNIN_LIBDIR/plugins/plugin.sh
 
 if [ "$1" = "config" ]; then
     echo 'graph_title Monit Uptime'
