@@ -14,7 +14,7 @@ if [ "$1" = "config" ]; then
 fi
 
 upt=`monit summary |grep uptime | cut -d' ' -f6`
-if [[ "upt" = *d ]]; then
+if [[ "$upt" = *d ]]; then
   val=`echo $upt |sed -e s/d//`
 else
   val=0
