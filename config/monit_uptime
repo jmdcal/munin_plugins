@@ -1,0 +1,3 @@
+[monit_uptime]
+user root
+group root

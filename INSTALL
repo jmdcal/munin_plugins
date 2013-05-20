@@ -1,0 +1,42 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Install runner_aggr runner_http
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These two plugins are made for Apache, so do not use that if you haven't.
+Apache needs to be installed and configured before you setup. In this situation,
+you can run generate.py script. Usually you need to put nothing but script name, but
+you can specify some details too. Here the full call:
+
+# generate.py [<munin plugins conf file> <path plugins> <path_sites_apache>]
+
+Where default is:
+<munin plugins conf file> ::= /etc/munin/plugin-conf.d/munin-node
+<path plugins> ::= /etc/munin/plugins
+<path_sites_apache> ::= /etc/apache2/sites-enabled
+
+Restart munin-node and enjoy.
+
+More details at
+
+http://cippino.wordpress.com/2010/12/13/apache-and-munin/
+
+
+~~~~~~~~~~~~~~~~~~~~
+Install monit_uptime
+~~~~~~~~~~~~~~~~~~~~
+
+Yuo can install this plugin using ln -s command directly in /etc/munin/plugins
+folder. After that link config/monit_uptime in /etc/munin/plugin-conf.d/ in the
+same way.
+Restart munin-node and enjoy.
+
+
+~~~~~~~~~~~~~~
+Known Problems
+~~~~~~~~~~~~~~
+
+1 - Keep attection if you use SELinux or other kind of Security access framework,
+because you have to configure all rights correctly. To know which values are
+necessary, take a look at /usr/share/munin/plugins folder using ls -alZ.
+
+
