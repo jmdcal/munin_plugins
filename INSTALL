@@ -26,8 +26,8 @@ Install monit_uptime
 ~~~~~~~~~~~~~~~~~~~~
 
 Yuo can install this plugin using ln -s command directly in /etc/munin/plugins
-folder. After that link config/monit_uptime in /etc/munin/plugin-conf.d/ in the
-same way.
+folder. After that, append the content of config/monit_uptime file to
+/etc/munin/plugin-conf.d/munin-node.
 Restart munin-node and enjoy.
 
 
@@ -36,7 +36,7 @@ Known Problems
 ~~~~~~~~~~~~~~
 
 1 - Keep attection if you use SELinux or other kind of Security access framework,
-because you have to configure all rights correctly. To know which values are
-necessary, take a look at /usr/share/munin/plugins folder using ls -alZ.
+because you have to configure all rights correctly. Ussually, my choice is to
+put down, because the call of monit get error about access denied.
 
 
