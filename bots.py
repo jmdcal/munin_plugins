@@ -10,7 +10,7 @@ from utils import *
 
 from collections import Counter
 
-logs='/opt/nginx/logs/'
+logs='/var/log/nginx'
 
 email=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 url=re.compile('http://(.*?)/')
