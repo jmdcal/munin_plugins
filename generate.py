@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
 #Script generator
-# generate.py [<munin plugins conf file> <path plugins> <path_sites_apache>]
+# generate.py [<munin plugins conf file> <munin plugins path> <path_sites_nginx>]
+#
+# example:
+# generate.py /etc/munin/plugin-conf.d/munin-node /etc/munin/plugins /etc/nginx/sites-enabled
+
 
 import sys 
 import os
@@ -33,10 +37,13 @@ def parse_title_and_customlog(file_path):
           res.append((title+'.'+port,custom_log,error_log))         
   return res
 
+
+
+  
 def create_runner(runner,title,customlog,path):
   name,ext=runner.split('.')
   log_file=customlog.split('/')[-1]
-  link_name="%s_%s_apache_%s.%s"%(name,title,log_file,ext)
+  link_name="%s_%s_nginx_%s.%s"%(name,title,log_file,ext)
   try:
     os.symlink(os.getcwd()+"/"+runner,path+'/'+link_name)
     print path+'/'+link_name
@@ -51,7 +58,7 @@ if len(sys.argv)>3:
 else:
   conf_file='/etc/munin/plugin-conf.d/munin-node'
   plugins_path='/etc/munin/plugins'
-  sites_path='/etc/apache2/sites-enabled'
+  sites_path='/etc/nginx/sites-enabled'
 
 #get list of runner
 runners_custom=['runner_aggr.py','runner_http.py',]

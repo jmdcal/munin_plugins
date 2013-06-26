@@ -18,7 +18,8 @@ def load_agents_list():
   agents=Counter()
   fd=open('cache/bots','r')
   for i in fd:
-    agents[i]=0
+    if len(i)>0:
+      agents[i]=0
   fd.close()
   return agents
 
