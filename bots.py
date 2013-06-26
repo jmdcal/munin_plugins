@@ -12,11 +12,11 @@ from collections import Counter
 
 logs='/var/log/nginx/'
 log_regex=r'(.*)access\.log$'
-cache="cache/bots"
+cache="/opt/munin_plugins/cache/bots"
 
 def load_agents_list():
   agents=Counter()
-  fd=open('cache/bots','r')
+  fd=open(cache,'r')
   for i in fd:
     i=i.strip()
     if len(i)>0:
@@ -67,7 +67,7 @@ if len(sys.argv)>1:
 else:
   print_data(agents)
 
-fd=open('cache/bots','w')
+fd=open(cache,'w')
 for l,v in agents:
   fd.write('%s\n'%l)
 fd.close()
