@@ -10,18 +10,24 @@ from utils import *
 
 from collections import Counter
 
-logs='/var/log/nginx'
-
+logs='/var/log/nginx/'
+log_regex=r'(.*)access\.log$'
 
 def agents_list(limit):
   whitebots=re.compile('(mod_pagespeed)')
   agents=Counter()
   for file in os.listdir(logs):
-    for i in open('/'.join((logs,file)),'r'):
-      datas=RowParser(i)
-      agent=datas.get_agent()
-      if 'bot' in agent and not re.search(whitebots,agent):
-        agents[agent]=1+agents[agent]
+    if re.match(log_regex,file):
+      for i in open('/'.join((logs,file)),'r'):
+        try:
+          datas=RowParser(i)
+        except AttributeError:
+          pass
+        else:
+          dt=datas.get_date()
+          agent=datas.get_agent()
+          if 'bot' in agent and not re.search(whitebots,agent) and dt>limit:
+            agents[agent]=1+agents[agent]
   return [(get_short_agent(s),v) for s,v in agents.most_common()]
 
 def print_config(agents):
