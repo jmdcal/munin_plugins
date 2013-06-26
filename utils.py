@@ -55,7 +55,7 @@ def getlimit(minutes=MINUTES):
 class RowParser(object):
   def __init__(self,row):
     self.row=row
-    self.parsed=parser.searc(row).groups()
+    self.parsed=parser.search(row).groups()
 
   def get_ip(self):
     return self.parsed[0]
