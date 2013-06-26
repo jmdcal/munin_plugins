@@ -12,10 +12,19 @@ from collections import Counter
 
 logs='/var/log/nginx/'
 log_regex=r'(.*)access\.log$'
+cache="cache/bots"
+
+def load_agents_list():
+  agents=Counter()
+  fd=open('cache/bots','r')
+  for i in fd:
+    agents[i]=0
+  fd.close()
+  return agents
 
 def agents_list(limit):
   whitebots=re.compile('(mod_pagespeed)')
-  agents=Counter()
+  agents=load_agents_list()
   for file in os.listdir(logs):
     if re.match(log_regex,file):
       for i in open('/'.join((logs,file)),'r'):
@@ -55,3 +64,9 @@ if len(sys.argv)>1:
   print_config(agents)
 else:
   print_data(agents)
+
+fd=open('cache/bots','w')
+for l,v in agents:
+  fd.write(l)
+fd.close()
+  
