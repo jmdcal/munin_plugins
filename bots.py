@@ -25,10 +25,10 @@ def agents_list(limit):
           pass
         else:
           dt=datas.get_date()
-          agent=datas.get_agent()
+          agent=get_short_agent(datas.get_agent())
           if 'bot' in agent and not re.search(whitebots,agent) and dt>limit:
             agents[agent]=1+agents[agent]
-  return [(get_short_agent(s),v) for s,v in agents.most_common()]
+  return agents.most_common()
 
 def print_config(agents):
   print "graph_title Nginx Bot:"
