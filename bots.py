@@ -67,6 +67,6 @@ else:
 
 fd=open('cache/bots','w')
 for l,v in agents:
-  fd.write(l)
+  fd.write('%s\n'%l)
 fd.close()
   
