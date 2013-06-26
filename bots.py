@@ -25,8 +25,9 @@ def agents_list(limit):
           pass
         else:
           dt=datas.get_date()
-          agent=get_short_agent(datas.get_agent())
+          agent=datas.get_agent()
           if 'bot' in agent and not re.search(whitebots,agent) and dt>limit:
+            agent=get_short_agent(agent)
             agents[agent]=1+agents[agent]
   return agents.most_common()
 
