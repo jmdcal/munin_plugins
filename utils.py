@@ -23,6 +23,7 @@ VALID_CTYPES=['text/html']
 #  '25/Jun/2013:03:51:59',
 #  'GET',
 #  '/++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png',
+#  ' HTTP/1.1', 
 #  '499',
 #  '0',
 #  '-',
@@ -33,7 +34,7 @@ row_pattern=(
   r'^([0-9]+(?:\.[0-9]+){3})' #IP
   r'\s+\-\s(.*?)' #user
   r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]' #date
-  r'\s+\"([A-Z]*?)\s(/.*?)\sHTTP.*?"' #request
+  r'\s+\"([A-Z]*?)\s(/.*?)(\sHTTP.*)?"' #request
   r'\s+([0-9]{3})' #http code
   r'\s+([0-9]+)' #bytes code
   r'\s+\"(.*?)\"' #reffer
@@ -41,16 +42,14 @@ row_pattern=(
   r'\s+\[\[(.*)\]\]' #latency
 )
 
+parser=re.compile(row_pattern)
 email_pattern=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 dom_pattern=re.compile('http://(.*?)/')
-
-parser=re.compile(row_pattern)
 
 def getlimit(minutes=MINUTES):
   actual_time=datetime.today()
   delay=timedelta(seconds=minutes*60)
   return actual_time-delay
-
 
 class RowParser(object):
   def __init__(self,row):
@@ -77,20 +76,23 @@ class RowParser(object):
   def get_url(self):
     return self.parsed[4]
 
-  def get_code(self):
+  def get_protocol(self):
     return self.parsed[5]
 
-  def get_bytes(self):
+  def get_code(self):
     return self.parsed[6]
+
+  def get_bytes(self):
+    return self.parsed[7]
     
   def get_reffer(self):
-    return self.parsed[7]
-
-  def get_agent(self):
     return self.parsed[8]
 
-  def get_latency(self):
+  def get_agent(self):
     return self.parsed[9]
+
+  def get_latency(self):
+    return self.parsed[10]
 
 def get_short_agent(agent):
   res=''
@@ -101,7 +103,15 @@ def get_short_agent(agent):
     eml=email_pattern.findall(agent)
     if len(eml)>0:
       res=eml[0]
-  return res.split()[0].replace('.','_').replace('@','_at_')
+  try:
+    res=res.split(' ')[0]
+  except:
+    pass
+
+  # fix for Googlebot-Image/1.0 and others with no useful agent signature
+  if len(res)==0:
+    res=agent.lower().replace('/','_')    
+  return res.replace('.','_').replace('@','_at_')
        
 def ft(time_ft):
   time_ft=int(time_ft)
