@@ -1,7 +1,9 @@
 ~~~~~~~~~
 LogFormat
 ~~~~~~~~~
+Every Nginx virtual host you want to monitor needs to use combined2 defined in this way:
 
-Every virtual host you want to monitor needs to use combined_format2 defined in this way:
+    log_format combined2 '$remote_addr - $remote_user [$time_local]  '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent" [[$request_time]]';
 
-LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" [[%D]] <<%{Content-Type}o>> {{bal_%{BALANCER_WORKER_ROUTE}e}}" combined_format2

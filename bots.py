@@ -12,38 +12,17 @@ from collections import Counter
 
 logs='/var/log/nginx'
 
-email=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
-url=re.compile('http://(.*?)/')
 
-
-limit=getlimit()
-
-def reduce_sign(sign):
-  uu=url.findall(sign)
-  if len(uu)>0:
-    sign=uu[0]
-  else:
-    ee=email.findall(sign)
-    if len(ee)>0:
-      sign=ee[0]
-  return sign.split()[0].replace('.','_').replace('@','_at_')
-
-
-def agents_list():
-  whitebots=re.compile('(Googlebot)|(msnbot)|(bingbot)|(mod_pagespeed)')
+def agents_list(limit):
+  whitebots=re.compile('(mod_pagespeed)')
   agents=Counter()
-
   for file in os.listdir(logs):
     for i in open('/'.join((logs,file)),'r'):
-      res=re.findall('"(.*?)"',i)
-      if len(res)>2:
-        agent=res[2]
-        if 'bot' in agent and not re.search(whitebots,agent):
-          agents[agent]=1+agents[agent]
-  
-  return [(reduce_sign(s),v) for s,v in agents.most_common()]
-
-
+      datas=RowParser(i)
+      agent=datas.get_agent()
+      if 'bot' in agent and not re.search(whitebots,agent):
+        agents[agent]=1+agents[agent]
+  return [(get_short_agent(s),v) for s,v in agents.most_common()]
 
 def print_config(agents):
   print "graph_title Nginx Bot:"
@@ -63,8 +42,8 @@ def print_data(agents):
   for l,v in agents:
     print "%s.value %s" %(l,v)
   
-
-agents=agents_list()
+limit=getlimit()
+agents=agents_list(limit)
 if len(sys.argv)>1:
   print_config(agents)
 else:
