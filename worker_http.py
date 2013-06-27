@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 # Usage: 
 # worker_http.py <title> <group> <some apache access log[.gz]>
@@ -13,25 +13,19 @@ import os
 from datetime import datetime,timedelta
 import time
 
+from collections import Counter
+
 from utils import *
 
-http_codes={
-400:"Bad Request",
-401:"Unauthorized",
-403:"Forbidden",
-500:"Internal Server Error",
-502:"Bad Gateway",
-503:"Service Unavailable",
-504:"Gateway Timeout",
-}
+from etc.env import http_codes
 
-limits={
-  4:dict(w=5,c=8),
-  5:dict(w=1,c=3),
-}
+#limits={
+#  4:dict(w=5,c=8),
+#  5:dict(w=1,c=3),
+#}
 
 def print_config(title,group):
-  print "graph_title Apache http codes: %s"%title
+  print "graph_title Nginx http codes: %s"%title
   print "graph_args --base 1000"
   print "graph_vlabel q.ty"
   print "graph_category %s"%group
@@ -54,19 +48,17 @@ if len(sys.argv)>3:
     print_config(title,group)
   else:
     fi=open(filename,'r')
-    counters={}
-    items=http_codes.items()
-    for k,v in items:
+    counters=Counter()
+    items=http_codes.keys()
+    for k in items:
       counters[k]=0
     for row in fi:
-      if is_valid_line(row,['text/html',],[]):
-        lat=get_lat(row)
-        ctype=get_ctype(row)
-        dt=get_date(row)
-        bytes=get_bytes(row)
-        code=get_code(row)
+      datas=RowParser(row)
+      if datas.is_valid_line(row,[]):
+        lat=datas.get_latency()
+        dt=datas.get_date()
+        code=dats.get_code()
         if lat and dt>limit and code in http_codes:
-            counters[code]+=1
-    items.sort()
-    for k,v in items:
+            counters[code]=1+counters[code]
+    for k in sorted(items):
       print "code%s.value %s"%(k,counters[k])

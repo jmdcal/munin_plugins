@@ -62,9 +62,9 @@ if len(sys.argv)>3:
 
           if pos<len(INTERVALS):
             idx=str(INTERVALS[pos])
-            counters[idx]+=1
+            counters[idx]=1+counters[idx]
           else:
-            counters['others']+=1
+            counters['others']=1+counters['others']
 
     tot=sum(counters.values())
 
