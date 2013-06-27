@@ -94,6 +94,11 @@ class RowParser(object):
   def get_latency(self):
     return self.parsed[10]
 
+  def is_valid_line(row,https=[]):
+    code=self.get_code()
+    return (len(https)==0 or code in https)
+
+
 def get_short_agent(agent):
   res=''
   dom=dom_pattern.findall(agent)
@@ -127,7 +132,3 @@ def change_format(dt):
   date=time.strptime('%s/%s/%s'%(dd,month,year),'%d/%b/%Y')
   return "%s %s.000000"%(time.strftime('%Y-%m-%d',date),tm)
 
-def is_valid_line(row,ctypes=[],https=[]):
-  ctype=get_ctype(row)
-  code=get_code(row)
-  return (len(ctype)==0 or ctype in ctypes) and (len(https)==0 or code in https)

@@ -1,35 +1,26 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 # Usage: 
-# worker_aggr.py <title> <group> <some apache access log[.gz]>
+# worker_aggr.py <title> <group> <some access log[.gz]>
 # or
 # worker_aggr.py <title> <group> config
 
 import re, sys
 from datetime import datetime,timedelta
-
+from collections import Counter
 from utils import *
+from etc.env import INTERVALS
+from etc.env import limits
+from etc.env import colors
 
-INTERVALS=[.5,1,2,5]
-limits={'05':dict(w=500,c=1000),
-        '1':dict(w=500,c=600),
-        '2':dict(w=40,c=50),
-        '5':dict(w=30,c=40),}
-
-colors={
-  '05':'00FF00',
-  '1':'88FF00',
-  '2':'FFFF00',
-  '5':'FF8800',
-}
 limit=getlimit()
 
-counters={'others':0}
+counters=Counter(others=0)
 for val in INTERVALS:
   counters[str(val)]=0
 
 def print_config(title,group):
-  print "graph_title Apache latency: %s"%title
+  print "graph_title Nginx latency: %s"%title
   print "graph_args --base 1000"
   print "graph_vlabel number of pages"
   print "graph_category %s"%group
@@ -57,13 +48,13 @@ if len(sys.argv)>3:
   else:
     fi=open(filename,'r')
     for row in fi:
-      if is_valid_line(row,['text/html',],[200,]):
-        lat=get_lat(row)
-        ctype=get_ctype(row)
-        dt=get_date(row)
-        bytes=get_bytes(row)
+      datas=RowParser(row)
+      if datas.is_valid_line(row,[200,]):
+        lat=datas.get_latency()
+        dt=datas.get_date()
+        bytes=datas.get_bytes()
 
-        if lat is not None and ctype in VALID_CTYPES and bytes>0 and dt>limit:
+        if lat is not None and bytes>0 and dt>limit:
           md=ft(lat)
           pos=0
           while pos<len(INTERVALS) and INTERVALS[pos]<md :

@@ -5,9 +5,10 @@
 
 import os
 import sys
+from etc.env import logs
 
 def getparams():
-  folder='/var/log/apache2'
+  folder=logs
   script_name=__file__.split('/')[-1][:-3]
   full_path=os.path.realpath(__file__)
   real_name=full_path.split('/')[-1][:-3]
