@@ -14,32 +14,33 @@ title_munin_block='[runner_*]'
 
 def parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
-  in_virtual_host=False
+  in_server=False
   res=[]
   for row in fd:
-    if not in_virtual_host:
-      if '<VirtualHost' in row:
-        in_virtual_host=True
-        title=""
-        custom_log=""
-        error_log=""
-        port=row.strip('<> \n').split(':')[-1]
+    if not in_server:
+      if 'server {' in row:
+        in_server=True
+        title=''
+        access_log=''
+        port=''
+        open_par=1
     else:
-      if 'ServerName' in row:
-        title=row.replace('ServerName','').strip()
-      elif 'CustomLog' in row:
-        custom_log=row.strip().split(' ')[1]
-      elif 'ErrorLog' in row:
-        error_log=row.strip().split(' ')[1]
-      elif '</VirtualHost' in row:
-        in_virtual_host=False
-        if len(title)>0 and (len(custom_log)>0 or len(error_log)>0):
-          res.append((title+'.'+port,custom_log,error_log))         
+      if '{' in row:
+        open_par+=1
+      elif '}' in row:
+        open_par-=1
+        if open_par==0:
+        in_server=False
+        if len(title)>0 and len(custom_log)>0:
+          res.append((title+'.'+port,custom_log,error_log))                 
+      if 'listen' in row:
+        port=row.replace('listen','').strip()
+      elif 'server_name' in row:
+        title=row.replace('server_name','').strip()
+      elif 'access_log' in row:
+        access_log=row.strip().split(' ')[1]
   return res
 
-
-
-  
 def create_runner(runner,title,customlog,path):
   name,ext=runner.split('.')
   log_file=customlog.split('/')[-1]
