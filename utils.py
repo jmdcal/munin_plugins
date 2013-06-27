@@ -2,6 +2,9 @@
 from datetime import datetime,timedelta
 import re
 import time
+from etc.env import logs
+from etc.env import MINUTES
+from etc.env import VALID_CTYPES
 
 
 #Nginx log Format
@@ -14,8 +17,6 @@ import time
 #192.107.92.74 - - [25/Jun/2013:03:51:59 +0200]  "GET /++theme++enea-skinaccessibile/static/theme/styles/polaroid-single.png HTTP/1.1" 499 0 "-" "Serf/1.1.0 mod_pagespeed/1.5.27.3-3005" [[2.554]]
 #192.107.92.74 - - [25/Jun/2013:03:51:59 +0200]  "GET /++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png HTTP/1.1" 499 0 "-" "Serf/1.1.0 mod_pagespeed/1.5.27.3-3005" [[2.554]]
 
-MINUTES=5
-VALID_CTYPES=['text/html']
 
 #this pattern produce:
 # ('192.107.92.74',
@@ -131,4 +132,15 @@ def change_format(dt):
   day,month,dd,tm,year=dt.split(' ')
   date=time.strptime('%s/%s/%s'%(dd,month,year),'%d/%b/%Y')
   return "%s %s.000000"%(time.strftime('%Y-%m-%d',date),tm)
+
+def getparams(this):
+  folder=logs
+  script_name=this.split('/')[-1][:-3]
+  full_path=os.path.realpath(__file__)
+  real_name=full_path.split('/')[-1][:-3]
+  parts=script_name.replace(real_name+'_','').split('_')
+  title=parts[0]
+  group=parts[1]
+  filename="_".join(parts[2:])
+  return full_path.replace('runner','worker'),title,title,'%s/%s'%(folder,filename)
 

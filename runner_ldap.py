@@ -5,17 +5,9 @@
 
 import os
 import sys
+from utils import getparams
 
-def getparams():
-  script_name=__file__.split('/')[-1][:-3]
-  full_path=os.path.realpath(__file__)
-  real_name=full_path.split('/')[-1][:-3]
-  parts=script_name.replace(real_name+'_','').split('_')
-  title=parts[0]
-  group=parts[1]
-  return full_path.replace('runner','worker'),title,title,''
-
-params=getparams()
+params=getparams(__file__)
 
 if len(sys.argv)>1 and sys.argv[1]=='config':
   lp=list(params)[:-1]
