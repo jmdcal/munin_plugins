@@ -25,21 +25,22 @@ def parse_title_and_customlog(file_path):
         port=''
         open_par=1
     else:
+      row=row.replace(';','')
       if '{' in row:
         open_par+=1
       elif '}' in row:
         open_par-=1
         if open_par==0:
           in_server=False
-        if len(title)>0 and len(access_log)>0:
-          res.append((title+'.'+port,access_log))
-      row=row.replace(';','')
-      if 'listen' in row:
+          if len(title)>0 and len(access_log)>0:
+            res.append((title+'.'+port,access_log))
+      elif 'listen' in row:
         port=row.replace('listen','').strip()
       elif 'server_name' in row:
-        title=row.replace('server_name','').strip()
+	aliases=row.replace('server_name','').split()
+        title=aliases[0]
       elif 'access_log' in row:
-        access_log=row.strip().split(' ')[1]
+        access_log=row.strip().split()[1]
   return res
 
 def create_runner(runner,title,customlog,path):
