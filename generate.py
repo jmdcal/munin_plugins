@@ -32,7 +32,7 @@ def parse_title_and_customlog(file_path):
         if open_par==0:
           in_server=False
         if len(title)>0 and len(access_log)>0:
-          res.append((title+'.'+port,access_log,error_log))
+          res.append((title+'.'+port,access_log))
       if 'listen' in row:
         port=row.replace('listen','').strip()
       elif 'server_name' in row:
@@ -63,20 +63,20 @@ else:
 
 #get list of runner
 runners_custom=['runner_aggr.py','runner_http.py',]
-runners_error=[]
+#runners_error=[]
 
 #foreach virtualhost file in sites_path
 for vh in os.listdir(sites_path):
   to_create=parse_title_and_customlog(sites_path+'/'+vh)
-  for title,access_log,error_log in to_create:
-    ans=raw_input("%s\n%s\n%s\nCreates munin plugin [Y/n]?"%(title,access_log,error_log))
+  for title,access_log in to_create:
+    ans=raw_input("%s\n%s\nCreates munin plugin [Y/n]?"%(title,access_log,))
     if ans=='y' or len(ans)<1:
       if len(title)>0 and len(access_log)>0:
         for runner in runners_custom:
           create_runner(runner,title,access_log,plugins_path)
-      if len(title)>0 and len(error_log)>0:
-        for runner in runners_error:
-          create_runner(runner,title,error_log,plugins_path)
+      #if len(title)>0:
+        #for runner in runners_error:
+          #create_runner(runner,title,error_log,plugins_path)
 
 
 #add rights in config file_path
