@@ -30,7 +30,7 @@ def parse_title_and_customlog(file_path):
       elif '}' in row:
         open_par-=1
         if open_par==0:
-        in_server=False
+          in_server=False
         if len(title)>0 and len(custom_log)>0:
           res.append((title+'.'+port,custom_log,error_log))                 
       if 'listen' in row:
