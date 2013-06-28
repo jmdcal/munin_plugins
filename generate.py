@@ -33,6 +33,7 @@ def parse_title_and_customlog(file_path):
           in_server=False
         if len(title)>0 and len(access_log)>0:
           res.append((title+'.'+port,access_log))
+      row=row.replace(';','')
       if 'listen' in row:
         port=row.replace('listen','').strip()
       elif 'server_name' in row:
