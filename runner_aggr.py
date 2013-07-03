@@ -5,7 +5,7 @@
 
 import os
 import sys
-from etc.env import logs
+
 from utils import getparams
 
 params=getparams(__file__)
