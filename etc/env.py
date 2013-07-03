@@ -1,4 +1,5 @@
 #
+import re
 
 #common 
 LOGS='/opt/nginx/logs/'
