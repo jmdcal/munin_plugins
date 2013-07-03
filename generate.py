@@ -66,7 +66,7 @@ else:
   sites_path='/etc/nginx/sites-enabled'
 
 #get list of runner
-runners_custom=['runner_aggr.py','runner_http.py',]
+runners_custom=['runner_aggr.py','runner_http.py','runner_bots.py']
 #runners_error=[]
 
 #foreach virtualhost file in sites_path
