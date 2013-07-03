@@ -9,6 +9,7 @@
 
 import sys 
 import os
+from base64 import b16encode
 
 title_munin_block='[runner_*]'
 
@@ -37,7 +38,7 @@ def parse_title_and_customlog(file_path):
       elif 'listen' in row:
         port=row.replace('listen','').strip()
       elif 'server_name' in row:
-	aliases=row.replace('server_name','').split()
+        aliases=row.replace('server_name','').split()
         title=aliases[0]
       elif 'access_log' in row:
         access_log=row.strip().split()[1]
@@ -45,12 +46,13 @@ def parse_title_and_customlog(file_path):
 
 def create_runner(runner,title,customlog,path):
   name,ext=runner.split('.')
-  log_file=customlog.split('/')[-1]
-  link_name="%s_%s_nginx_%s.%s"%(name,title,log_file,ext)
+  log_file=b16encode(customlog.split('/')[-1])
+  title=b16encode(title)
+  link_name="%s_%s_nginx_%s"%(name,title,log_file)
   try:
+    link_name=link_name.replace('.','#')
     os.symlink(os.getcwd()+"/"+runner,path+'/'+link_name)
     print path+'/'+link_name
-
   except OSError:
     print "WARNING: %s"%link_name
 
