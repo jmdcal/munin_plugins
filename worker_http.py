@@ -17,19 +17,14 @@ from collections import Counter
 
 from utils import *
 
-from etc.env import http_codes
-
-#limits={
-#  4:dict(w=5,c=8),
-#  5:dict(w=1,c=3),
-#}
+from etc.env import HTTP_CODES
 
 def print_config(title,group):
   print "graph_title Nginx http codes: %s"%title
   print "graph_args --base 1000"
   print "graph_vlabel q.ty"
   print "graph_category %s"%group
-  hci=http_codes.items()
+  hci=HTTP_CODES.items()
   hci.sort()
   for k,v in hci:
     print "code%s.label [%s] %s (last %s minutes)"%(k,k,v,MINUTES)
@@ -49,7 +44,7 @@ if len(sys.argv)>3:
   else:
     fi=open(filename,'r')
     counters=Counter()
-    items=http_codes.keys()
+    items=HTTP_CODES.keys()
     for k in items:
       counters[k]=0
     for row in fi:
@@ -57,8 +52,8 @@ if len(sys.argv)>3:
       if datas.is_valid_line(row,[]):
         lat=datas.get_latency()
         dt=datas.get_date()
-        code=dats.get_code()
-        if lat and dt>limit and code in http_codes:
+        code=datas.get_code()
+        if lat and dt>limit and code in HTTP_CODES:
             counters[code]=1+counters[code]
     for k in sorted(items):
       print "code%s.value %s"%(k,counters[k])
