@@ -3,7 +3,7 @@
 # Usage: 
 # worker_aggr.py <title> <group> <some access log[.gz]>
 # or
-# worker_aggr.py <title> <group> config
+# worker_aggr.py <title> <group> <some access log[.gz]> config
 
 import re, sys
 from datetime import datetime,timedelta
@@ -43,8 +43,9 @@ if len(sys.argv)>3:
   title=sys.argv[1]
   group=sys.argv[2]
   filename=sys.argv[3]
-  if filename=='config':
-    print_config(title,group)
+  if len(sys.argv)>4:
+    if sys.argv[4]=='config':
+      print_config(title,group)
   else:
     fi=open(filename,'r')
     for row in fi:

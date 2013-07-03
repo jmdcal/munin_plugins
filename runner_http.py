@@ -11,9 +11,6 @@ from utils import getparams
 params=getparams(__file__)
 
 if len(sys.argv)>1 and sys.argv[1]=='config':
-  lp=list(params)[:-1]
-  row="%s config"%" ".join(lp)
-else:
-  row=" ".join(params)
+  params=params+('config',)
 
-os.system(row)
+os.system(" ".join(params))

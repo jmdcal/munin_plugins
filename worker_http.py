@@ -3,7 +3,7 @@
 # Usage: 
 # worker_http.py <title> <group> <some apache access log[.gz]>
 # or
-# worker_http.py <title> <group> config
+# worker_http.py <title> <group> <some apache access log[.gz]> config
 
 import sys
 import re
@@ -39,8 +39,9 @@ if len(sys.argv)>3:
   title=sys.argv[1]
   group=sys.argv[2]
   filename=sys.argv[3]
-  if filename=='config':
-    print_config(title,group)
+  if len(sys.argv)>4:
+    if sys.argv[4]=='config':
+      print_config(title,group)
   else:
     fi=open(filename,'r')
     counters=Counter()
