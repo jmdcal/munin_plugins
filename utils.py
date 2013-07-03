@@ -111,5 +111,5 @@ def getparams(this):
   title=b16decode(parts[0])
   group=parts[1]
   filename=b16decode(parts[2])
-  return full_path.replace('runner','worker'),title,group,'%s/%s'%(logs,filename)
+  return full_path.replace('runner','worker'),title,group,'%s/%s'%(LOGS,filename)
 
