@@ -28,7 +28,7 @@ class RowParser(object):
 
   def _get_val(self,lab):
     try:
-      res=self.parsed[row_mapping[lab]]
+      res=self.parsed[ROW_MAPPING[lab]]
     except IndexError:
       res=None
     return res
