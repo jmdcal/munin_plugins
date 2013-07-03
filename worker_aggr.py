@@ -10,8 +10,8 @@ from datetime import datetime,timedelta
 from collections import Counter
 from utils import *
 from etc.env import INTERVALS
-from etc.env import limits
-from etc.env import colors
+from etc.env import LIMITS
+from etc.env import COLORS
 
 limit=getlimit()
 
@@ -28,9 +28,9 @@ def print_config(title,group):
     key=str(val).replace('.','')
     print "numbers%s.label pages served in %s secs"%(key,val)
     print "numbers%s.draw AREASTACK"%key
-    print "numbers%s.colour %s"%(key,colors[key])
-#    print "numbers%s.warning %s"%(key,limits[key]['w'])
-#    print "numbers%s.critical %s"%(key,limits[key]['c'])
+    print "numbers%s.colour %s"%(key,COLORS[key])
+    #print "numbers%s.warning %s"%(key,LIMITS[key]['w'])
+    #print "numbers%s.critical %s"%(key,LIMITS[key]['c'])
 
   print "numbersother.label more"
   print "numbersother.draw AREASTACK"
@@ -49,7 +49,7 @@ if len(sys.argv)>3:
     fi=open(filename,'r')
     for row in fi:
       datas=RowParser(row)
-      if datas.is_valid_line(row,[200,]):
+      if datas.is_valid_line([200,]):
         lat=datas.get_latency()
         dt=datas.get_date()
         bytes=datas.get_bytes()
