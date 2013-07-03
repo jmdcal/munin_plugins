@@ -2,6 +2,7 @@
 
 #common 
 LOGS='/opt/nginx/logs/'
+CACHE="/opt/munin_plugins/cache"
 
 #utils.py
 MINUTES=5
@@ -57,9 +58,9 @@ EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #Bots.py
-log_regex=r'(.*)access\.log$'
-cache="/opt/munin_plugins/cache/bots"
-wl_agents=re.compile('(mod_pagespeed)')
+LOG_REGEX=r'(.*)access\.log$'
+CACHE_BOTS="%s/bots"%CACHE
+WL_AGENTS=re.compile('(mod_pagespeed)')
 
 #worker_aggr.py
 INTERVALS=(.5,1,2,5)    

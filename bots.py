@@ -7,15 +7,16 @@ import sys
 import os
 
 from utils import *
-from etc.env import logs
-from etc.env import log_regex
-from etc.env import cache
-from etc.env import wl_agents
+from etc.env import LOGS
+from etc.env import LOG_REGEX
+from etc.env import CACHE_BOTS
+from etc.env import WL_AGENTS
+
 from collections import Counter
 
 def load_agents_list():
   agents=Counter()
-  fd=open(cache,'r')
+  fd=open(CACHE_BOTS,'r')
   for i in fd:
     i=i.strip()
     if len(i)>0:
@@ -25,18 +26,18 @@ def load_agents_list():
 
 def agents_list(limit):
   agents=load_agents_list()
-  for file in os.listdir(logs):
-    if re.match(log_regex,file):
-      for i in open('/'.join((logs,file)),'r'):
+  for file in os.listdir(LOGS):
+    if re.match(LOG_REGEX,file):
+      for i in open('/'.join((LOGS,file)),'r'):
         try:
           datas=RowParser(i)
         except AttributeError:
           pass
         else:
           dt=datas.get_date()
-          agent=datas.get_agent()
-          if 'bot' in agent and not wl_agents.search(agent) and dt>limit:
-            agent=get_short_agent(agent)
+          agent=datas.get_agent()          
+          if agent is not None and 'bot' in agent and not WL_AGENTS.search(agent) and dt>limit:
+            agent=get_short_agent(agent)               
             agents[agent]=1+agents[agent]
   return agents.most_common()
 
@@ -48,8 +49,8 @@ def print_config(agents):
   
   for l,v in agents:
     print "%s.label %s" %(l,l)
-    print "%s.warning 5"
-    print "%s.critical 10"
+    print "%s.warning 10" %l
+    print "%s.critical 30" %l
 
 def print_data(agents):
   for l,v in agents:
@@ -62,7 +63,7 @@ if len(sys.argv)>1:
 else:
   print_data(agents)
 
-fd=open(cache,'w')
+fd=open(CACHE_BOTS,'w')
 for l,v in agents:
   fd.write('%s\n'%l)
 fd.close()
