@@ -1,11 +1,60 @@
 #
 
 #common 
-logs='/var/log/nginx/'
+LOGS='/opt/nginx/logs/'
 
 #utils.py
 MINUTES=5
 VALID_CTYPES=['text/html']
+#Nginx log Format
+#    log_format combined2 '$remote_addr - $remote_user [$time_local]  '
+#                    '"$request" $status $body_bytes_sent '
+#                    '"$http_referer" "$http_user_agent" [[$request_time]]';
+#
+# This is an example about the nginx log row
+# 192.107.92.74 - - [25/Jun/2013:03:51:59 +0200]  "GET /++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png HTTP/1.1" 499 0 "-" "Serf/1.1.0 mod_pagespeed/1.5.27.3-3005" [[2.554]]
+row_pattern=(
+  r'^([0-9]+(?:\.[0-9]+){3})' #IP
+  r'\s+\-\s(.*?)' #user
+  r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]' #date
+  r'\s+\"([A-Z]*?)\s(/.*?)(\sHTTP.*)?"' #request
+  r'\s+([0-9]{3})' #http code
+  r'\s+([0-9]+)' #bytes code
+  r'\s+\"(.*?)\"' #reffer
+  r'\s+\"(.*?)\"' #signature
+  r'\s+\[\[(.*)\]\]' #latency
+)
+ROW_PARSER=re.compile(row_pattern)
+
+# row_pattern produce:
+# ('192.107.92.74',
+#  '-',
+#  '25/Jun/2013:03:51:59',
+#  'GET',
+#  '/++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png',
+#  ' HTTP/1.1',
+#  '499',
+#  '0',
+#  '-',
+#  'Serf/1.1.0 mod_pagespeed/1.5.27.3-3005',
+#  '2.554')
+# so row_mapping is the follow
+ROW_MAPPING={
+  'ip':0,
+  'user':1,
+  'date':2,
+  'method':3,
+  'url':4,
+  'protocol':5,
+  'code':6,
+  'bytes':7,
+  'reffer':8,
+  'agent':9,
+  'latency':10,
+}
+
+EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
+DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #Bots.py
 log_regex=r'(.*)access\.log$'
