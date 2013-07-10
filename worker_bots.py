@@ -7,6 +7,8 @@
 
 import re
 import sys
+import fcntl
+import time
 
 from utils import *
 from etc.env import LOGS
@@ -70,8 +72,17 @@ if len(sys.argv)>3:
   else:
     print_data(agents)
 
+locked=False
+while not locked:
+  try:
+    fcntl.flock(CACHE_BOTS,fcntl.LOCK_EX)
+  except IOError:
+    time.sleep(3)
+  else:
+    locked=True
+  
 fd=open(CACHE_BOTS,'w')
 for l,v in agents:
   fd.write('%s\n'%l)
 fd.close()
-  
+fcntl.flock(file, fcntl.LOCK_UN)
