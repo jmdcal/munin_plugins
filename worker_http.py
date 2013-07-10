@@ -53,8 +53,12 @@ if len(sys.argv)>3:
       if datas.is_valid_line(row,[]):
         lat=datas.get_latency()
         dt=datas.get_date()
-        code=datas.get_code()
-        if lat and dt>limit and code in HTTP_CODES:
+        try:
+          code=int(datas.get_code())
+        except ValueError: 
+          pass #Something get wrong with parser
+        else:
+          if lat and dt>limit and code in HTTP_CODES:
             counters[code]=1+counters[code]
     for k in sorted(items):
       print "code%s.value %s"%(k,counters[k])
