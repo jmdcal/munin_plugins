@@ -36,7 +36,7 @@ def agents_list(access_file,limit):
     except AttributeError:
       pass
     else:
-      if datas.is_valid_line(row,[200]):
+      if datas.is_valid_line([200,]):
         dt=datas.get_date()
         agent=datas.get_agent()
         if agent is not None and 'bot' in agent and not WL_AGENTS.search(agent) and dt>limit:

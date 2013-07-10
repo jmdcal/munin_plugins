@@ -71,7 +71,7 @@ class RowParser(object):
   def get_latency(self):
     return self._get_val('latency')
 
-  def is_valid_line(self,row,https=[]):
+  def is_valid_line(self,https=[]):
     try:
       code=int(self.get_code())
     except ValueError:

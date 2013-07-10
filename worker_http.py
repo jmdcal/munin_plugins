@@ -50,7 +50,7 @@ if len(sys.argv)>3:
       counters[k]=0
     for row in fi:
       datas=RowParser(row)
-      if datas.is_valid_line(row,[]):
+      if datas.is_valid_line([]):
         lat=datas.get_latency()
         dt=datas.get_date()
         try:
