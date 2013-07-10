@@ -72,7 +72,10 @@ class RowParser(object):
     return self._get_val('latency')
 
   def is_valid_line(self,row,https=[]):
-    code=self.get_code()
+    try:
+      code=int(self.get_code())
+    except ValueError:
+      code=self.get_code()
     return (len(https)==0 or code in https)
 
 def get_short_agent(agent):
