@@ -77,7 +77,7 @@ fd=open(CACHE_BOTS,'a')
 locked=False
 while not locked:
   try:
-    fcntl.flock(fd,fcntl.LOCK_EX)
+    fcntl.lockf(fd,fcntl.LOCK_EX)
   except IOError:
     time.sleep(3)
   else:
@@ -85,5 +85,5 @@ while not locked:
 
 for l,v in agents:
   fd.write('%s\n'%l)
-fcntl.flock(fd, fcntl.LOCK_UN)
+fcntl.lockf(fd, fcntl.LOCK_UN)
 fd.close()
