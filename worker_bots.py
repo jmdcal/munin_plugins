@@ -73,7 +73,7 @@ if len(sys.argv)>3:
   else:
     print_data(agents)
 
-fd=open(CACHE_BOTS,'w')    
+fd=open(CACHE_BOTS,'a')    
 locked=False
 while not locked:
   try:
