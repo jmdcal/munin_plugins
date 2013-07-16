@@ -82,6 +82,7 @@ HTTP_CODES={
   400:"Bad Request",
   401:"Unauthorized",
   403:"Forbidden",
+  444:"No Response for malware",
   500:"Internal Server Error",
   502:"Bad Gateway",
   503:"Service Unavailable",
