@@ -53,7 +53,7 @@ def open_and_update(fn):
     
   count+=1
   fd.seek(0)    
-  fd.write(count)
+  fd.write(str(count))
   fd.truncate()
   unlock_fn(fd)
   fd.close()  
