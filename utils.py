@@ -86,7 +86,7 @@ def get_short_agent(agent):
   except AttributeError:
     fd=open(WRONG_AGENTS,'a')
     fd.write(agent)
-    fd,close()
+    fd.close()
     dom=''
     
   if len(dom)>0:
