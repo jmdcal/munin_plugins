@@ -30,7 +30,7 @@ def lock_fn(fd):
     else:
       locked=True
 
-def unlock_fn(df):
+def unlock_fn(fd):
   fcntl.lockf(fd, fcntl.LOCK_UN)
   
 def open_and_update(fn):
