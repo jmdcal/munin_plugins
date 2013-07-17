@@ -59,7 +59,7 @@ else:
     fd.write(count)
     fd.truncate()
     fd.close()
-  else
+  else:
     #ok we will return 0
     count=0
     
