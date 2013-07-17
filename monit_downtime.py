@@ -17,7 +17,9 @@ def print_config(title,group):
   print "graph_category %s"%group
   print "failedtest.label test failed"
   print "failedtest.draw AREASTACK"
-  print "failedtest.colour FF0000"
+  print "failedtest.colour FF0000"  
+  print "failedtest.warning 6"
+  print "failedtest.critical 12"
 
 def lock_fn(fd):
   #locking file
