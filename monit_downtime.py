@@ -48,9 +48,7 @@ def open_and_update(fn):
   #try to get previous value
   try:
     count=int(fd.read())
-  except (IOError, ValueError):
-    #IOError means that file is open in W mode
-    #ValueError means that file doesn't contains an int
+  except:
     count=0
     
   count+=1
