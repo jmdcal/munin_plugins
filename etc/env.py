@@ -89,3 +89,5 @@ HTTP_CODES={
   504:"Gateway Timeout",
 }
 
+#monit_downtime.py
+DOWNTIME_COUNTER='%s/monit_downs'%CACHE
