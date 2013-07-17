@@ -48,7 +48,7 @@ def open_and_update(fn):
   #try to get previous value
   try:
     count=int(fd.read())
-  except IOError,ValueError:
+  except (IOError, ValueError):
     #IOError means that file is open in W mode
     #ValueError means that file doesn't contains an int
     count=0
@@ -69,7 +69,7 @@ else:
   count=0
   try:
     pid=int(subprocess.check_output(['pidof','monit']).strip())
-  except subprocess.CalledProcessError, ValueError:
+  except (subprocess.CalledProcessError, ValueError):
     #if fails means that the process is not running
     count=open_and_update(DOWNTIME_COUNTER)               
     
