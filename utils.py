@@ -12,6 +12,7 @@ from etc.env import ROW_PARSER
 from etc.env import ROW_MAPPING
 from etc.env import EMAIL_PARSER
 from etc.env import DOM_PARSER
+from etc.env import WRONG_AGENTS
 
 def getlimit(minutes=MINUTES):
   actual_time=datetime.today()
@@ -80,7 +81,14 @@ class RowParser(object):
 
 def get_short_agent(agent):
   res=''
-  dom=DOM_PARSER.search(agent).group(0)
+  try:
+    dom=DOM_PARSER.search(agent).group(0)
+  except AttributeError:
+    fd=open(WRONG_AGENTS,'a')
+    fd.write(agent)
+    fd,close()
+    dom=''
+    
   if len(dom)>0:
     res=dom.replace('http:','').replace('/','')
   else:

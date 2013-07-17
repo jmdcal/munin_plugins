@@ -6,6 +6,7 @@ LOGS='/opt/nginx/logs/'
 CACHE="/opt/munin_plugins/cache"
 
 #utils.py
+WRONG_AGENTS='%s/bad_signature'%CACHE
 MINUTES=5
 VALID_CTYPES=['text/html']
 #Nginx log Format
