@@ -1,6 +1,6 @@
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Install runner_aggr runner_http
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Install runner_aggr runner_http runner_bots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These two plugins are made for Apache, so do not use that if you haven't.
 Apache needs to be installed and configured before you setup. In this situation,
@@ -20,10 +20,9 @@ More details at
 
 http://cippino.wordpress.com/2010/12/13/apache-and-munin/
 
-
-~~~~~~~~~~~~~~~~~~~~
-Install monit_uptime
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+Install monit_downtime
+~~~~~~~~~~~~~~~~~~~~~~
 
 Yuo can install this plugin using ln -s command directly in /etc/munin/plugins
 folder. After that, append the content of config/monit_uptime file to
@@ -36,7 +35,7 @@ Known Problems
 ~~~~~~~~~~~~~~
 
 1 - Keep attection if you use SELinux or other kind of Security access framework,
-because you have to configure all rights correctly. Ussually, my choice is to
+because you have to configure all rights correctly. Usually, my choice is to
 put down, because the call of monit get error about access denied.
 
 
