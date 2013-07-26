@@ -3,7 +3,7 @@ REQUIRES
 ~~~~~~~~~
 
 Python2.7+
-This is necessary for collections library
+This is necessary for libraries.
 
 
 ~~~~~~~~~
@@ -15,5 +15,3 @@ Every Nginx virtual host you want to monitor needs to use combined2 defined in t
                     '"$request" $status $body_bytes_sent '
                     '"$http_referer" "$http_user_agent" [[$request_time]]';
 
-
-                    
