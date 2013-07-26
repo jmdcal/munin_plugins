@@ -101,14 +101,14 @@ else:
   for l in monit_status.keys():
     counts[l]=0
 
-  csensors=0
+  csensors=1
   try:
     pid=int(subprocess.check_output(['pidof','monit']).strip())
   except (subprocess.CalledProcessError, ValueError):
     #if fails means that the process is not running
     counts['failedtest']=1
-    csensors=1
   else:
+    csensors=0
     sensors=subprocess.check_output(['monit','summary'])
     for row in sensors.split('\n'):
       status=parse_monit_row(row)
@@ -119,6 +119,7 @@ else:
   for l in monit_status.keys():
     id=l.replace(' ','_')
     print "%s.value %s"% (id,counts[l]*100/csensors)
+    
   print "failedtest.value %s"% (counts['failedtest']*100/csensors)
 
   
