@@ -10,69 +10,94 @@ import subprocess
 
 from etc.env import DOWNTIME_COUNTER
 
+monit_status_ok={
+  "online with all services":'00FF00',
+  "running":'00FF00',
+  "accessible":'00FF00',  
+  "monitored":'FFFF00',
+  "initializing":'FFFF00',
+  "action done":'FFFF00',
+  "checksum succeeded":'FFFF00',
+  "connection succeeded":'FFFF00',
+  "content succeeded":'FFFF00',
+  "data access succeeded":'FFFF00',
+  "execution succeeded":'FFFF00',
+  "filesystem flags succeeded":'FFFF00',
+  "gid succeeded":'FFFF00',
+  "icmp succeeded":'FFFF00',
+  "monit instance changed not":'FFFF00',
+  "type succeeded":'FFFF00',
+  "exists":'FFFF00',
+  "permission succeeded":'FFFF00',
+  "pid succeeded":'FFFF00',
+  "ppid succeeded":'FFFF00',
+  "resource limit succeeded":'FFFF00',
+  "size succeeded":'FFFF00',
+  "timeout recovery":'FFFF00',
+  "timestamp succeeded":'FFFF00',
+  "uid succeeded":'FFFF00',
+}
+
+monit_status_ko={
+  "not monitored":'FF0000',
+  "checksum failed":'FF0000',
+  "connection failed":'FF0000',
+  "content failed":'FF0000',
+  "data access error":'FF0000',
+  "execution failed":'FF0000',
+  "filesystem flags failed" , 'FF0000',
+  "gid failed":'FF0000',
+  "icmp failed":'FF0000',
+  "monit instance changed":'FF0000',
+  "invalid type":'FF0000',
+  "does not exist":'FF0000',
+  "permission failed":'FF0000',
+  "pid failed":'FF0000',
+  "ppid failed":'FF0000',
+  "resource limit matched":'FF0000',
+  "size failed":'FF0000',
+  "timeout":'FF0000',
+  "timestamp failed":'FF0000',
+  "uid failed":'FF0000',
+}
+    
 def print_config(title,group):
   print "graph_title %s"%title
   print "graph_args --base 1000"
   print "graph_vlabel n. of test failed"
   print "graph_category %s"%group
-  print "failedtest.label test failed"
+  print "failedtest.label monit down"
   print "failedtest.draw AREASTACK"
   print "failedtest.colour FF0000"  
   print "failedtest.warning 6"
   print "failedtest.critical 12"
-
-def lock_fn(fd):
-  #locking file
-  locked=False
-  while not locked:
-    try:
-      fcntl.lockf(fd,fcntl.LOCK_EX)
-    except IOError:
-      time.sleep(3)
-    else:
-      locked=True
-
-def unlock_fn(fd):
-  fcntl.lockf(fd, fcntl.LOCK_UN)
-  
-def open_and_update(fn):
-  count=0
-  #open file to check how many time
-  try:
-    #it exists
-    fd=open(fn,'r+')
-  except IOError:
-    #it not exists
-    fd=open(fn,'w')
-  
-  lock_fn(fd)
-
-  #try to get previous value
-  try:
-    count=int(fd.read())
-  except:
-    count=0
-    
-  count+=1
-  fd.seek(0)    
-  fd.write(str(count))
-  fd.truncate()
-  unlock_fn(fd)
-  fd.close()  
-
-  return count
+  for l,c in monit_status_ok.items()+monit_status_ko.items():
+    id=l.replace(' ','_')
+    print "%s.label %s" % (id,l)
+    print "%s.draw AREASTACK" % id
+    print "%s.colour %s"  % (id,c)
 
 
 if len(sys.argv)>1 and sys.argv[1]=='config':
   print_config('Monit downtime','monit')
 else:
-  count=0
+  counts={}
+  counts['failedtest']=0
+  for l in monit_status.keys():
+    counts[l]=0  
+  
+  sensors=1
   try:
     pid=int(subprocess.check_output(['pidof','monit']).strip())
   except (subprocess.CalledProcessError, ValueError):
     #if fails means that the process is not running
-    count=open_and_update(DOWNTIME_COUNTER)               
+    counts['failedtest']=1
+  else:
+    pass
     
-  print "failedtest.value %s"%count
+  for l in monit_status.keys():    
+    id=l.replace(' ','_')
+    print "%s.value %s"% (id,count*100/sensors)
+  print "failedtest.value %s"% (count*100/sensors)
   
 
