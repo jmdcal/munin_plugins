@@ -1,1 +1,12 @@
-cache/*
+# Ignore python compiled files
+*.py[co]
+# Ignore eggs
+*.egg-info
+# Translation files
+# Ignore backups
+*~
+.*.swp
+# CSSEdit backups
+._*
+less/
+*.mo
