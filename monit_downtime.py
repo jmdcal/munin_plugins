@@ -67,8 +67,6 @@ def print_config(title,group):
   print "failedtest.label monit down"
   print "failedtest.draw AREASTACK"
   print "failedtest.colour FF0000"
-  print "failedtest.warning 6"
-  print "failedtest.critical 12"
   for l,c in monit_status.items():
     id=l.replace(' ','_')
     print "%s.label %s" % (id,l)
