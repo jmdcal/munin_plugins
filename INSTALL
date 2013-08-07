@@ -1,3 +1,9 @@
+~~~~~~~~~
+Configure
+~~~~~~~~~
+
+Go in ./etc and copy env.py.dist in env.py and modify it.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Install runner_aggr runner_http runner_bots
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

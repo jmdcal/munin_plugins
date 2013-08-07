@@ -11,3 +11,4 @@
 less/
 *.mo
 cache/*
+etc/env.py
