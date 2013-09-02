@@ -92,7 +92,7 @@ if len(sys.argv)>1:
     print '  Options:'
     print '\t-h, --help:\tshow this help'
     print '\t-f:\t\tforce creation of all symlinks without asking'
-    print '\t-n:\t\tforce creation of all new symlinks without asking'
+    print '\t-n:\t\tforce creation of new symlinks without asking'
     
 if not help_asked:   
   #foreach virtualhost file in sites_path
