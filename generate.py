@@ -101,12 +101,10 @@ is_ok=False
 for row in fo:
   if title_munin_block in row:    
     is_ok=True
-    print "OK\t%s in %s" % (title_munin_block, row)
-  else:
-    print "FAILS %s in %s" % (title_munin_block, row)
 fo.close()
 
 if not is_ok:
   fo=open(conf_file,'a')
   fo.write("\n"+title_munin_block+"\nuser root\ngroup root\ntimeout 120\n\n")
+  print "Added config in %s"%conf_file
 
