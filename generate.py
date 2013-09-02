@@ -80,10 +80,12 @@ for vh in os.listdir(sites_path):
     for runner in runners_custom:
   
       link_name=create_full_link_name(runner,title,access_log,plugins_path)
+      
         
-      ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
-      if ans=='y' or len(ans)<1:
+      #ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
+      if not os.path.exists(link_name):
         if len(title)>0 and len(access_log)>0:
+            print "Creating.. %s"%link_name
             create_runner(runner,link_name)
 
 
