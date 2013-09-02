@@ -9,6 +9,7 @@
 
 import sys 
 import os
+import re
 from base64 import b16encode
 
 title_munin_block='[runner_*]'
@@ -18,7 +19,9 @@ def parse_title_and_customlog(file_path):
   in_server=False
   res=[]
   for row in fd:
-    if not in_server:
+    if re.match('^#',row):
+      pass #this is a comment    
+    elif not in_server:
       if 'server {' in row:
         in_server=True
         title=''
