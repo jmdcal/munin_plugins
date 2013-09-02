@@ -101,8 +101,9 @@ is_ok=False
 for row in fo:
   if title_munin_block in row:    
     is_ok=True
+    print "OK\t%s in %s" % (title_munin_block, row)
   else:
-    print "%s in %s FAILS" % (title_munin_block, row)
+    print "FAILS %s in %s" % (title_munin_block, row)
 fo.close()
 
 if not is_ok:
