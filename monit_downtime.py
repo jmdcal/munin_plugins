@@ -18,9 +18,9 @@ def print_config(title,group):
   print "graph_args --base 1000"
   print "graph_vlabel status"
   print "graph_category %s"%group
-  print "failedtest.label monit staus"
+  print "failedtest.label monit down"
   print "failedtest.draw AREASTACK"
-  print "failedtest.colour FF0000"
+  print "failedtest.colour FF9900"
   for l,c in MONIT_STATUS.items():
     id=l.replace(' ','_')
     print "%s.label %s" % (id,l)
