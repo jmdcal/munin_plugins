@@ -99,8 +99,10 @@ for vh in os.listdir(sites_path):
 fo=open(conf_file,'r')
 is_ok=False
 for row in fo:
-  if title_munin_block in row:
+  if title_munin_block in row:    
     is_ok=True
+  else:
+    print "%s in %s FAILS" % (title_munin_block, row)
 fo.close()
 
 if not is_ok:
