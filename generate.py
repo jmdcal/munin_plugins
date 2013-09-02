@@ -56,7 +56,7 @@ def create_full_link_name(runner,title,customlog,path):
 def create_runner(runner,link_name):    
   try:    
     os.symlink(os.getcwd()+"/"+runner,link_name)
-    print "CREATED: %s" link_name
+    print "CREATED: %s"%link_name
   except OSError:
     print "WARNING: %s"%link_name
 
