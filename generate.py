@@ -89,7 +89,7 @@ for vh in os.listdir(sites_path):
         def_label='y/N'
       
       ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [%s]?"%(vh,title,access_log,link_name,def_label))
-      if (len(ans)==0 and def_create) or 
+      if (len(ans)==0 and def_create) or \
          (len(ans)>0 and ans.lower()=='y'):
         create_runner(runner,link_name)
 
