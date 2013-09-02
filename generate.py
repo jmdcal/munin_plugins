@@ -56,7 +56,7 @@ def create_full_link_name(runner,title,customlog,path):
 def create_runner(runner,link_name):    
   try:    
     os.symlink(os.getcwd()+"/"+runner,link_name)
-    print link_name
+    print "CREATED:  %s" link_name
   except OSError:
     print "WARNING: %s"%link_name
 
@@ -85,7 +85,6 @@ for vh in os.listdir(sites_path):
       #ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
       if not os.path.exists(link_name):
         if len(title)>0 and len(access_log)>0:
-            print "Creating.. %s"%link_name
             create_runner(runner,link_name)
 
 
