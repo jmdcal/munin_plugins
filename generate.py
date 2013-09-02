@@ -11,8 +11,19 @@ import sys
 import os
 import re
 from base64 import b16encode
+from etc.env import MUNIN_PLUGINS_BLOCK
+from etc.env import MUNIN_PLUGINS_CONF
+from etc.env import MUNIN_PLUGINS
+from etc.env import NGINX_SITES
+from etc.env import NGINX_RUNNERS
 
-title_munin_block='[runner_*]'
+title_munin_block=MUNIN_PLUGINS_BLOCK
+conf_file=MUNIN_PLUGINS_CONF
+plugins_path=MUNIN_PLUGINS
+sites_path=NGINX_SITES
+
+#get list of runner
+runners_custom=NGINX_RUNNERS
 
 def parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
@@ -63,19 +74,6 @@ def create_runner(runner,link_name):
   except OSError:
     print "WARNING: %s"%link_name
 
-if len(sys.argv)>3:
-  conf_file=sys.argv[1]
-  plugins_path=sys.argv[2]
-  sites_path=sys.argv[3]
-else:
-  conf_file='/etc/munin/plugin-conf.d/munin-node'
-  plugins_path='/etc/munin/plugins'
-  sites_path='/etc/nginx/sites-enabled'
-
-#get list of runner
-runners_custom=['runner_aggr.py','runner_http.py','runner_bots.py']
-#runners_error=[]
-
 #foreach virtualhost file in sites_path
 for vh in os.listdir(sites_path):
   to_create=parse_title_and_customlog(sites_path+'/'+vh)
@@ -105,6 +103,7 @@ for row in fo:
     is_ok=True
 fo.close()
 
-fo=open(conf_file,'a')
-fo.write("\n"+title_munin_block+"\nuser root\ngroup root\ntimeout 120\n\n")
+if not is_ok:
+  fo=open(conf_file,'a')
+  fo.write("\n"+title_munin_block+"\nuser root\ngroup root\ntimeout 120\n\n")
 
