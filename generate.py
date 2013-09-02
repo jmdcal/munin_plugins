@@ -73,7 +73,7 @@ def create_runner(runner,link_name):
   except OSError:
     print "WARNING: %s"%link_name
 
-
+created=False
 #do not make questions about creation but force all (-f option)
 force_all=False 
 #do not make questions about creation but force new ones (-n option)
@@ -118,6 +118,7 @@ if not help_asked:
           if (len(ans)==0 and def_create) or \
             (len(ans)>0 and ans.lower()=='y'):
             create_runner(runner,link_name)
+            created=True
 
   #add rights in config file_path
   fo=open(conf_file,'r')
@@ -132,3 +133,5 @@ if not help_asked:
     fo.write("\n"+title_munin_block+"\nuser root\ngroup root\ntimeout 120\n\n")
     print "Added config in %s"%conf_file
 
+  if not created:
+    print "WARNING: no link was created"
