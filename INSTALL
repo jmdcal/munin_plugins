@@ -38,7 +38,7 @@ Install monit_downtime
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Yuo can install this plugin using ln -s command directly in /etc/munin/plugins
-folder. After that, append the content of config/monit_uptime file to
+folder. After that, append the content of config/monit_downtime file to
 /etc/munin/plugin-conf.d/munin-node.
 Restart munin-node and enjoy.
 
