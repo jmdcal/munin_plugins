@@ -19,7 +19,7 @@ def parse_title_and_customlog(file_path):
   in_server=False
   res=[]
   for row in fd:
-    if re.match('^#',row):
+    if re.match('^#',row.strip()):
       pass #this is a comment    
     elif not in_server:
       if 'server {' in row:
