@@ -73,7 +73,7 @@ runners_custom=['runner_aggr.py','runner_http.py','runner_bots.py']
 for vh in os.listdir(sites_path):
   to_create=parse_title_and_customlog(sites_path+'/'+vh)
   for title,access_log in to_create:
-    ans=raw_input("%s\n%s\nCreates munin plugin [Y/n]?"%(title,access_log,))
+    ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\tCreates munin plugin [Y/n]?"%(vh,title,access_log,))
     if ans=='y' or len(ans)<1:
       if len(title)>0 and len(access_log)>0:
         for runner in runners_custom:
