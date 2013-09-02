@@ -77,18 +77,14 @@ runners_custom=['runner_aggr.py','runner_http.py','runner_bots.py']
 for vh in os.listdir(sites_path):
   to_create=parse_title_and_customlog(sites_path+'/'+vh)
   for title,access_log in to_create:
-    link_name=create_full_link_name(runner,title,access_log,plugins_path)
-    
-    
-    
-    ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
-    if ans=='y' or len(ans)<1:
-      if len(title)>0 and len(access_log)>0:
-        for runner in runners_custom:
-          create_runner(runner,link_name)
-      #if len(title)>0:
-        #for runner in runners_error:
-          #create_runner(runner,title,error_log,plugins_path)
+    for runner in runners_custom:
+  
+      link_name=create_full_link_name(runner,title,access_log,plugins_path)
+        
+      ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
+      if ans=='y' or len(ans)<1:
+        if len(title)>0 and len(access_log)>0:
+            create_runner(runner,link_name)
 
 
 #add rights in config file_path
