@@ -88,11 +88,11 @@ if len(sys.argv)>1:
     make_news=True
   elif '-h' in opts or '--help' in opts:
     help_asked=True
-    print 'USAGE:\n\tgenerate.py [opts]\n\n'
+    print 'USAGE:\n\tgenerate.py [opts]\n'
     print '  Options:'
     print '\t-h, --help:\tshow this help'
-    print '\t-f:\tforce creation of all symlinks without asking'
-    print '\t-n:\tforce creation of all new symlinks without asking'
+    print '\t-f:\t\tforce creation of all symlinks without asking'
+    print '\t-n:\t\tforce creation of all new symlinks without asking'
     
 if not help_asked:   
   #foreach virtualhost file in sites_path
