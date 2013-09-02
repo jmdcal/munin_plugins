@@ -44,15 +44,19 @@ def parse_title_and_customlog(file_path):
         access_log=row.strip().split()[1]
   return res
 
-def create_runner(runner,title,customlog,path):
+
+def create_full_link_name(runner,title,customlog,path):
   name,ext=runner.split('.')
   log_file=b16encode(customlog.split('/')[-1])
   title=b16encode(title)
   link_name="%s_%s_nginx_%s"%(name,title,log_file)
-  try:
-    link_name=link_name.replace('.','#')
-    os.symlink(os.getcwd()+"/"+runner,path+'/'+link_name)
-    print path+'/'+link_name
+  link_name=link_name.replace('.','#')
+  return path+'/'+link_name
+
+def create_runner(runner,link_name):    
+  try:    
+    os.symlink(os.getcwd()+"/"+runner,link_name)
+    print link_name
   except OSError:
     print "WARNING: %s"%link_name
 
@@ -73,11 +77,15 @@ runners_custom=['runner_aggr.py','runner_http.py','runner_bots.py']
 for vh in os.listdir(sites_path):
   to_create=parse_title_and_customlog(sites_path+'/'+vh)
   for title,access_log in to_create:
-    ans=raw_input("\n--> %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,))
+    link_name=create_full_link_name(runner,title,access_log,plugins_path)
+    
+    
+    
+    ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
     if ans=='y' or len(ans)<1:
       if len(title)>0 and len(access_log)>0:
         for runner in runners_custom:
-          create_runner(runner,title,access_log,plugins_path)
+          create_runner(runner,link_name)
       #if len(title)>0:
         #for runner in runners_error:
           #create_runner(runner,title,error_log,plugins_path)
