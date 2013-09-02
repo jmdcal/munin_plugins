@@ -8,23 +8,30 @@ Go in ./etc and copy env.py.dist in env.py and modify it.
 Install runner_aggr runner_http runner_bots
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These two plugins are made for Apache, so do not use that if you haven't.
-Apache needs to be installed and configured before you setup. In this situation,
-you can run generate.py script. Usually you need to put nothing but script name, but
-you can specify some details too. Here the full call:
+These plugins are made for Nginx, so do not use that if you haven't.
+Nginx needs to be installed and configured before you setup. In this situation,
+you can run generate.py script. Before do that, be sure to change etc/env/py in 
+according with your configuration, especially NGINX_SITES and MUNIN_PLUGINS.
+After that, you can check the usage as usual (-h):
 
-# generate.py [<munin plugins conf file> <path plugins> <path_sites_apache>]
+# generate.py -h 
 
-Where default is:
-<munin plugins conf file> ::= /etc/munin/plugin-conf.d/munin-node
-<path plugins> ::= /etc/munin/plugins
-<path_sites_apache> ::= /etc/apache2/sites-enabled
+USAGE:
+        generate.py [opts]
 
+  Options:
+        -h, --help:     show this help
+        -f:             force creation of all symlinks without asking
+        -n:             force creation of new symlinks without asking
+
+If you call generate.py without arguments, you will have to answers to a question
+for every symlink. 
+        
 Restart munin-node and enjoy.
 
 More details at
 
-http://cippino.wordpress.com/2010/12/13/apache-and-munin/
+http://cippino.wordpress.com/tag/munin/
 
 ~~~~~~~~~~~~~~~~~~~~~~
 Install monit_downtime
