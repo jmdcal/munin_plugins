@@ -81,11 +81,17 @@ for vh in os.listdir(sites_path):
   
       link_name=create_full_link_name(runner,title,access_log,plugins_path)
       
-        
-      #ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [Y/n]?"%(vh,title,access_log,link_name))
       if not os.path.exists(link_name):
-        if len(title)>0 and len(access_log)>0:
-            create_runner(runner,link_name)
+        def_create=True
+        def_label='Y/n'
+      else:
+        def_create=False
+        def_label='y/N'
+      
+      ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\nCreates munin plugin [%s]?"%(vh,title,access_log,link_name,def_label))
+      if (len(ans)==0 and def_create) or 
+         (len(ans)>0 and ans.lower()=='y'):
+        create_runner(runner,link_name)
 
 
 #add rights in config file_path
