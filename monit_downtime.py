@@ -12,6 +12,7 @@ from collections import Counter
 
 from etc.env import MONIT_STATUS
 from etc.env import MONIT_PARSER
+from etc.env import MONIT_PERCENTAGE_GRAPH
 
 def print_config(title,group):
   print "graph_title %s"%title
@@ -36,7 +37,6 @@ def parse_monit_row(row):
   else:
     status=groups[2].lower().strip()
   return status
-
   
 if len(sys.argv)>1 and sys.argv[1]=='config':
   print_config('Monit status','monit')
@@ -60,11 +60,15 @@ else:
         counts[status]=counts[status]+1
         csensors+=1
 
+  norm=lambda x:x
+  if MONIT_PERCENTAGE_GRAPH:
+    norm=lambda x:(x*100/csensors)
+    
   for l,v in counts.most_common():
     id=l.replace(' ','_')
-    print "%s.value %s"% (id,v*100/csensors)
-    
-  print "failedtest.value %s"% (counts['failedtest']*100/csensors)
+    print "%s.value %s"% (id,norm(v))
+      
+  print "failedtest.value %s"% (norm(counts['failedtest']))
 
   
   
