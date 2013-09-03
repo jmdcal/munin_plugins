@@ -18,18 +18,8 @@ from etc.env import WL_AGENTS
 
 from collections import Counter
 
-def load_agents_list():
-  agents=Counter()
-  fd=open(CACHE_BOTS,'r')
-  for i in fd:
-    i=i.strip()
-    if len(i)>0:
-      agents[i]=0
-  fd.close()
-  return agents
-
 def agents_list(access_file,limit):
-  agents=load_agents_list()
+  agents=load_from_cache(CACHE_BOTS)
   for i in open(access_file,'r'):
     try:
       datas=RowParser(i)
@@ -73,17 +63,4 @@ if len(sys.argv)>3:
   else:
     print_data(agents)
 
-fd=open(CACHE_BOTS,'w')    
-locked=False
-while not locked:
-  try:
-    fcntl.lockf(fd,fcntl.LOCK_EX)
-  except IOError:
-    time.sleep(3)
-  else:
-    locked=True
-
-for l,v in agents:
-  fd.write('%s\n'%l)
-fcntl.lockf(fd, fcntl.LOCK_UN)
-fd.close()
+store_in_cache(CACHE_BOTS,agents.keys())

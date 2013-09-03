@@ -124,3 +124,44 @@ def getparams(this):
   filename=b16decode(parts[2])
   return full_path.replace('runner','worker'),title,group,'%s/%s'%(LOGS,filename)
 
+def load_from_cache(fname):
+  res=Counter()
+  if os.path.isfile(fname):
+    fd=open(fname,'r')
+    for i in fd:
+      i=i.strip()
+      if len(i)>0:
+        res[i]=0
+    fd.close()
+  return res
+
+def store_in_cache(fname,values):
+  locked=False
+  exists=os.path.isfile(fname)
+  mode='w'
+  if exists:
+    mode='r+'
+    
+  fd=open(fname,mode)    
+  while not locked:
+    try:
+      fcntl.lockf(fd,fcntl.LOCK_EX)
+    except IOError:
+      time.sleep(3)
+    else:
+      locked=True
+
+  if exists:
+    for i in fd:
+      try:
+        values.remove(i)
+      except ValueError:
+        #We try to remove from values what is yet in cache file
+        pass
+    
+  #now in values we have only new values for cache and we will append to file
+  for l in values:
+    fd.write('%s\n'%l)
+    
+  fcntl.lockf(fd, fcntl.LOCK_UN)
+  fd.close()
