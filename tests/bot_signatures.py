@@ -6,7 +6,7 @@ import re
 import sys
 import os
 
-from utils import *
+from ..utils import *
 
 from ..etc.env import LOGS
 
