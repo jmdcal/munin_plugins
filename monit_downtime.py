@@ -10,9 +10,12 @@ import subprocess
 
 from collections import Counter
 
+from utils import *
 from etc.env import MONIT_STATUS
 from etc.env import MONIT_PARSER
 from etc.env import MONIT_PERCENTAGE_GRAPH
+from etc.env import MONIT_FULL
+from etc.env import CACHE_MONIT
 
 def print_config(title,group):
   print "graph_title %s"%title
@@ -37,7 +40,8 @@ def parse_monit_row(row):
   else:
     status=groups[2].lower().strip()
   return status
-  
+
+msgs=load_from_cache(CACHE_MONIT)
 if len(sys.argv)>1 and sys.argv[1]=='config':
   print_config('Monit status','monit')
 else:
@@ -70,5 +74,5 @@ else:
       
   print "failedtest.value %s"% (norm(counts['failedtest']))
 
-  
+store_in_cache(CACHE_MONIT,msgs.keys())
   
