@@ -6,19 +6,35 @@ import re
 import sys
 import os
 
-from ..utils import *
+sys.path.append("..")
 
-from ..etc.env import LOGS
+from utils import RowParser
+from utils import get_short_agent
+from etc.env import LOGS
 
 log_regex=r'(.*)access\.log$'
+agents={}
 
 for file in os.listdir(LOGS):
   if re.match(log_regex,file):
     print 'Processing: %s' % file
-    for i in open('/'.join((logs,file)),'r'):
+    for i in open('/'.join((LOGS,file)),'r'):
       try:
         datas=RowParser(i)
       except:
         print '\t wrong signature in row: %s' % i
       else:
-        print "\t found %s" % datas.get_agent()
+        agent=datas.get_agent()
+        if agent is not None and 'bot' in agent:
+          short=get_short_agent(agent)
+          sites=agents.get((agent,short),set())
+          sites.add(file)
+          agents[(agent,short)]=sites
+
+for sig,sites in agents.items():
+  agent,short=sig
+  print "SIGN: %s"%short
+  print agent
+  for site in sites:
+    print "\t%s"%site
+  print "\n"
