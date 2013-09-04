@@ -1,4 +1,6 @@
-#
+#DO NOT MODIFY THIS FILE ON WORKING INSTALLATION
+#USE etc/custom.py TO OVERRIDE ALL VARIABLES
+
 import re
 
 #common 
@@ -154,3 +156,15 @@ MONIT_PARSER=re.compile(MONIT_RE)
 MONIT_PERCENTAGE_GRAPH=True #Use % values instead of absolute values
 MONIT_FULL=False #Show all possible message instead all viewed message
 CACHE_MONIT="%s/monit_messages"%CACHE
+
+
+
+
+
+
+#Leave this on the bottom
+
+try:
+  from custom import *
+except ImportError:  
+  pass
