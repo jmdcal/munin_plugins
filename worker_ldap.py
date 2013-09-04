@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 # Usage:
 # worker_ldap.py <title> <group> 
