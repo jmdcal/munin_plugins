@@ -30,7 +30,7 @@ def print_config(title,group,vals):
     id=l.replace(' ','_')
     print "%s.label %s" % (id,l)
     print "%s.draw AREASTACK" % id
-    if c in not None:
+    if c is not None:
       print "%s.colour %s"  % (id,c)
     
 def parse_monit_row(row):
