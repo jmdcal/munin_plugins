@@ -87,9 +87,6 @@ def get_short_agent(agent):
   try:
     dom=DOM_PARSER.search(agent).group(0)
   except AttributeError:
-    fd=open(WRONG_AGENTS,'a')
-    fd.write(agent)
-    fd.close()
     dom=''
     
   if len(dom)>0:
@@ -98,6 +95,11 @@ def get_short_agent(agent):
     eml=EMAIL_PARSER.findall(agent)
     if len(eml)>0:
       res=eml[0]
+    else:
+      fd=open(WRONG_AGENTS,'a')
+      fd.write('%s\n'%agent)
+      fd.close()
+  
   try:
     res=res.split(' ')[0]
   except:
@@ -105,6 +107,8 @@ def get_short_agent(agent):
   # fix for Googlebot-Image/1.0 and others with no useful agent signature
   if len(res)==0:
     res=agent.lower().replace('/','_')    
+    
+
   return res.replace('.','_').replace('@','_at_')
        
 def ft(time_ft):
