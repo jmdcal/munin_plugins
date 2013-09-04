@@ -24,14 +24,15 @@ def print_config(title,group,vals):
   print "failedtest.draw AREASTACK"
   print "failedtest.colour 757575"
   
-  #If MONIT_FULL is set, vals contains all MONIT_STATUS keys
-  for l,c in MONIT_STATUS.items():
-    if l in vals:
-      id=l.replace(' ','_')
-      print "%s.label %s" % (id,l)
-      print "%s.draw AREASTACK" % id
+  for l in vals:
+    #get color if available
+    c=MONIT_STATUS.get(l,None)
+    id=l.replace(' ','_')
+    print "%s.label %s" % (id,l)
+    print "%s.draw AREASTACK" % id
+    if c in not None:
       print "%s.colour %s"  % (id,c)
-
+    
 def parse_monit_row(row):
   status=None
   try:
