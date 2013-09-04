@@ -24,7 +24,7 @@ def print_config(title,group,vals):
   for l in vals:
     #get color if available
     c=MONIT_STATUS.get(l,None)
-    id=l.replace(' ','_')
+    id=l.strip().replace(' ','_')
     print "%s.label %s" % (id,l)
     print "%s.draw AREASTACK" % id
     if c is not None:
