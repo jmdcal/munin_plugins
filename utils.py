@@ -170,7 +170,7 @@ class CacheCounter(Counter):
     if exists:
       for i in fd:
         try:
-          values.remove(i)
+          values.remove(i.strip())
         except ValueError:
           #We try to remove from values what is yet in cache file
           pass
