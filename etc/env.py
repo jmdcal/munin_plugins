@@ -148,7 +148,8 @@ MONIT_STATUS={
   "timestamp failed":'FF0000',
   "uid failed":'FF0000',
 }
-MONIT_ORDER=["monit down","running"]
+MONIT_FIRSTS=[]
+MONIT_LASTESTS=["monit down","running"]
 MONIT_RE=(
   r'^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)'
   r"\s('.*?')"
@@ -158,11 +159,6 @@ MONIT_PARSER=re.compile(MONIT_RE)
 MONIT_PERCENTAGE_GRAPH=True #Use % values instead of absolute values
 MONIT_FULL=False #Show all possible message instead all viewed message
 CACHE_MONIT="%s/monit_messages"%CACHE
-
-
-
-
-
 
 #Leave this on the bottom
 
