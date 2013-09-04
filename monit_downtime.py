@@ -75,7 +75,5 @@ else:
     id=l.replace(' ','_')
     print "%s.value %s"% (id,norm(v))
       
-  print "failedtest.value %s"% (norm(counts['failedtest']))
-
 counts.store_in_cache()
   
