@@ -149,7 +149,7 @@ MONIT_STATUS={
   "uid failed":'FF0000',
 }
 MONIT_FIRSTS=[]
-MONIT_LASTESTS=["monit down","running"]
+MONIT_LASTESTS=["monit down","running","online with all services"]
 MONIT_RE=(
   r'^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)'
   r"\s('.*?')"
