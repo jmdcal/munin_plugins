@@ -8,8 +8,6 @@ import fcntl
 import time
 import subprocess
 
-from collections import Counter
-
 from utils import *
 from etc.env import MONIT_STATUS
 from etc.env import MONIT_PARSER
@@ -17,7 +15,7 @@ from etc.env import MONIT_PERCENTAGE_GRAPH
 from etc.env import MONIT_FULL
 from etc.env import CACHE_MONIT
 
-def print_config(title,group):
+def print_config(title,group,vals):
   print "graph_title %s"%title
   print "graph_args --base 1000"
   print "graph_vlabel status"
@@ -25,11 +23,14 @@ def print_config(title,group):
   print "failedtest.label monit down"
   print "failedtest.draw AREASTACK"
   print "failedtest.colour 757575"
+  
+  #If MONIT_FULL is set, vals contains all MONIT_STATUS keys
   for l,c in MONIT_STATUS.items():
-    id=l.replace(' ','_')
-    print "%s.label %s" % (id,l)
-    print "%s.draw AREASTACK" % id
-    print "%s.colour %s"  % (id,c)
+    if l in vals:
+      id=l.replace(' ','_')
+      print "%s.label %s" % (id,l)
+      print "%s.draw AREASTACK" % id
+      print "%s.colour %s"  % (id,c)
 
 def parse_monit_row(row):
   status=None
@@ -41,14 +42,16 @@ def parse_monit_row(row):
     status=groups[2].lower().strip()
   return status
 
-msgs=load_from_cache(CACHE_MONIT)
+#We init at least with failedtest counter
+to_init=['failedtest',]
+if MONIT_FULL:
+  to_init+=MONIT_STATUS.keys()
+
+counts=CacheCounter(CACHE_MONIT,to_init)
+
 if len(sys.argv)>1 and sys.argv[1]=='config':
-  print_config('Monit status','monit')
-else:
-  counts=Counter()
-  counts['failedtest']=0
-  for l in MONIT_STATUS.keys():
-    counts[l]=0
+  print_config('Monit status','monit',counts.keys())
+else:  
   csensors=1
   try:
     pid=int(subprocess.check_output(['pidof','monit']).strip())
@@ -74,5 +77,5 @@ else:
       
   print "failedtest.value %s"% (norm(counts['failedtest']))
 
-store_in_cache(CACHE_MONIT,msgs.keys())
+counts.store_in_cache()
   
