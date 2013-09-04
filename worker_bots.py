@@ -29,6 +29,9 @@ def agents_list(access_file,limit):
         if agent is not None and 'bot' in agent and not WL_AGENTS.search(agent) and dt>limit:
           agent=get_short_agent(agent)
           agents[agent]=1+agents[agent]
+  
+  agents.store_in_cache()
+  
   return agents.most_common()
 
 def print_config(title,group,agents):
@@ -60,4 +63,4 @@ if len(sys.argv)>3:
   else:
     print_data(agents)
 
-agents.store_in_cache()
+
