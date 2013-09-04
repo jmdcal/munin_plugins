@@ -101,7 +101,7 @@ HTTP_CODES={
 
 #monit_downtime.py
 MONIT_STATUS={
-  "monit down":'757575'
+  "monit down":'757575',
   "online with all services":'00FF00',
   "running":'00FF00',
   "accessible":'00FF00',  
