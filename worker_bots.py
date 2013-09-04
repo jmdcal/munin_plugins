@@ -16,10 +16,8 @@ from etc.env import LOG_REGEX
 from etc.env import CACHE_BOTS
 from etc.env import WL_AGENTS
 
-from collections import Counter
-
 def agents_list(access_file,limit):
-  agents=load_from_cache(CACHE_BOTS)
+  agents=CacheCounter(CACHE_BOTS)
   for i in open(access_file,'r'):
     try:
       datas=RowParser(i)
@@ -63,4 +61,4 @@ if len(sys.argv)>3:
   else:
     print_data(agents)
 
-store_in_cache(CACHE_BOTS,agents.keys())
+agents.store_in_cache()
