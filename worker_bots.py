@@ -7,7 +7,6 @@
 
 import re
 import sys
-import fcntl
 import time
 
 from utils import *

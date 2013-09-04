@@ -3,6 +3,7 @@ from datetime import datetime,timedelta
 import re
 import time
 import os
+import fcntl
 from base64 import b16decode
 
 from collections import Counter
