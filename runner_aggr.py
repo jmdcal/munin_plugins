@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 #This is a worker caller and it is used to get parameters from filename
 #Call it using a symbolic link: runner_aggr_title_group_file.log.py
