@@ -20,11 +20,6 @@ def print_config(title,group,vals):
   print "graph_args --base 1000"
   print "graph_vlabel status"
   print "graph_category %s"%group
-  print "failedtest.label monit down"
-  print "failedtest.draw AREASTACK"
-  print "failedtest.colour 757575"
-  
-  vals.remove('failedtest')
   for l in vals:
     #get color if available
     c=MONIT_STATUS.get(l,None)
@@ -45,7 +40,7 @@ def parse_monit_row(row):
   return status
 
 #We init at least with failedtest counter
-to_init=['failedtest',]
+to_init=['monit down',]
 if MONIT_FULL:
   to_init+=MONIT_STATUS.keys()
 
@@ -59,7 +54,7 @@ else:
     pid=int(subprocess.check_output(['pidof','monit']).strip())
   except (subprocess.CalledProcessError, ValueError):
     #if fails means that the process is not running
-    counts['failedtest']=1
+    counts['monit down']=1
   else:
     csensors=0
     sensors=subprocess.check_output(['monit','summary'])
