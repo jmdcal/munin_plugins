@@ -102,12 +102,12 @@ HTTP_CODES={
 #monit_downtime.py
 MONIT_STATUS={
   "monit down":'757575',
-  "online with all services":'00FF00',
-  "running":'00FF00',
-  "accessible":'00FF00',  
-  "monitored":'00FF00',
-  "initializing":'00FF00',
-  "action done":'00FF00', 
+  "running":'005000',
+  "online with all services":'006000',
+  "accessible":'007000',  
+  "monitored":'008000',
+  "initializing":'009000',
+  "action done":'00A000', 
   "checksum succeeded":'00FF00',
   "connection succeeded":'00FF00',
   "content succeeded":'00FF00',
@@ -149,7 +149,7 @@ MONIT_STATUS={
   "uid failed":'FF0000',
 }
 MONIT_FIRSTS=[]
-MONIT_LASTESTS=["monit down","running","online with all services"]
+MONIT_LASTESTS=[,"online with all services","running","monit down"]
 MONIT_RE=(
   r'^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)'
   r"\s('.*?')"
