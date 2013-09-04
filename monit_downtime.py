@@ -20,6 +20,7 @@ def print_config(title,group,vals):
   print "graph_args --base 1000"
   print "graph_vlabel status"
   print "graph_category %s"%group
+  print "graph_order monit_down running"
   for l in vals:
     #get color if available
     c=MONIT_STATUS.get(l,None)
