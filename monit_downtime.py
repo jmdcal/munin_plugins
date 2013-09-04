@@ -10,9 +10,11 @@ import subprocess
 
 from utils import *
 from etc.env import MONIT_STATUS
+from etc.env import MONIT_ORDER
 from etc.env import MONIT_PARSER
 from etc.env import MONIT_PERCENTAGE_GRAPH
 from etc.env import MONIT_FULL
+
 from etc.env import CACHE_MONIT
 
 def print_config(title,group,vals):
@@ -20,7 +22,7 @@ def print_config(title,group,vals):
   print "graph_args --base 1000"
   print "graph_vlabel status"
   print "graph_category %s"%group
-  print "graph_order monit_down running"
+  print "graph_order %s" % " ".join([i.strip().replace(' ','_') for i in MONIT_ORDER])
   for l in vals:
     #get color if available
     c=MONIT_STATUS.get(l,None)
@@ -69,7 +71,7 @@ else:
   if MONIT_PERCENTAGE_GRAPH:
     norm=lambda x:(x*100/csensors)
     
-  for l,v in counts.most_common():
+  for l,v in counts.items():
     id=l.replace(' ','_')
     print "%s.value %s"% (id,norm(v))
       

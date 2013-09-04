@@ -148,6 +148,7 @@ MONIT_STATUS={
   "timestamp failed":'FF0000',
   "uid failed":'FF0000',
 }
+MONIT_ORDER=["monit down","running"]
 MONIT_RE=(
   r'^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)'
   r"\s('.*?')"
