@@ -24,6 +24,7 @@ def print_config(title,group,vals):
   print "failedtest.draw AREASTACK"
   print "failedtest.colour 757575"
   
+  vals.remove('failedtest')
   for l in vals:
     #get color if available
     c=MONIT_STATUS.get(l,None)
