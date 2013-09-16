@@ -22,7 +22,7 @@ row_pattern=(
   r'^([0-9]+(?:\.[0-9]+){3})' #IP
   r'\s+\-\s(.*?)' #user
   r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]' #date
-  r'\s+\"([A-Z]*?)\s(/.*?)(\sHTTP.*)?"' #request
+  r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?"' #request
   r'\s+([0-9]{3})' #http code
   r'\s+([0-9]+)' #bytes code
   r'\s+\"(.*?)\"' #reffer
