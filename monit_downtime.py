@@ -61,13 +61,13 @@ if len(sys.argv)>1 and sys.argv[1]=='config':
 else:  
   csensors=1
   try:
-    pid=int(subprocess.check_output(['pidof','monit']).strip())
+    pid=int(subprocess.check_output(['pidof','monit'],stderr=subprocess.STDOUT).strip())
   except (subprocess.CalledProcessError, ValueError):
     #if fails means that the process is not running
     counts['monit down']=1
   else:
     csensors=0
-    sensors=subprocess.check_output(['monit','summary'])
+    sensors=subprocess.check_output(['monit','summary'],stderr=subprocess.STDOUT)
     for row in sensors.split('\n'):
       status=parse_monit_row(row)
       if status is not None:
