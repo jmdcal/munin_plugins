@@ -1,11 +1,7 @@
 #!/usr/bin/python
 
 #Script generator
-# generate.py [<munin plugins conf file> <munin plugins path> <path_sites_nginx>]
-#
-# example:
-# generate.py /etc/munin/plugin-conf.d/munin-node /etc/munin/plugins /etc/nginx/sites-enabled
-
+# see ./generate.sh -h for usage
 
 import sys 
 import os
