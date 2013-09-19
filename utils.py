@@ -13,6 +13,7 @@ from etc.env import MINUTES
 from etc.env import VALID_CTYPES
 from etc.env import ROW_PARSER
 from etc.env import ROW_MAPPING
+from etc.env import NGINX_PARSER
 from etc.env import EMAIL_PARSER
 from etc.env import DOM_PARSER
 from etc.env import WRONG_AGENTS
@@ -28,7 +29,11 @@ class RowParser(object):
     try:
       self.parsed=ROW_PARSER.search(row).groups()
     except AttributeError:
-      self.parsed=[]
+      #Fall back to combine nginx log
+      try:
+        self.parsed=NGINX_PARSER.search(row).groups()
+      except AttributeError:        
+        self.parsed=[]
 
   def _get_val(self,lab):
     try:
