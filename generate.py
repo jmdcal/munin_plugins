@@ -88,7 +88,7 @@ def install(force_all,make_news,def_create,fun,pars={}):
     if def_create:
       fun(**pars)
       created=True
-  else
+  else:
     if def_create:
       def_label='Y/n'
     else:
