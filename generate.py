@@ -146,7 +146,7 @@ if not help_asked:
         orig_name='/'.join([os.getcwd(),runner])
         link_name=create_full_link_name(runner,title,access_log,plugins_path)
         def_create=not os.path.exists(link_name)        
-        pars=dict(orig=orig_name,link_name=link_name)
+        pars=dict(orig=orig_name,link=link_name)
         
         created=install(force_all,make_news,def_create,create_link,pars) or created
   if created:
