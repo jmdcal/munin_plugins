@@ -1,17 +1,64 @@
+~~~~~~~~~~~~
+Requirements
+~~~~~~~~~~~~
+
+- Python >= 2.7
+- Monit
+- Munin-node
+- Nginx
+
+
 ~~~~~~~~~
-REQUIRES
+Configure
 ~~~~~~~~~
 
-Python2.7+
-This is necessary for libraries.
+Go in ./etc and create custom.py file. All variable in custom.py will override 
+env.py value. Modify the path in according of your host setup.
 
-
-~~~~~~~~~
-LogFormat
-~~~~~~~~~
-Every Nginx virtual host you want to monitor needs to use combined2 defined in this way:
+To use runner_aggr, you have to configure nginx log in this way:
+- add the following new log define
 
     log_format combined2 '$remote_addr - $remote_user [$time_local]  '
                     '"$request" $status $body_bytes_sent '
                     '"$http_referer" "$http_user_agent" [[$request_time]]';
+
+- change every access_log directive in virtualhost, adding combined2 at the end
+  
+    access_log /some/where/<somename>.log combined2;
+
+    
+~~~~~~~
+Install 
+~~~~~~~
+
+The fast way to install, is using generate.py. The help can show you the options
+
+# generate.py -h 
+
+USAGE:
+        generate.py [opts]
+
+  Options:
+        -h, --help:     show this help
+        -f:             force creation of all symlinks without asking
+        -n:             force creation of new symlinks without asking
+
+If you call generate.py without arguments, you will have to answers to a question
+for every symlink. 
+        
+Restart munin-node, munin-async (if you use that) and enjoy.
+
+More details at
+
+http://cippino.wordpress.com/tag/munin/
+
+
+~~~~~~~~~~~~~~
+Known Problems
+~~~~~~~~~~~~~~
+
+1 - Keep attection if you use SELinux or other kind of Security access framework,
+because you have to configure all rights correctly. Usually, my choice is to
+put down, because the call of monit get error about access denied.
+
 
