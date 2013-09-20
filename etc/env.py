@@ -3,8 +3,17 @@
 
 import re
 
+#Daemons
+NGINX_BASE='/opt/nginx'
+NGING_LOG='%s/logs' % NGINX_BASE
+NGINX_SITES='%s/sites-enabled'%NGINX_BASE
+
+MUNIN_BASE='/etc/munin'
+MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
+MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
+
 #common 
-LOGS='/opt/nginx/logs/'
+LOGS=NGINX_LOG
 CACHE="/opt/munin_plugins/cache"
 
 #utils.py
@@ -66,10 +75,6 @@ EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #generate.py
-MUNIN_BASE='/etc/munin'
-MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
-MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
-NGINX_SITES='/etc/nginx/sites-enabled'
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py']
 
 #Bots.py
