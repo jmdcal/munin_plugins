@@ -97,7 +97,7 @@ def install(force_all,make_news,def_create,fun,pars={}):
     for k,v in pars.items():
       print "-->%s: %s"%(k,v)
        
-    ans=raw_input("\n\t- %s\n\nCreates munin plugin [%s]?"%(link_name,def_label))
+    ans=raw_input("\nCreates munin plugin [%s]?"%def_label)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
       fun(**pars)      
