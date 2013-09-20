@@ -68,7 +68,7 @@ DOM_PARSER=re.compile('http://(.*?)(/|\))')
 #generate.py
 MUNIN_BASE='/etc/munin'
 MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
-MUNIN_PLUGINS='%/plugins' % MUNIN_BASE
+MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
 NGINX_SITES='/etc/nginx/sites-enabled'
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py']
 
