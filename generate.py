@@ -6,14 +6,15 @@
 import sys 
 import os
 import re
+import subprocess
+import shutil
+
 from base64 import b16encode
-from etc.env import MUNIN_PLUGINS_BLOCK
-from etc.env import MUNIN_PLUGINS_CONF
+from etc.env import MUNIN_PLUGINS_CONFD
 from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
 from etc.env import NGINX_RUNNERS
 
-title_munin_block=MUNIN_PLUGINS_BLOCK
 conf_file=MUNIN_PLUGINS_CONF
 plugins_path=MUNIN_PLUGINS
 sites_path=NGINX_SITES
@@ -60,14 +61,49 @@ def create_full_link_name(runner,title,customlog,path):
   title=b16encode(title)
   link_name="%s_%s_nginx_%s"%(name,title,log_file)
   link_name=link_name.replace('.','#')
-  return path+'/'+link_name
-
-def create_runner(runner,link_name):    
-  try:    
-    os.symlink(os.getcwd()+"/"+runner,link_name)
-    print "CREATED: %s"%link_name
+  return '/'.join([path,link_name])
+ 
+def create_link(orig,link):
+  try:
+    os.symlink(orig,link)
+    print "CREATED: %s"%link
   except OSError:
-    print "WARNING: %s"%link_name
+    print "WARNING: %s"%link
+
+
+def config_env(fn,orig,dest):
+  forig='/'.join([orig,'config',fn])
+  fdest='/'.join([dest,fn])
+  
+  #checking if file exists
+  if not os.path.isfile(forig):
+    shutil.copy(forig,fdest)
+
+def install(force_all,make_news,def_create,fun,pars={}):
+  created=False
+  if force_all:       
+    fun(**pars)  
+    created=True
+  elif make_news:
+    if def_create:
+      fun(**pars)
+      created=True
+  else
+    if def_create:
+      def_label='Y/n'
+    else:
+      def_label='y/N'
+
+    for k,v in pars.items():
+      print "-->%s: %s"%(k,v)
+       
+    ans=raw_input("\n\t- %s\n\nCreates munin plugin [%s]?"%(link_name,def_label))
+    if (len(ans)==0 and def_create) or \
+      (len(ans)>0 and ans.lower()=='y'):
+      fun(**pars)      
+      created=True
+      
+  return created
 
 created=False
 #do not make questions about creation but force all (-f option)
@@ -91,43 +127,28 @@ if len(sys.argv)>1:
     print '\t-n:\t\tforce creation of new symlinks without asking'
     
 if not help_asked:   
+  orig_name='/'.join([os.getcwd(),'monit_downtime.py'])
+  link_name='/'.join([plugins_path,'monit_downtime'])
+  def_create=not os.path.exists(link_name)
+  pars=dict(orig=orig_name,link=link_name)
+    
+  created=install(force_all,make_news,def_create,create_link,pars)
+  if created:
+    config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+  
+  #configure plugins that use runner
   #foreach virtualhost file in sites_path
+  created=False
   for vh in os.listdir(sites_path):
     to_create=parse_title_and_customlog(sites_path+'/'+vh)
     for title,access_log in to_create:
       for runner in runners_custom: 
+        orig_name='/'.join([os.getcwd(),runner])
         link_name=create_full_link_name(runner,title,access_log,plugins_path)
-        def_create=not os.path.exists(link_name)
+        def_create=not os.path.exists(link_name)        
+        pars=dict(orig=orig_name,link_name=link_name)
         
-        if force_all:
-          create_runner(runner,link_name)
-        elif make_news:
-          if def_create:
-            create_runner(runner,link_name)
-        else:     
-          if def_create:
-            def_label='Y/n'
-          else:
-            def_label='y/N'
-            
-          ans=raw_input("\n--> %s\n\t- %s\n\t- %s\n\t- %s\n\nCreates munin plugin [%s]?"%(vh,title,access_log,link_name,def_label))
-          if (len(ans)==0 and def_create) or \
-            (len(ans)>0 and ans.lower()=='y'):
-            create_runner(runner,link_name)
-            created=True
+        created=install(force_all,make_news,def_create,create_link,pars) or created
+  if created:
+    config_env('runners',os.getcwd(),MUNIN_PLUGINS_CONFD)
 
-  #add rights in config file_path
-  fo=open(conf_file,'r')
-  is_ok=False
-  for row in fo:
-    if title_munin_block in row:    
-      is_ok=True
-  fo.close()
-
-  if not is_ok:
-    fo=open(conf_file,'a')
-    fo.write("\n"+title_munin_block+"\nuser root\ngroup root\ntimeout 120\n\n")
-    print "Added config in %s"%conf_file
-
-  if not created:
-    print "WARNING: no link was created"

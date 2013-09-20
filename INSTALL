@@ -1,18 +1,36 @@
+~~~~~~~~~~~~
+Requirements
+~~~~~~~~~~~~
+
+- Python >= 2.7
+- Monit 
+- Nginx
+
+
 ~~~~~~~~~
 Configure
 ~~~~~~~~~
 
-Go in ./etc and copy env.py.dist in env.py and modify it.
+Go in ./etc and create custom.py file. All variable in custom.py will override 
+env.py value. Modify the path in according of your host setup.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Install runner_aggr runner_http runner_bots
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To use runner_aggr, you have to configure nginx log in this way:
+- add the following new log define
 
-These plugins are made for Nginx, so do not use that if you haven't.
-Nginx needs to be installed and configured before you setup. In this situation,
-you can run generate.py script. Before do that, be sure to change etc/env/py in 
-according with your configuration, especially NGINX_SITES and MUNIN_PLUGINS.
-After that, you can check the usage as usual (-h):
+    log_format combined2 '$remote_addr - $remote_user [$time_local]  '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent" [[$request_time]]';
+
+- change every access_log directive in virtualhost, adding combined2 at the end
+  
+    access_log /some/where/<somename>.log combined2;
+
+    
+~~~~~~~
+Install 
+~~~~~~~
+
+The fast way to install, is using generate.py. The help can show you the options
 
 # generate.py -h 
 
@@ -27,20 +45,11 @@ USAGE:
 If you call generate.py without arguments, you will have to answers to a question
 for every symlink. 
         
-Restart munin-node and enjoy.
+Restart munin-node, munin-async (if you use that) and enjoy.
 
 More details at
 
 http://cippino.wordpress.com/tag/munin/
-
-~~~~~~~~~~~~~~~~~~~~~~
-Install monit_downtime
-~~~~~~~~~~~~~~~~~~~~~~
-
-Yuo can install this plugin using ln -s command directly in /etc/munin/plugins
-folder. After that, append the content of config/monit_downtime file to
-/etc/munin/plugin-conf.d/munin-node.
-Restart munin-node and enjoy.
 
 
 ~~~~~~~~~~~~~~

@@ -66,9 +66,9 @@ EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #generate.py
-MUNIN_PLUGINS_BLOCK='[runner_*]'
-MUNIN_PLUGINS_CONF='/etc/munin/plugin-conf.d/munin-node'
-MUNIN_PLUGINS='/etc/munin/plugins'
+MUNIN_BASE='/etc/munin'
+MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
+MUNIN_PLUGINS='%/plugins' % MUNIN_BASE
 NGINX_SITES='/etc/nginx/sites-enabled'
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py']
 
