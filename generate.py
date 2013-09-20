@@ -66,9 +66,9 @@ def create_full_link_name(runner,title,customlog,path):
 def create_link(orig,link):
   try:
     os.symlink(orig,link)
-    print "CREATED: %s"%link
+    print "CREATED: %s\n"%link
   except OSError:
-    print "WARNING: %s"%link
+    print "WARNING: %s\n"%link
 
 def config_env(fn,orig,dest):
   forig='/'.join([orig,'config',fn])
