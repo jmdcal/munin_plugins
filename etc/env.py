@@ -5,7 +5,7 @@ import re
 
 #Daemons
 NGINX_BASE='/opt/nginx'
-NGING_LOG='%s/logs' % NGINX_BASE
+NGINX_LOG='%s/logs' % NGINX_BASE
 NGINX_SITES='%s/sites-enabled'%NGINX_BASE
 
 MUNIN_BASE='/etc/munin'
