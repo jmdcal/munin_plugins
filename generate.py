@@ -15,7 +15,7 @@ from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
 from etc.env import NGINX_RUNNERS
 
-conf_file=MUNIN_PLUGINS_CONF
+conf_file=MUNIN_PLUGINS_CONFD
 plugins_path=MUNIN_PLUGINS
 sites_path=NGINX_SITES
 
