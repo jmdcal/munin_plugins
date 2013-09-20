@@ -3,7 +3,8 @@ Requirements
 ~~~~~~~~~~~~
 
 - Python >= 2.7
-- Monit 
+- Monit
+- Munin-node
 - Nginx
 
 
