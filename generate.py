@@ -70,13 +70,12 @@ def create_link(orig,link):
   except OSError:
     print "WARNING: %s"%link
 
-
 def config_env(fn,orig,dest):
   forig='/'.join([orig,'config',fn])
   fdest='/'.join([dest,fn])
   
   #checking if file exists
-  if not os.path.isfile(forig):
+  if not os.path.isfile(fdest):
     shutil.copy(forig,fdest)
 
 def install(force_all,make_news,def_create,fun,pars={}):
@@ -146,9 +145,9 @@ if not help_asked:
         orig_name='/'.join([os.getcwd(),runner])
         link_name=create_full_link_name(runner,title,access_log,plugins_path)
         def_create=not os.path.exists(link_name)        
-        pars=dict(orig=orig_name,link=link_name)
-        
+        pars=dict(orig=orig_name,link=link_name)        
         created=install(force_all,make_news,def_create,create_link,pars) or created
+        
   if created:
     config_env('runners',os.getcwd(),MUNIN_PLUGINS_CONFD)
 
