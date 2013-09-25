@@ -99,14 +99,15 @@ for field_name,(label,conv) in PLONE_GRAPHS.items():
     
   for s,desc in ps_cache.items():
     fun=eval(conv)
-    val=fun(desc[field_name])
-    if isinstance(val,dict):
-      for k,v in val.items():
-        id="%s_%s_%s"%(s,field_name,k)
-        print "%s.%s %s"%(id,attr,to_real(v,id))
-    else:
-      id="%s_%s"%(s,field_name)
-      print "%s.%s %s"%(id,attr,to_real(val,id))
+    if desc is not None:
+      val=fun(desc[field_name])
+      if isinstance(val,dict):
+        for k,v in val.items():
+          id="%s_%s_%s"%(s,field_name,k)
+          print "%s.%s %s"%(id,attr,to_real(v,id))
+      else:
+        id="%s_%s"%(s,field_name)
+        print "%s.%s %s"%(id,attr,to_real(val,id))
       
 ps_cache.store_in_cache()
 
