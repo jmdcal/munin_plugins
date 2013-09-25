@@ -206,7 +206,7 @@ class Cache(object):
 #Simple cache based on a list of values
 class CacheDict(Cache,dict):  
   def load_value(self,val):
-    self[val]=default
+    self[val]=self.default
 
   def get_values(self):
     return self.keys()
@@ -216,7 +216,7 @@ class CacheCounter(Cache,Counter):
   default=0
   
   def load_value(self,val):
-    self[val]=default
+    self[val]=self.default
 
   def get_values(self):
     return self.keys()
