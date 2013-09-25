@@ -171,20 +171,14 @@ CACHE_MONIT="%s/monit_messages"%CACHE
 
 
 #plone_usage
-PS_FIELDS={
-  'cpu_percent':('Cpu %','identity'),
-  'memory_percent':('Memory %','identity'),
+PLONE_GRAPHS={
+  'cpu_percent':('Plone Cpu %','identity'),
+  'memory_percent':('Plone Memory %','identity'),
+  'connections':('Connections','len'), 
+  'io_counters':('Counters','split_counters'),
 }
-#PS_FIELDS={
-  #'connections':('Connections','len'), 
-  #'io_counters':('Counters','split_counters'),
-
-#}
-#ZOPE_ZEO_RE=r'/(.*?\.py)(.?)-C\s((/.*?/)(zope|zeo)(\.conf))'
-ZOPE_ZEO_RE=r'(run|runzeo\.py).*?-C\s((/.*?/)(zope|zeo)(\.conf))'
-ZOPE_ZEO_PARSER=re.compile(ZOPE_ZEO_RE)
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-PLONE_MULTIGRAPH=True
+
 #Leave this on the bottom
 
 try:

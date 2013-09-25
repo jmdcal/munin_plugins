@@ -8,33 +8,15 @@ from collections import deque
 
 from utils import *
 
-from etc.env import PS_FIELDS
-from etc.env import ZOPE_ZEO_PARSER
+from etc.env import PLONE_GRAPHS
+from etc.env import ZOPE_PARSER
+from etc.env import ZEO_PARSER
 from etc.env import INSTANCES_CACHE
-from etc.env import PLONE_MULTIGRAPH
 
-def print_config(title,group,vals):
-  if PLONE_MULTIGRAPH:
-    for field_name,(label,conv) in PS_FIELDS.items():    
-      print "multigraph plone_%s"%field_name
-      print "graph_title %s %s"%(title,label)    
-      print "graph_args --base 1000"
-      print "graph_vlabel usage %s"%label
-      print "graph_category %s"%group
-
-      for id,l,c in vals:
-        if l==label:
-          print "%s.label %s" % (id,c)
-  else:
-    print "graph_title %s"%title
-    print "graph_args --base 1000"
-    print "graph_vlabel usage"
-    print "graph_category %s"%group
-
-    for id,l,c in vals:
-      print "%s.label %s" % (id,l,c)
-
-
+#Utils: empty process descriptor
+def empty_desc():
+  desc=dict([(i,None) for i in PLONE_GRAPHS.keys()])  
+  return desc
 
 #Converters
 def identity(x):
@@ -53,78 +35,81 @@ def split_counters(vals):
     pass
   return {'read':rb, 'write':wb}
 
-#Utils: empty process descriptor
-def empty_desc():
-  desc=dict([(i,None) for i in PS_FIELDS.keys()])  
-  return desc
+def print_config(title,group,sensors):
+  for field_name,(label,conv) in PLONE_GRAPHS.items():    
+    print "multigraph plone_%s"%field_name
+    print "graph_title %s %s"%(title,label)    
+    print "graph_args --base 1000"
+    print "graph_vlabel usage %s"%label
+    print "graph_category %s"%group
+    for s in sensors.keys():
+      print "%s_%s.label %s"%(s,field_name,s)
 
-#Parser for 
-def is_valid_line(row):
+def find_cfg(command):
   cfg=None
-  try:
-    gr=ZOPE_ZEO_PARSER.search(row).groups()
-    cfg=gr[1]
-  except AttributeError:
-    pass
+  for i in command:
+    if 'zope.conf' in i or 'zeo.conf' in i:
+      cfg=i
+     
   return cfg
 
-def get_instance_name(cfg):
-  title,conf=cfg.split('parts')
-  name=conf.strip('/').split('/')[0]
-  title='%sbin/%s'%(title,name)
-  id=title.strip('/').replace('/','_').replace('-','_')
-  return (title,id)
-
-
-#cache is a dict cmd -> desc
+def build_sensor_name(command):
+  cfg=find_cfg(command)
+  name=None
+  if cfg is not None:
+    try:
+      instance_num=re.search('parts/(.*?)/etc',cfg).group(1)
+      buildout=re.search('/(.*?)/parts',cfg).group(1)
+    except AttributeError:
+      pass
+    else:
+      path=buildout.split('/')
+      name=path[-1]
+      if name=='buildout':
+        name=path[-2]
+      name='%s_%s'%(name,instance_num)
+      
+  return name
+  
 
 ps_cache=CacheDict(INSTANCES_CACHE)
 ps_cache.set_default(empty_desc())
-for pd in psutil.process_iter():
-  try:
-    desc=pd.as_dict()
-  except psutil._error.NoSuchProcess:
-    cmd=''
-  else:
-    cmd=" ".join(desc['cmdline'])
-  
-  cfg=is_valid_line(cmd)
-  if cfg is not None:  
-    ps_cache[cmd]=desc
+#ps_cache: cmd -> (graph_id -> value)
+for pd in psutil.process_iter(): 
+  name=build_sensor_name(pd.cmdline)
+  #ppid>1 means that 
+  if name is not None and pd.ppid>1:
+    ps_cache[name]=pd.as_dict()
 
+is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
+title='Plone instances'
+group='plone'
 
-sensors=deque()  
-values=deque()
+attr='value'
+to_real=lambda val,lab:val
+if is_config:
+  attr='label'
+  to_real=lambda val,lab:lab
 
-for cmd,desc in ps_cache.items():
-  #we revaluate cmd because some are taked from cache 
-  cfg=is_valid_line(cmd)
-  title,id=get_instance_name(cfg)
-  for field_name,(label,conv_name) in PS_FIELDS.items():
-    fun=eval(conv_name)
+for field_name,(label,conv) in PLONE_GRAPHS.items():    
+  if is_config:
+    print "multigraph plone_%s"%field_name
+    print "graph_title %s %s"%(title,label)    
+    print "graph_args --base 1000"
+    print "graph_vlabel usage %s"%label
+    print "graph_category %s"%group
     
-    try:
-      val=fun(desc[field_name])
-    except TypeError:
-      #This trap a converter failure
-      val=0      
-      
+  for s,desc in ps_cache.items():
+    fun=eval(conv)
+    val=fun(desc[field_name])
     if isinstance(val,dict):
       for k,v in val.items():
-        row_id='%s_%s_%s'%(id,field_name,k)
-        label_ex='%s %s'%(label,k)
-        values.append('%s.value %s'%(row_id,v))
-        sensors.append((row_id,label_ex,cfg))
+        id="%s_%s_%s"%(s,field_name,k)
+        print "%s.%s %s"%(id,attr,to_real(v,id))
     else:
-      #import pdb; pdb.set_trace()
-      row_id='%s_%s'%(id,field_name)
-      values.append('%s.value %s'%(row_id,val))
-      sensors.append((row_id,label,cfg))
+      id="%s_%s"%(s,field_name)
+      print "%s.%s %s"%(id,attr,to_real(val,id))
       
-if len(sys.argv)>1 and sys.argv[1]=='config':
-  print_config('Plone instances','plone',sensors)
-else:  
-  for row in values:
-    print row    
-
 ps_cache.store_in_cache()
+
+
