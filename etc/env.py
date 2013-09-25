@@ -177,8 +177,10 @@ PS_FIELDS={
   'io_counters':('Counters','split_counters'),
   'memory_percent':('Memory %','identity'),
 }
-ZOPE_ZEO_RE=r'-C\s(/.*?/)((zope\.conf)|(zeo\.conf))'
+#ZOPE_ZEO_RE=r'/(.*?\.py)(.?)-C\s((/.*?/)(zope|zeo)(\.conf))'
+ZOPE_ZEO_RE=r'(run|runzeo\.py).*?-C\s((/.*?/)(zope|zeo)(\.conf))'
 ZOPE_ZEO_PARSER=re.compile(ZOPE_ZEO_RE)
+INSTANCES_CACHE='%s/zope_instances'%CACHE
 
 #Leave this on the bottom
 
