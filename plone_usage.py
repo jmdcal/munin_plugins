@@ -24,7 +24,7 @@ def print_config(title,group,vals):
 
       for id,l,c in vals:
         if l==label:
-          print "%s.label %s %s" % (id,l,c)
+          print "%s.label %s" % (id,c)
   else:
     print "graph_title %s"%title
     print "graph_args --base 1000"
@@ -72,7 +72,7 @@ def get_instance_name(cfg):
   title,conf=cfg.split('parts')
   name=conf.strip('/').split('/')[0]
   title='%sbin/%s'%(title,name)
-  id=title.strip('/').replace('/','_')  
+  id=title.strip('/').replace('/','_').replace('-','_')
   return (title,id)
 
 
@@ -116,6 +116,7 @@ for cmd,desc in ps_cache.items():
         values.append('%s.value %s'%(row_id,v))
         sensors.append((row_id,label_ex,cfg))
     else:
+      #import pdb; pdb.set_trace()
       row_id='%s_%s'%(id,field_name)
       values.append('%s.value %s'%(row_id,val))
       sensors.append((row_id,label,cfg))
