@@ -169,6 +169,17 @@ MONIT_PERCENTAGE_GRAPH=True #Use % values instead of absolute values
 MONIT_FULL=False #Show all possible message instead all viewed message
 CACHE_MONIT="%s/monit_messages"%CACHE
 
+
+#plone_usage
+PS_FIELDS={
+  'connections':('Connections','len'), 
+  'cpu_percent':('Cpu %','identity'),
+  'io_counters':('Counters','split_counters'),
+  'memory_percent':('Memory %','identity'),
+}
+ZOPE_ZEO_RE=r'-C\s(/.*?/)((zope\.conf)|(zeo\.conf))'
+ZOPE_ZEO_PARSER=re.compile(ZOPE_ZEO_RE)
+
 #Leave this on the bottom
 
 try:

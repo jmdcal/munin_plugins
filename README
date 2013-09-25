@@ -3,6 +3,7 @@ Requirements
 ~~~~~~~~~~~~
 
 - Python >= 2.7
+- psutil for Python
 - Monit
 - Munin-node
 - Nginx
