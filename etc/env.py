@@ -181,7 +181,7 @@ PS_FIELDS={
 ZOPE_ZEO_RE=r'(run|runzeo\.py).*?-C\s((/.*?/)(zope|zeo)(\.conf))'
 ZOPE_ZEO_PARSER=re.compile(ZOPE_ZEO_RE)
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-
+PLONE_MULTIGRAPH=True
 #Leave this on the bottom
 
 try:

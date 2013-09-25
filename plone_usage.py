@@ -11,15 +11,30 @@ from utils import *
 from etc.env import PS_FIELDS
 from etc.env import ZOPE_ZEO_PARSER
 from etc.env import INSTANCES_CACHE
+from etc.env import PLONE_MULTIGRAPH
 
 def print_config(title,group,vals):
-  print "graph_title %s"%title
-  print "graph_args --base 1000"
-  print "graph_vlabel usage"
-  print "graph_category %s"%group
+  if PLONE_MULTIGRAPH:
+    for field_name,(label,conv) in PS_FIELDS.items():    
+      print "multigraph plone_%s"%field_name
+      print "graph_title %s %s"%(title,label)    
+      print "graph_args --base 1000"
+      print "graph_vlabel usage %s"%label
+      print "graph_category %s"%group
 
-  for id,l in vals:
-    print "%s.label %s" % (id,l)
+      for id,l,c in vals:
+        if l==label:
+          print "%s.label %s %s" % (id,l,c)
+  else:
+    print "graph_title %s"%title
+    print "graph_args --base 1000"
+    print "graph_vlabel usage"
+    print "graph_category %s"%group
+
+    for id,l,c in vals:
+      print "%s.label %s" % (id,l,c)
+
+
 
 #Converters
 def identity(x):
@@ -85,8 +100,7 @@ for cmd,desc in ps_cache.items():
   #we revaluate cmd because some are taked from cache 
   cfg=is_valid_line(cmd)
   title,id=get_instance_name(cfg)
-  for field_name,details in PS_FIELDS.items():
-    label,conv_name=details    
+  for field_name,(label,conv_name) in PS_FIELDS.items():
     fun=eval(conv_name)
     
     try:
@@ -100,11 +114,11 @@ for cmd,desc in ps_cache.items():
         row_id='%s_%s_%s'%(id,field_name,k)
         label_ex='%s %s'%(label,k)
         values.append('%s.value %s'%(row_id,v))
-        sensors.append((row_id,label_ex))
+        sensors.append((row_id,label_ex,cfg))
     else:
       row_id='%s_%s'%(id,field_name)
       values.append('%s.value %s'%(row_id,val))
-      sensors.append((row_id,label))
+      sensors.append((row_id,label,cfg))
       
 if len(sys.argv)>1 and sys.argv[1]=='config':
   print_config('Plone instances','plone',sensors)
