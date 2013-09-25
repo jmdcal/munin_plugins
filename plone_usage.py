@@ -9,8 +9,6 @@ from collections import deque
 from utils import *
 
 from etc.env import PLONE_GRAPHS
-from etc.env import ZOPE_PARSER
-from etc.env import ZEO_PARSER
 from etc.env import INSTANCES_CACHE
 
 #Utils: empty process descriptor
