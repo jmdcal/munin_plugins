@@ -33,16 +33,6 @@ def split_counters(vals):
     pass
   return {'read':rb, 'write':wb}
 
-def print_config(title,group,sensors):
-  for field_name,(label,conv) in PLONE_GRAPHS.items():    
-    print "multigraph plone_%s"%field_name
-    print "graph_title %s %s"%(title,label)    
-    print "graph_args --base 1000"
-    print "graph_vlabel usage %s"%label
-    print "graph_category %s"%group
-    for s in sensors.keys():
-      print "%s_%s.label %s"%(s,field_name,s)
-
 def find_cfg(command):
   cfg=None
   for i in command:
@@ -90,8 +80,8 @@ if is_config:
   to_real=lambda val,lab:lab
 
 for field_name,(label,conv) in PLONE_GRAPHS.items():    
+  print "multigraph plone_%s"%field_name
   if is_config:
-    print "multigraph plone_%s"%field_name
     print "graph_title %s %s"%(title,label)    
     print "graph_args --base 1000"
     print "graph_vlabel usage %s"%label
@@ -101,13 +91,15 @@ for field_name,(label,conv) in PLONE_GRAPHS.items():
     fun=eval(conv)
     if desc is not None:
       val=fun(desc[field_name])
-      if isinstance(val,dict):
-        for k,v in val.items():
-          id="%s_%s_%s"%(s,field_name,k)
-          print "%s.%s %s"%(id,attr,to_real(v,id))
-      else:
-        id="%s_%s"%(s,field_name)
-        print "%s.%s %s"%(id,attr,to_real(val,id))
+    else:
+      val=0
+    if isinstance(val,dict):
+      for k,v in val.items():
+        id="%s_%s_%s"%(s,field_name,k)
+        print "%s.%s %s"%(id,attr,to_real(v,id))
+    else:
+      id="%s_%s"%(s,field_name)
+      print "%s.%s %s"%(id,attr,to_real(val,id))
       
 ps_cache.store_in_cache()
 
