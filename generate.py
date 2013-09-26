@@ -149,14 +149,16 @@ if not help_asked:
   #foreach virtualhost file in sites_path
   created=False
   for vh in os.listdir(sites_path):
-    to_create=parse_title_and_customlog(sites_path+'/'+vh)
-    for title,access_log in to_create:
-      for runner in runners_custom: 
-        orig_name='/'.join([os.getcwd(),runner])
-        link_name=create_full_link_name(runner,title,access_log,plugins_path)
-        def_create=not os.path.exists(link_name)        
-        pars=dict(orig=orig_name,link=link_name)        
-        created=install(force_all,make_news,def_create,create_link,pars) or created
+    fpath=sites_path+'/'+vh
+    if os.path.isfile(fpath):
+      to_create=parse_title_and_customlog(fpath)
+      for title,access_log in to_create:
+        for runner in runners_custom: 
+          orig_name='/'.join([os.getcwd(),runner])
+          link_name=create_full_link_name(runner,title,access_log,plugins_path)
+          def_create=not os.path.exists(link_name)        
+          pars=dict(orig=orig_name,link=link_name)        
+          created=install(force_all,make_news,def_create,create_link,pars) or created
         
   if created:
     config_env('runners',os.getcwd(),MUNIN_PLUGINS_CONFD)
