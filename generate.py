@@ -37,7 +37,7 @@ def parse_title_and_customlog(file_path):
         port=''
         open_par=1
     else:
-      row=row.replace(';','')
+      row=row.strip().replace(';','')
       if '{' in row:
         open_par+=1
       elif '}' in row:
@@ -48,7 +48,7 @@ def parse_title_and_customlog(file_path):
             res.append((title+'.'+port,access_log))
       elif 'listen' in row:
         port=row.replace('listen','').strip()
-      elif 'server_name' in row:
+      elif re.match('^server_name',row):
         aliases=row.replace('server_name','').split()
         title=aliases[0]
       elif 'access_log' in row:
