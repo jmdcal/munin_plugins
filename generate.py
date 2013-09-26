@@ -93,6 +93,7 @@ def install(force_all,make_news,def_create,fun,pars={}):
     else:
       def_label='y/N'
 
+    print "\n\n"
     for k,v in pars.items():
       print "-->%s: %s"%(k,v)
        
@@ -126,6 +127,15 @@ if len(sys.argv)>1:
     print '\t-n:\t\tforce creation of new symlinks without asking'
     
 if not help_asked:   
+  orig_name='/'.join([os.getcwd(),'plone_usage.py'])
+  link_name='/'.join([plugins_path,'plone_usage'])
+  def_create=not os.path.exists(link_name)
+  pars=dict(orig=orig_name,link=link_name)
+    
+  created=install(force_all,make_news,def_create,create_link,pars)
+  if created:
+    config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+  
   orig_name='/'.join([os.getcwd(),'monit_downtime.py'])
   link_name='/'.join([plugins_path,'monit_downtime'])
   def_create=not os.path.exists(link_name)
