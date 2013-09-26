@@ -28,18 +28,29 @@ VALID_CTYPES=['text/html']
 # This is an example about the nginx log row
 # 192.107.92.74 - - [25/Jun/2013:03:51:59 +0200]  "GET /++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png HTTP/1.1" 499 0 "-" "Serf/1.1.0 mod_pagespeed/1.5.27.3-3005" [[2.554]]
 
-nginx_pattern=(
-  r'^([0-9]+(?:\.[0-9]+){3})' #IP
-  r'\s+\-\s(.*?)' #user
-  r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]' #date
-  r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?"' #request
-  r'\s+([0-9]{3})' #http code
-  r'\s+([0-9]+)' #bytes code
-  r'\s+\"(.*?)\"' #reffer
-  r'\s+\"(.*?)\"' #signature
-)
 
-row_pattern=nginx_pattern+r'\s+\[\[(.*)\]\]' #latency
+_ip_pattern=r'^([0-9]+(?:\.[0-9]+){3})'
+_user_pattern=r'\s+\-\s(.*?)'
+_date_pattern=r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]'
+_request_pattern=r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?|\-"'
+_http_code_pattern=r'\s+([0-9]{3})'
+_bytes_pattern=r'\s+([0-9]+)'
+_reffer_pattern=r'\s+\"(.*?)\"'
+_signature_pattern=r'\s+\"(.*?)\"'
+_latency_pattern=r'\s+\[\[(.*)\]\]'
+
+nginx_pattern= \
+  _ip_pattern + \
+  _user_pattern + \
+  _date_pattern + \
+  _request_pattern + \
+  _http_code_pattern + \
+  _bytes_pattern + \
+  _reffer_pattern + \
+  _signature_pattern
+
+
+row_pattern=nginx_pattern+_latency_pattern #latency
 NGINX_PARSER=re.compile(nginx_pattern)
 ROW_PARSER=re.compile(row_pattern)
 
