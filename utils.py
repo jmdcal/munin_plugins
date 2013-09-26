@@ -86,6 +86,9 @@ class RowParser(object):
       code=int(self.get_code())
     except ValueError:
       code=self.get_code()
+    except TypeError:      
+      #no valid code is parsed
+      code=0
     return (len(https)==0 or code in https)
 
 def get_short_agent(agent):
