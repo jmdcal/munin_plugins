@@ -183,10 +183,10 @@ CACHE_MONIT="%s/monit_messages"%CACHE
 
 #plone_usage
 PLONE_GRAPHS={
-  'cpu_percent':('Plone Cpu %','identity'),
-  'memory_percent':('Plone Memory %','identity'),
-  'connections':('Connections','len'), 
-  'io_counters':('Counters','split_counters'),
+  'cpu_percent':('Plone Cpu %','identity','get_cpu_percent'),
+  'memory_percent':('Plone Memory %','identity','get_memory_percent'),
+  'connections':('Connections','len','get_connections'), 
+  'io_counters':('Counters','split_counters','get_io_counters'),
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 
