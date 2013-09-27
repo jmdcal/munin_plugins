@@ -7,6 +7,7 @@ import re
 NGINX_BASE='/opt/nginx'
 NGINX_LOG='%s/logs' % NGINX_BASE
 NGINX_SITES='%s/sites-enabled'%NGINX_BASE
+NGINX_CONFD='%s/conf.d'%NGINX_BASE
 
 MUNIN_BASE='/etc/munin'
 MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
