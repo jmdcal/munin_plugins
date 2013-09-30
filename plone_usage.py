@@ -51,8 +51,9 @@ def build_sensor_name(command):
       if name=='buildout':
         name=path[-2]
       name='%s_%s'%(name,instance_num)
+      name=name.replace('.','_')
       
-  return name.replace('.','_')
+  return name
   
 ps_cache=CacheDict(INSTANCES_CACHE)
 ps_cache.set_default(None)
