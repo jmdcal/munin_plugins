@@ -52,7 +52,7 @@ def build_sensor_name(command):
         name=path[-2]
       name='%s_%s'%(name,instance_num)
       
-  return name
+  return name.replace('.','_')
   
 ps_cache=CacheDict(INSTANCES_CACHE)
 ps_cache.set_default(None)
