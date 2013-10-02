@@ -156,6 +156,7 @@ if not help_asked:
         for runner in runners_custom: 
           orig_name='/'.join([os.getcwd(),runner])
           link_name=create_full_link_name(runner,title,access_log,plugins_path)
+          print "%s %s %s"%(title,access_log,link_name)
           def_create=not os.path.exists(link_name)        
           pars=dict(orig=orig_name,link=link_name)        
           created=install(force_all,make_news,def_create,create_link,pars) or created
