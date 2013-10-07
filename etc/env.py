@@ -190,10 +190,7 @@ PLONE_GRAPHS={
   'io_counters':('Counters','split_counters','get_io_counters'),
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-AREASTACK_SENSORS=['memory_percent',]
-
-
-
+AREASTACK_SENSORS=['memory_percent','swap']
 
 #Leave this on the bottom
 
