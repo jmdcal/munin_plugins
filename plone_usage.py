@@ -10,6 +10,7 @@ from utils import *
 
 from etc.env import PLONE_GRAPHS
 from etc.env import INSTANCES_CACHE
+from etc.env import AREASTACK_SENSORS
 
 #Converters
 def identity(x):
@@ -68,11 +69,17 @@ is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
 title='Plone instances'
 group='plone'
 
-attr='value'
-to_real=lambda val,lab:val
+def print_data(id,v,fname):
+  print "%s.value %s"%(id,v)
+  
+def print_config(id,v,fname):
+  print "%s.label %s"%(id,id)
+  if fname in AREASTACK_SENSORS: 
+    print "%s.draw AREASTACK"%id
+
+printer=print_data
 if is_config:
-  attr='label'
-  to_real=lambda val,lab:lab
+  printer=print_config
 
 for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():    
   print "multigraph plone_%s"%field_name
@@ -92,10 +99,10 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
     if isinstance(val,dict):
       for k,v in val.items():
         id="%s_%s_%s"%(s,field_name,k)
-        print "%s.%s %s"%(id,attr,to_real(v,id))
+        printer(id,v,field_name)
     else:
       id="%s_%s"%(s,field_name)
-      print "%s.%s %s"%(id,attr,to_real(val,id))
+      printer(id,val,field_name)
       
 ps_cache.store_in_cache()
 
