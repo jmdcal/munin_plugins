@@ -188,6 +188,7 @@ PLONE_GRAPHS={
   'memory_percent':('Plone Memory %','identity','get_memory_percent'),
   'connections':('Connections','len','get_connections'), 
   'io_counters':('Counters','split_counters','get_io_counters'),
+  'swap':('Swap','get_swap','get_memory_maps'),
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 AREASTACK_SENSORS=['memory_percent','swap']

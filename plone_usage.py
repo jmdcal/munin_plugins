@@ -29,6 +29,9 @@ def split_counters(vals):
     pass
   return {'read':rb, 'write':wb}
 
+def get_swap(vals):
+  return sum(i.swap for i in vals)
+
 def find_cfg(command):
   cfg=None
   for i in command:
@@ -103,20 +106,6 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
     else:
       id="%s_%s"%(s,field_name)
       printer(id,val,field_name)
-
-field_name='swap'
-print "multigraph plone_%s"%field_name
-if is_config:
-  label="Plone swap"
-  print "graph_title %s %s"%(title,label)    
-  print "graph_args --base 1000"
-  print "graph_vlabel usage %s"%label
-  print "graph_category %s"%group
-
-for s,pd in ps_cache.items():  
-  id="%s_%s"%(s,field_name)
-  val=sum(i.swap for i in pd.get_memory_maps())
-  printer(id,val,field_name)
       
 ps_cache.store_in_cache()
 
