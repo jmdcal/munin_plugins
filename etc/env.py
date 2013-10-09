@@ -189,6 +189,7 @@ PLONE_GRAPHS={
   'connections':('Connections','len','get_connections'), 
   'io_counters':('Counters','split_counters','get_io_counters'),
   'swap':('Swap','get_swap','get_memory_maps'),
+  'storages':('Storages','get_storages','get_open_files')
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 AREASTACK_SENSORS=['memory_percent','swap']

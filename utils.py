@@ -144,11 +144,13 @@ def getparams(this):
 class Cache(object): 
   default=None
   
-  def __init__(self,fn,*args,**kargs):
+  def __init__(self,fn,def_value=None,*args,**kargs):
     super(Cache,self).__init__(*args,**kargs)
-    self.fn=fn   
+    self.fn=fn       
+    if def_value is not None:
+      self.default=def_value
     self.load_from_cache()
-
+    
   def _lock(self,fd):
     locked=False
     while not locked:
@@ -195,9 +197,6 @@ class Cache(object):
       
     self._unlock(fd)
     fd.close()
-
-  def set_default(self,value):
-    self.default=value
 
   #Methods to define in class
   def load_value(self,val):

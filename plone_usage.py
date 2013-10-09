@@ -2,6 +2,7 @@
 
 # Usage plone_usage.py [config]
 
+import os
 import sys
 import psutil
 from collections import deque
@@ -32,6 +33,16 @@ def split_counters(vals):
 def get_swap(vals):
   return sum(i.swap for i in vals)
 
+def cut(val):
+  parts=val.split('/')
+  res='undefined'
+  if len(parts)>0:
+    res=parts[-1].replace('.','_')
+  return res
+  
+def get_storages(vals):
+  return dict([(cut(i.path),os.path.getsize(i.path)) for i in vals])
+
 def find_cfg(command):
   cfg=None
   for i in command:
@@ -43,6 +54,7 @@ def find_cfg(command):
 def build_sensor_name(command):
   cfg=find_cfg(command)
   name=None
+  buildout=None
   if cfg is not None:
     try:
       instance_num=re.search('parts/(.*?)/etc',cfg).group(1)
@@ -56,15 +68,14 @@ def build_sensor_name(command):
         name=path[-2]
       name='%s_%s'%(name,instance_num)
       name=name.replace('.','_')
-      
   return name
-  
-ps_cache=CacheDict(INSTANCES_CACHE)
-ps_cache.set_default(None)
-#ps_cache: cmd -> (graph_id -> value)
+
+#ps_cache: cmd -> process descriptor  
+ps_cache=CacheDict(INSTANCES_CACHE,def_value=(None,None,None))
+
 for pd in psutil.process_iter(): 
   name=build_sensor_name(pd.cmdline)
-  #ppid>1 means that 
+  #ppid>1 means that is a child: this check is useful for zeo process 
   if name is not None and pd.ppid>1:
     ps_cache[name]=pd
 
@@ -106,7 +117,7 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
     else:
       id="%s_%s"%(s,field_name)
       printer(id,val,field_name)
-      
+           
 ps_cache.store_in_cache()
 
 
