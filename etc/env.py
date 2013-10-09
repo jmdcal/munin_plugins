@@ -192,7 +192,7 @@ PLONE_GRAPHS={
   'storages':('Storages','get_storages','get_open_files')
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-AREASTACK_SENSORS=['memory_percent','swap']
+AREASTACK_SENSORS=['memory_percent','swap','storages']
 
 #Leave this on the bottom
 
