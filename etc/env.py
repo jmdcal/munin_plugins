@@ -33,7 +33,7 @@ VALID_CTYPES=['text/html']
 _ip_pattern=r'^([0-9]+(?:\.[0-9]+){3})'
 _user_pattern=r'\s+\-\s(.*?)'
 _date_pattern=r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]'
-_request_pattern=r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?|\-"'
+_request_pattern=r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?"'
 _http_code_pattern=r'\s+([0-9]{3})'
 _bytes_pattern=r'\s+([0-9]+)'
 _reffer_pattern=r'\s+\"(.*?)\"'
@@ -87,7 +87,13 @@ EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #generate.py
+REQUIREMENTS={
+  'Python2.7':['python2.7','-V'],
+  'psutil':['python2.7','-c','"import psutil; print psutil.version_info"']
+}
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py']
+
+
 
 #Bots.py
 LOG_REGEX=r'(.*)access\.log$'
