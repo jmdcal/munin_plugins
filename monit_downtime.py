@@ -54,7 +54,9 @@ to_init=['monit down',]
 if MONIT_FULL:
   to_init+=MONIT_STATUS.keys()
 
-counts=CacheCounter(CACHE_MONIT,to_init)
+counts=CacheCounter(CACHE_MONIT)
+for i in to_init:
+  counts[i]=0
 
 if len(sys.argv)>1 and sys.argv[1]=='config':
   print_config('Monit status','monit',counts.keys())
