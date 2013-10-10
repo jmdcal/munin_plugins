@@ -43,7 +43,7 @@ if len(sys.argv)>1:
     flab=flab+lab+'..'
     if re.match(fpat,row):
       print "%s ok"%flab
-      print re.search(fpath,row).groups()
+      print re.search(fpat,row).groups()
     else:
       print "%s FAIL"%flab
 else:
