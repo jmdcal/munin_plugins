@@ -15,6 +15,7 @@ from etc.env import MONIT_LASTESTS
 from etc.env import MONIT_PARSER
 from etc.env import MONIT_PERCENTAGE_GRAPH
 from etc.env import MONIT_FULL
+from etc.env import MONIT_OPTS
 
 from etc.env import CACHE_MONIT
 
@@ -69,7 +70,7 @@ else:
     counts['monit down']=1
   else:
     csensors=0
-    sensors=subprocess.check_output(['monit','summary'],stderr=subprocess.STDOUT)
+    sensors=subprocess.check_output(['monit','summary']+MONIT_OPTS,stderr=subprocess.STDOUT)
     for row in sensors.split('\n'):
       status=parse_monit_row(row)
       if status is not None:

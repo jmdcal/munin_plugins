@@ -186,7 +186,7 @@ MONIT_PARSER=re.compile(MONIT_RE)
 MONIT_PERCENTAGE_GRAPH=True #Use % values instead of absolute values
 MONIT_FULL=False #Show all possible message instead all viewed message
 CACHE_MONIT="%s/monit_messages"%CACHE
-
+MONIT_OPTS=[]
 
 #plone_usage
 PLONE_GRAPHS={
