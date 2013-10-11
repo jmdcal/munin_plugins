@@ -87,9 +87,13 @@ EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
 DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #generate.py
+# check name -> (check string, return code)
 REQUIREMENTS={
-  'Python2.7':['python2.7','-V'],
-  'psutil':['python2.7','-c','"import psutil; print psutil.version_info"']
+  'Python2.7':(['python2.7','-V'],0),
+  'psutil':(['python2.7','-c','import psutil; print psutil.__version__'],0),
+  'Monit':(['monit','-V'],0),
+  'Munin node':(['munin-node-configure','--version',],1),
+  'Nginx':(['nginx','-v'],0),
 }
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py']
 

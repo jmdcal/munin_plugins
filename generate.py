@@ -14,6 +14,7 @@ from etc.env import MUNIN_PLUGINS_CONFD
 from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
 from etc.env import NGINX_RUNNERS
+from etc.env import REQUIREMENTS
 
 conf_file=MUNIN_PLUGINS_CONFD
 plugins_path=MUNIN_PLUGINS
@@ -21,6 +22,24 @@ sites_path=NGINX_SITES
 
 #get list of runner
 runners_custom=NGINX_RUNNERS
+
+def check_requirements():
+  for k in REQUIREMENTS:
+    (v,retcode)=REQUIREMENTS[k]
+    try:
+      res=subprocess.check_output(v,stderr=subprocess.STDOUT)
+      if res is None or len(res)==0:
+        res='ok'
+    except OSError:
+      res='failed'
+    except subprocess.CalledProcessError, err:
+      # this is a way to solve a strange case of munin-node
+      # if you call munin-node -V it returns state == 1 instead of 0
+      res='failed'
+      if err.returncode == retcode:
+        res=err.output
+    print "Checking %s: %s"%(k,res)
+      
 
 def parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
@@ -48,7 +67,7 @@ def parse_title_and_customlog(file_path):
             res.append((title+'.'+port,access_log))
       elif 'listen' in row:
         port=row.replace('listen','').strip()
-      elif re.match('^server_name',row):
+      elif re.match('^server_name\s',row):
         aliases=row.replace('server_name','').split()
         title=aliases[0]
       elif 'access_log' in row:
@@ -105,6 +124,8 @@ def install(force_all,make_news,def_create,fun,pars={}):
       
   return created
 
+
+check_requirements()
 created=False
 #do not make questions about creation but force all (-f option)
 force_all=False 
