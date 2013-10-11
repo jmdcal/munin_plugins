@@ -10,15 +10,15 @@ sys.path.append("..")
 
 from utils import RowParser
 from utils import get_short_agent
-from etc.env import LOGS
+from etc.env import NGINX_LOGS
 
 log_regex=r'(.*)access\.log$'
 agents={}
 
-for file in os.listdir(LOGS):
+for file in os.listdir(NGINX_LOGS):
   if re.match(log_regex,file):
     print 'Processing: %s' % file
-    for i in open('/'.join((LOGS,file)),'r'):
+    for i in open('/'.join((NGINX_LOGS,file)),'r'):
       try:
         datas=RowParser(i)
       except:

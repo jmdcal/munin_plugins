@@ -14,7 +14,6 @@ MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
 MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
 
 #common 
-LOGS=NGINX_LOG
 CACHE="/opt/munin_plugins/cache"
 
 #utils.py

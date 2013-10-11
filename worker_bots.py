@@ -10,7 +10,6 @@ import sys
 import time
 
 from utils import *
-from etc.env import LOGS
 from etc.env import LOG_REGEX
 from etc.env import CACHE_BOTS
 from etc.env import WL_AGENTS
