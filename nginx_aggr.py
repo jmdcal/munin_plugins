@@ -21,7 +21,7 @@ for val in INTERVALS:
   counters[str(val)]=0
 
 def print_config(title,group):
-  print "graph_title Nginx latency: %s"%title
+  print "graph_title Nginx latency (new): %s"%title
   print "graph_args --base 1000"
   print "graph_vlabel number of pages"
   print "graph_category %s"%group
