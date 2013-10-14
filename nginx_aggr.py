@@ -30,14 +30,10 @@ def print_config(title,group):
     print "numbers%s.label pages served in %s secs"%(key,val)
     print "numbers%s.draw AREASTACK"%key
     print "numbers%s.colour %s"%(key,COLORS[key])
-    #print "numbers%s.warning %s"%(key,LIMITS[key]['w'])
-    #print "numbers%s.critical %s"%(key,LIMITS[key]['c'])
 
   print "numbersother.label more"
   print "numbersother.draw AREASTACK"
   print "numbersother.colour FF0000"
-#  print "numbersother.warning 5"
-#  print "numbersother.critical 10"
 
 title,group,filename=getparams2(__file__)
 
