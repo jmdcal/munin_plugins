@@ -1,17 +1,9 @@
 #!/usr/bin/python2.7
 
-# Usage: 
-# worker_aggr.py <title> <group> <some access log[.gz]>
-# or
-# worker_aggr.py <title> <group> <some access log[.gz]> config
-
-import re
 import sys
-from datetime import datetime,timedelta
 from collections import Counter
 from utils import *
 from etc.env import INTERVALS
-from etc.env import LIMITS
 from etc.env import COLORS
 
 limit=getlimit()
@@ -36,7 +28,6 @@ def print_config(title,group):
   print "numbersother.colour FF0000"
 
 title,group,filename=getparams2(__file__)
-
   
 if len(sys.argv)>1 :
   if sys.argv[1]=='config':

@@ -94,7 +94,7 @@ REQUIREMENTS={
   'Munin node':(['munin-node-configure','--version',],1),
   'Nginx':(['nginx','-v'],0),
 }
-NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py','nginx_aggr.py']
+NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py','nginx_aggr.py','nginx_bots.py','nginx_http.py']
 
 
 
