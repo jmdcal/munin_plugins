@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 #Script generator
 # see ./generate.sh -h for usage
