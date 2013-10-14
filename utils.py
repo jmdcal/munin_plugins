@@ -9,7 +9,7 @@ from base64 import b16decode
 from collections import Counter
 from collections import deque
 
-from etc.env import NGINX_LOGS
+from etc.env import NGINX_LOG
 from etc.env import MINUTES
 from etc.env import VALID_CTYPES
 from etc.env import ROW_PARSER
@@ -138,7 +138,16 @@ def getparams(this):
   title=b16decode(parts[0])
   group=parts[1]
   filename=b16decode(parts[2])
-  return full_path.replace('runner','worker'),title,group,'%s/%s'%(NGINX_LOGS,filename)
+  return full_path.replace('runner','worker'),title,group,'%s/%s'%(NGINX_LOG,filename)
+
+def getparams2(this):
+  script_name=this.split('/')[-1]
+  parts=script_name.split('_')  
+  title=b16decode(parts[2])
+  group=parts[3]
+  filename=b16decode(parts[4])  
+  return (title,group,'%s/%s'%(NGINX_LOG,filename))
+
 
 #Mixin Cache Class
 class Cache(object): 
