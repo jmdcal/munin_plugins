@@ -140,13 +140,15 @@ def getparams(this):
   filename=b16decode(parts[2])
   return full_path.replace('runner','worker'),title,group,'%s/%s'%(NGINX_LOG,filename)
 
-def getparams2(this):
+def getparams_from_config(this):
   script_name=this.split('/')[-1]
   parts=script_name.split('_')  
-  title=b16decode(parts[2])
-  group=parts[3]
-  filename=b16decode(parts[4])  
-  return (title,group,'%s/%s'%(NGINX_LOG,filename))
+  
+  title=os.environ.get('title','Untitled')
+  group=os.environ.get('group','Undefined')
+  filename=os.environ.get('log_file',None)
+  
+  return (title,group,filename)
 
 
 #Mixin Cache Class

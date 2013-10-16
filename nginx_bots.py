@@ -44,13 +44,16 @@ def print_data(agents):
 
 limit=getlimit()
 
-title,group,filename=getparams2(__file__)
+title,group,filename=getparams_from_config(__file__)
 
-agents=agents_list(filename,limit)
-if len(sys.argv)>1:
-  if sys.argv[1]=='config':
-    print_config(title,group,agents)
+if filename None:
+  sys.stderr.write('Not configured: see documentation')
 else:
-  print_data(agents)
+  agents=agents_list(filename,limit)
+  if len(sys.argv)>1:
+    if sys.argv[1]=='config':
+      print_config(title,group,agents)
+  else:
+    print_data(agents)
 
 

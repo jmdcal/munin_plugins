@@ -36,28 +36,30 @@ def print_config(title,group):
 limit=getlimit()
 
 
-title,group,filename=getparams2(__file__)
-
-if len(sys.argv)>1:
-  if sys.argv[1]=='config':
-    print_config(title,group)
+title,group,filename=getparams_from_config(__file__)
+if filename None:
+  sys.stderr.write('Not configured: see documentation')
 else:
-  fi=open(filename,'r')
-  counters=Counter()
-  items=HTTP_CODES.keys()
-  for k in items:
-    counters[k]=0
-  for row in fi:
-    datas=RowParser(row)
-    if datas.is_valid_line(HTTP_CODES.keys()):
-      lat=datas.get_latency()
-      dt=datas.get_date()
-      try:
-        code=int(datas.get_code())
-      except ValueError: 
-        pass #Something get wrong with parser
-      else:
-        if lat and dt>limit:
-          counters[code]=1+counters[code]
-  for k in sorted(items):
-    print "code%s.value %s"%(k,counters[k])
+  if len(sys.argv)>1:
+    if sys.argv[1]=='config':
+      print_config(title,group)
+  else:
+    fi=open(filename,'r')
+    counters=Counter()
+    items=HTTP_CODES.keys()
+    for k in items:
+      counters[k]=0
+    for row in fi:
+      datas=RowParser(row)
+      if datas.is_valid_line(HTTP_CODES.keys()):
+        lat=datas.get_latency()
+        dt=datas.get_date()
+        try:
+          code=int(datas.get_code())
+        except ValueError: 
+          pass #Something get wrong with parser
+        else:
+          if lat and dt>limit:
+            counters[code]=1+counters[code]
+    for k in sorted(items):
+      print "code%s.value %s"%(k,counters[k])
