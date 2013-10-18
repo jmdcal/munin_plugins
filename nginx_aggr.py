@@ -8,9 +8,6 @@ from etc.env import COLORS
 
 limit=getlimit()
 
-counters=Counter(others=0)
-for val in INTERVALS:
-  counters[str(val)]=0
 
 def print_config(title,group):
   print "graph_title Nginx latency (new): %s"%title
@@ -34,12 +31,16 @@ files=getparams_from_config()
 
 if len(files)<1:
   sys.stderr.write('Not configured: see documentation')
-else:   
+else:    
   for title,group,filename in files:
     print "multigraph nginx_%s_%s"%('aggr',filename.replace('/','_').replace('.','_'))
     if is_config:
       print_config(title,group)
     else:     
+      counters=Counter(others=0)
+      for val in INTERVALS:
+        counters[str(val)]=0
+      
       fi=open(filename,'r')
       for row in fi:
         datas=RowParser(row)

@@ -1,10 +1,5 @@
 #!/usr/bin/python2.7
 
-# Usage: 
-# worker_http.py <title> <group> <some apache access log[.gz]>
-# or
-# worker_http.py <title> <group> <some apache access log[.gz]> config
-
 import sys
 import re
 import commands
