@@ -27,44 +27,53 @@ def print_config(title,group):
   print "numbersother.draw AREASTACK"
   print "numbersother.colour FF0000"
 
-title,group,filename=getparams_from_config(__file__)
 
-if filename None:
+is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
+files=getparams_from_config()
+
+
+if len(files)<1:
   sys.stderr.write('Not configured: see documentation')
-else: 
-  if len(sys.argv)>1 :
-    if sys.argv[1]=='config':
+else:   
+  for title,group,filename in files:
+    print "multigraph nginx_%s_%s"%('aggr',filename.replace('/','_').replace('.','_'))
+    if is_config:
       print_config(title,group)
-  else:
-    fi=open(filename,'r')
-    for row in fi:
-      datas=RowParser(row)
-      if datas.is_valid_line([200,]):
-        lat=datas.get_latency()
-        dt=datas.get_date()
-        bytes=datas.get_bytes()
+    else:     
+      fi=open(filename,'r')
+      for row in fi:
+        datas=RowParser(row)
+        if datas.is_valid_line([200,]):
+          lat=datas.get_latency()
+          dt=datas.get_date()
+          bytes=datas.get_bytes()
 
-        if lat is not None and bytes>0 and dt>limit:
-          md=ft(lat)
-          pos=0
-          while pos<len(INTERVALS) and INTERVALS[pos]<md :
-            pos+=1
+          if lat is not None and bytes>0 and dt>limit:
+            md=ft(lat)
+            pos=0
+            while pos<len(INTERVALS) and INTERVALS[pos]<md :
+              pos+=1
 
-          if pos<len(INTERVALS):
-            idx=str(INTERVALS[pos])
-            counters[idx]=1+counters[idx]
-          else:
-            counters['others']=1+counters['others']
+            if pos<len(INTERVALS):
+              idx=str(INTERVALS[pos])
+              counters[idx]=1+counters[idx]
+            else:
+              counters['others']=1+counters['others']
 
-    tot=sum(counters.values())
+      tot=sum(counters.values())
 
-    for threshould in INTERVALS:
-      val=counters[str(threshould)]
-      print "numbers%s.value %s"%(str(threshould).replace('.',''),val)
+      for threshould in INTERVALS:
+        val=counters[str(threshould)]
+        print "numbers%s.value %s"%(str(threshould).replace('.',''),val)
 
-    val=counters['others']
-    print "numbersother.value %s"%val
-
+      val=counters['others']
+      print "numbersother.value %s"%val
+    
+    
+   
+  
+  
+  
 
 
 

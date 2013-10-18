@@ -44,16 +44,20 @@ def print_data(agents):
 
 limit=getlimit()
 
-title,group,filename=getparams_from_config(__file__)
 
-if filename None:
+is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
+files=getparams_from_config()
+
+if len(files)<1:
   sys.stderr.write('Not configured: see documentation')
 else:
-  agents=agents_list(filename,limit)
-  if len(sys.argv)>1:
-    if sys.argv[1]=='config':
+  for title,group,filename in files:
+    print "multigraph nginx_%s_%s"%('aggr',filename.replace('/','_').replace('.','_'))
+  
+    agents=agents_list(filename,limit)
+    if is_config:
       print_config(title,group,agents)
-  else:
-    print_data(agents)
+    else:
+      print_data(agents)
 
 

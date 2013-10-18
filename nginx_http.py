@@ -36,30 +36,34 @@ def print_config(title,group):
 limit=getlimit()
 
 
-title,group,filename=getparams_from_config(__file__)
-if filename None:
+is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
+files=getparams_from_config()
+
+if len(files)<1:
   sys.stderr.write('Not configured: see documentation')
 else:
-  if len(sys.argv)>1:
-    if sys.argv[1]=='config':
+  for title,group,filename in files:
+    print "multigraph nginx_%s_%s"%('aggr',filename.replace('/','_').replace('.','_'))
+    
+    if is_config:
       print_config(title,group)
-  else:
-    fi=open(filename,'r')
-    counters=Counter()
-    items=HTTP_CODES.keys()
-    for k in items:
-      counters[k]=0
-    for row in fi:
-      datas=RowParser(row)
-      if datas.is_valid_line(HTTP_CODES.keys()):
-        lat=datas.get_latency()
-        dt=datas.get_date()
-        try:
-          code=int(datas.get_code())
-        except ValueError: 
-          pass #Something get wrong with parser
-        else:
-          if lat and dt>limit:
-            counters[code]=1+counters[code]
-    for k in sorted(items):
-      print "code%s.value %s"%(k,counters[k])
+    else:
+      fi=open(filename,'r')
+      counters=Counter()
+      items=HTTP_CODES.keys()
+      for k in items:
+        counters[k]=0
+      for row in fi:
+        datas=RowParser(row)
+        if datas.is_valid_line(HTTP_CODES.keys()):
+          lat=datas.get_latency()
+          dt=datas.get_date()
+          try:
+            code=int(datas.get_code())
+          except ValueError: 
+            pass #Something get wrong with parser
+          else:
+            if lat and dt>limit:
+              counters[code]=1+counters[code]
+      for k in sorted(items):
+        print "code%s.value %s"%(k,counters[k])

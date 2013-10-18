@@ -140,15 +140,20 @@ def getparams(this):
   filename=b16decode(parts[2])
   return full_path.replace('runner','worker'),title,group,'%s/%s'%(NGINX_LOG,filename)
 
-def getparams_from_config(this):
-  script_name=this.split('/')[-1]
-  parts=script_name.split('_')  
-  
-  title=os.environ.get('title','Untitled')
-  group=os.environ.get('group','Undefined')
-  filename=os.environ.get('log_file',None)
-  
-  return (title,group,filename)
+def getparams_from_config():
+  files=deque()
+  end=False
+  file_no=0
+  filename=''
+  while filename is not None:
+    title=os.environ.get('GRAPH_TITLE_%s'%file_no,'Untitled')
+    group=os.environ.get('GRAPH_GROUP_%s'%file_no,'Undefined')
+    filename=os.environ.get('GRAPH_ACCESS_%s'%file_no,None)  
+    if filename is not None:
+      files.append((title,group,filename))
+      file_no+=1
+        
+  return files
 
 
 #Mixin Cache Class
