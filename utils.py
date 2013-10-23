@@ -69,6 +69,17 @@ class RowParser(object):
   def get_code(self):
     return self._get_val('code')
 
+  def get_int_code(self):
+    try:
+      code=int(self.get_code())
+    except ValueError:
+      code=-1
+    except TypeError:      
+      #no valid code is parsed
+      code=-1
+      
+    return code
+
   def get_bytes(self):
     return self._get_val('bytes')
     
