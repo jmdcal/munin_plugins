@@ -18,6 +18,8 @@ def print_config(id,v):
   print "%s.label %s"%(id,id)
 
 class LatencyAggregator(object):
+  id='latencyaggregator'
+  
   def __init__(self,title,group):
     self.title=title
     self.group=group
@@ -55,7 +57,12 @@ class LatencyAggregator(object):
     v=self.counter['others']            
     printer(id,v)
         
+  def update_cache(self):
+    pass
+        
 class BotsCounter(object):
+  id='botscounter'
+  
   def __init__(self,title,group):
     self.title=title
     self.group=group
@@ -76,8 +83,13 @@ class BotsCounter(object):
   def print_data(self, printer):
     for l,v in self.counter.items():
       printer(l,v)
+
+  def update_cache(self):
+    self.counter.store_in_cache()
      
 class HttpCodesCounter(object):
+  id='httpcodescounter'
+  
   def __init__(self,title,group):
     self.title=title
     self.group=group
@@ -97,6 +109,9 @@ class HttpCodesCounter(object):
   def print_data(self, printer):
     for k in sorted(HTTP_CODES.keys()):      
       printer("code%s"%k,self.counter[str(k)])
+
+  def update_cache(self):
+    pass
      
 is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
 files=getparams_from_config()
@@ -107,62 +122,33 @@ printer=print_data
 if is_config:
   printer=print_config
 
+analyzers=(LatencyAggregator,BotsCounter,HttpCodesCounter)
 
 if len(files)<1:
   sys.stderr.write('Not configured: see documentation')
 else:     
   for title,group,filename in files:
-    #Aggr init
-    aggr=LatencyAggregator(title,group)
-    #aggr_counters=Counter(dict([(str(i),0) for i in INTERVALS]+[('others',0)]))
-
-    #Bots init
-    bots=BotsCounter(title,group)    
-    
-    #Http init
-    httpcodes=HttpCodesCounter(title,group)
-           
+    #creates a list of analyzers
+    an_objs=[cl(title,group) for cl in analyzers]
+               
     #read from files valid rows
     fi=open(filename,'r')
     for row in fi:
       datas=RowParser(row)
-
       if datas.get_date()>limit:                      
-        #aggr evaluate
-        aggr.update_with(datas)
+        for an in an_objs:
+           an.update_with(datas)
 
-        #bots evaluate
-        bots.update_with(datas)
-          
-        #http evaluate
-        httpcodes.update_with(datas)
-        
-    #Aggr prints
-    print "multigraph nginx_%s_%s"%('aggr',filename.replace('/','_').replace('.','_'))
-    if is_config:
-      aggr.print_config_header()    
-    aggr.print_data(printer)
-        
-    #Bots prints
-    print "multigraph nginx_%s_%s"%('bots',filename.replace('/','_').replace('.','_'))
-    if is_config:
-      bots.print_config_header()
-    bots.print_data(printer)
-          
-    #Http prints
-    print "multigraph nginx_%s_%s"%('http',filename.replace('/','_').replace('.','_'))
-    if is_config:
-      httpcodes.print_config_header()
-    httpcodes.print_data(printer)
-
-
+    fi.close()
+  
+    #prints
+    for an in an_objs:
+      print "multigraph nginx_%s_%s"%(an.id,filename.replace('/','_').replace('.','_'))
+      if is_config:
+        an.print_config_header()    
+      an.print_data(printer)
+      an.update_cache()
       
-      
-      
-
-      
-    
-    
   
   
   
