@@ -76,8 +76,7 @@ class RowParser(object):
       code=-1
     except TypeError:      
       #no valid code is parsed
-      code=-1
-      
+      code=-1      
     return code
 
   def get_bytes(self):
