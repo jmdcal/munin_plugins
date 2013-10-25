@@ -83,14 +83,6 @@ is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
 title='Plone instances'
 group='plone'
 
-def print_data(id,v,fname):
-  print "%s.value %s"%(id,v)
-  
-def print_config(id,v,fname):
-  print "%s.label %s"%(id,id)
-  if fname in AREASTACK_SENSORS: 
-    print "%s.draw AREASTACK"%id
-
 printer=print_data
 if is_config:
   printer=print_config
@@ -103,6 +95,10 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
     print "graph_vlabel usage %s"%label
     print "graph_category %s"%group
     
+  graph=None
+  if field_name in AREASTACK_SENSORS: 
+    graph="AREASTACK"
+    
   for s,pd in ps_cache.items():
     fun=eval(conv)
     mthd=getattr(pd,mthd_name,None)
@@ -113,10 +109,16 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
     if isinstance(val,dict):
       for k,v in val.items():
         id="%s_%s_%s"%(s,field_name,k)
-        printer(id,v,field_name)
+        printer(id=id,
+                value=v,
+                label="%s %s"%(s,k),
+                draw=graph)
     else:
       id="%s_%s"%(s,field_name)
-      printer(id,val,field_name)
+      printer(id=id,
+              value=val,
+              label=s,
+              draw=graph)
            
 ps_cache.store_in_cache()
 
