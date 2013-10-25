@@ -1,6 +1,7 @@
 from collections import Counter
 from utils import ft
 from etc.env import INTERVALS
+from etc.env import MINUTES
 
 from base import BaseCounter
 
@@ -30,10 +31,9 @@ class LatencyAggregator(BaseCounter):
             
   def print_data(self, printer):
     for threshould in INTERVALS:
-      id="numbers%s"%str(threshould).replace('.','')
-      v=self.counter[str(threshould)]            
-      printer(id,v)
+      printer(id="numbers%s"%str(threshould).replace('.',''),
+              value=self.counter[str(threshould)],
+              label="Paged served in less than %s sec during last %s mins"%(threshould,MINUTES,))
 
-    id="numbersother"
-    v=self.counter['others']            
-    printer(id,v)
+    printer(id="numbersother",
+            value=self.counter['others'])

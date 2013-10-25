@@ -1,7 +1,7 @@
 from collections import Counter
 
 from etc.env import HTTP_CODES
-
+from etc.env import MINUTES
 from base import BaseCounter
 
 class HttpCodesCounter(BaseCounter):
@@ -19,4 +19,6 @@ class HttpCodesCounter(BaseCounter):
               
   def print_data(self, printer):
     for k in sorted(HTTP_CODES.keys()):      
-      printer("code%s"%k,self.counter[str(k)])
+      printer(id="code%s"%k,
+              value=self.counter[str(k)],
+              label="Number of %s in %s mins"%(k,MINUTES),)

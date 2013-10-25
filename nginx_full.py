@@ -7,12 +7,6 @@ from nginx_analyzers import BotsCounter
 from nginx_analyzers import HttpCodesCounter
 
 from utils import *
-
-def print_data(id,v):
-  print "%s.value %s"%(id,v)
-
-def print_config(id,v):
-  print "%s.label %s"%(id,id)
                    
 is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
 files=getparams_from_config()

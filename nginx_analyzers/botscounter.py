@@ -1,6 +1,7 @@
 from utils import *
 
 from etc.env import CACHE_BOTS
+from etc.env import MINUTES
 
 from base import BaseCounter
 
@@ -21,7 +22,12 @@ class BotsCounter(BaseCounter):
       
   def print_data(self, printer):
     for l,v in self.counter.items():
-      printer(l,v)
+      printer(id=l,
+              value=v,
+              label="Number of pages asked by %s in %s mins"%(l,MINUTES),
+              warning=10,
+              critical=30,
+              )
 
   def update_cache(self):
     self.counter.store_in_cache()

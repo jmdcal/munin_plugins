@@ -165,6 +165,34 @@ def getparams_from_config():
         
   return files
 
+def mkoutput(**argv):
+  id=argv.get('id',None)
+  if id is not None:
+    del argv['id']
+    for k,v in argv.items():
+      if v is not None:
+        print "%s.%s %s"%(id,k,v)
+
+def print_data(**args):
+  id=args.get('id',None)
+  v=args.get('value',None)
+  if id is not None and v is not None:
+    mkoutput(id=id,
+             value=v)
+
+def print_config(**args):
+  id=args.get('id',None)
+  l=args.get('label',None)
+  if id is not None and l is not None:
+    mkoutput(id=id,
+             label=l,
+             draw=args.get('draw',None),
+             type=args.get('type',None),
+             warning=args.get('warning',None),
+             critical=args.get('critical',None),
+             color=args.get('colour',None),
+             line=args.get('line',None),)
+    
 #Mixin Cache Class
 class Cache(object): 
   default=None
