@@ -13,8 +13,7 @@ def print_data(id,v):
 
 def print_config(id,v):
   print "%s.label %s"%(id,id)
-      
-             
+                   
 is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
 files=getparams_from_config()
 
@@ -39,8 +38,7 @@ else:
       datas=RowParser(row)
       if datas.get_date()>limit:                      
         for an in an_objs:
-           an.update_with(datas)
-
+          an.update_with(datas)
     fi.close()
   
     #prints

@@ -38,7 +38,6 @@ def check_requirements():
         res=err.output
     print "Checking %s: %s"%(k,res)
       
-
 def parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
   in_server=False
@@ -88,14 +87,20 @@ def config_env(fn,orig,dest):
   if not os.path.isfile(fdest):
     shutil.copy(forig,fdest)
 
-def install(force_all,make_news,def_create,fun,pars={}):
+def install(fpy, syml,force_all,make_news):
+  orig='/'.join([os.getcwd(),fpy])
+  link='/'.join([MUNIN_PLUGINS,syml])
+  def_create=not os.path.exists(link)
+  pars=dict(orig=orig,link=link)
+  
   created=False
+   
   if force_all:       
-    fun(**pars)  
+    create_link(orig=orig,link=link)  
     created=True
   elif make_news:
     if def_create:
-      fun(**pars)
+      create_link(orig=orig,link=link)
       created=True
   else:
     if def_create:
@@ -103,20 +108,17 @@ def install(force_all,make_news,def_create,fun,pars={}):
     else:
       def_label='y/N'
 
-    print "\n\n"
-    for k,v in pars.items():
-      print "-->%s: %s"%(k,v)
-       
     ans=raw_input("\nCreates munin plugin [%s]?"%def_label)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
-      fun(**pars)      
+      create_link(orig=orig,link=link)      
       created=True
       
   return created
 
+
 check_requirements()
-created=False
+
 #do not make questions about creation but force all (-f option)
 force_all=False 
 #do not make questions about creation but force new ones (-n option)
@@ -136,30 +138,13 @@ if len(sys.argv)>1:
     print '\t-h, --help:\tshow this help'
     print '\t-f:\t\tforce creation of all symlinks without asking'
     print '\t-n:\t\tforce creation of new symlinks without asking'
-    
-if not help_asked:   
-  orig_name='/'.join([os.getcwd(),'plone_usage.py'])
-  link_name='/'.join([plugins_path,'plone_usage'])
-  def_create=not os.path.exists(link_name)
-  pars=dict(orig=orig_name,link=link_name)
-    
-  created=install(force_all,make_news,def_create,create_link,pars)
-  if created:
-    config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
-  
-  orig_name='/'.join([os.getcwd(),'monit_downtime.py'])
-  link_name='/'.join([plugins_path,'monit_downtime'])
-  def_create=not os.path.exists(link_name)
-  pars=dict(orig=orig_name,link=link_name)
-    
-  created=install(force_all,make_news,def_create,create_link,pars)
-  if created:
-    config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
-  
-
+   
+if not help_asked:      
   #build config for nginx_*, they read from single file the list of access_logs
   tmp_file=open(TMP_CONFIG,'w')
   tmp_file.write('[nginx_*]\n')
+  tmp_file.write('user root\n')
+  tmp_file.write('group root\n')
   file_no=0
   
   for vh in os.listdir(sites_path):
@@ -173,16 +158,22 @@ if not help_asked:
         file_no+=1
 
   tmp_file.close()
-  if file_no>0:    
-    shutil.copy(TMP_CONFIG,CONFIG_NAME)
-    for sensor in NGINX_SENSORS:
-      orig_name='/'.join([os.getcwd(),sensor])
-      link_name='/'.join([plugins_path,sensor])
-      def_create=not os.path.exists(link_name)
-      pars=dict(orig=orig_name,link=link_name)
-      install(force_all,make_news,def_create,create_link,pars)
+  if file_no>0:        
+    created=install('nginx_full.py','nginx_full',force_all,make_news)
+    if created:
+      shutil.copy(TMP_CONFIG,CONFIG_NAME)  
+    
+  try:
+    os.remove(TMP_CONFIG)
+  except OSError:
+    pass   
+    
+  created=install('plone_usage.py','plone_usage',force_all,make_news)
+  if created:
+    config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 
-    
-    
+  created=install('monit_downtime.py','monit_downtime',force_all,make_news)
+  if created:
+    config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 
 

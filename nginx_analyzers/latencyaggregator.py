@@ -1,4 +1,5 @@
 from collections import Counter
+from utils import ft
 from etc.env import INTERVALS
 
 from base import BaseCounter
