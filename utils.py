@@ -190,7 +190,7 @@ def print_config(**args):
              type=args.get('type',None),
              warning=args.get('warning',None),
              critical=args.get('critical',None),
-             color=args.get('colour',None),
+             colour=args.get('color',None),
              line=args.get('line',None),)
     
 #Mixin Cache Class
