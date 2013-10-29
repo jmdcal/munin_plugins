@@ -2,6 +2,7 @@ from collections import Counter
 from utils import ft
 from etc.env import INTERVALS
 from etc.env import MINUTES
+from etc.env import COLORS
 
 from base import BaseCounter
 
@@ -10,7 +11,7 @@ class LatencyAggregator(BaseCounter):
   
   def __init__(self,title,group):    
     super(LatencyAggregator,self).__init__("Nginx latency: %s"%title,group)
-    self.label="number of pages"
+    self.label="number of pages in %s mins" %MINUTES
     self.counter=Counter(dict([(str(i),0) for i in INTERVALS]+[('others',0)]))
     
   def update_with(self,datas):
@@ -33,7 +34,12 @@ class LatencyAggregator(BaseCounter):
     for threshould in INTERVALS:
       printer(id="numbers%s"%str(threshould).replace('.',''),
               value=self.counter[str(threshould)],
-              label="Paged served in less than %s sec during last %s mins"%(threshould,MINUTES,))
+              label="%s sec"%threshould,
+              color=COLORS[str(threshould).replace('.','')],
+              draw="AREASTACK")
 
     printer(id="numbersother",
-            value=self.counter['others'])
+            value=self.counter['others'],
+            label="others",
+            color='FF0000',
+            draw="AREASTACK")
