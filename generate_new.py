@@ -13,6 +13,7 @@ from etc.env import MUNIN_PLUGINS_CONFD
 from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
 from etc.env import NGINX_SENSORS
+from etc.env import NGINX_LOG
 from etc.env import REQUIREMENTS
 from etc.env import TMP_CONFIG
 from etc.env import CONFIG_NAME
@@ -38,6 +39,20 @@ def check_requirements():
         res=err.output
     print "Checking %s: %s"%(k,res)
       
+def get_real_file(file_log):
+  res=None
+  fn=file_log.split('/')
+  if os.path.exists(file_log):
+    res=file_log
+  elif os.path.exists('/'.join([NGINX_LOG,file_log])):
+    res='/'.join([NGINX_LOG,file_log])
+  elif len(fn)>0 and os.path.exists('/'.join([NGINX_LOG,fn[-1]])):
+    res='/'.join([NGINX_LOG,fn[-1]])
+
+  if res is not None:
+     res=res.replace('//','/')
+  return res
+
 def parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
   in_server=False
@@ -61,7 +76,9 @@ def parse_title_and_customlog(file_path):
         if open_par==0:
           in_server=False
           if len(title)>0 and len(access_log)>0:
-            res.append((title+'.'+port,access_log))
+            access_log=get_real_file(access_log)
+            if access_log is not None:
+              res.append((title+'.'+port,access_log))
       elif 'listen' in row:
         port=row.replace('listen','').strip()
       elif re.match('^server_name\s',row):
@@ -108,7 +125,7 @@ def install(fpy, syml,force_all,make_news):
     else:
       def_label='y/N'
 
-    ans=raw_input("\nCreates munin plugin [%s]?"%def_label)
+    ans=raw_input("Creates munin plugin %s -> %s [%s]?"%(syml,fpy,def_label))
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
       create_link(orig=orig,link=link)      
