@@ -17,8 +17,9 @@ class BotsCounter(BaseCounter):
   def update_with(self,datas):    
     if datas.get_int_code() in [200,]:
       agent=datas.get_agent()
-      agent=get_short_agent(agent)
-      self.counter[agent]=1+self.counter[agent]
+      if 'bot' in agent:
+        agent=get_short_agent(agent)
+        self.counter[agent]=1+self.counter[agent]
       
   def print_data(self, printer):
     for l,v in self.counter.items():
