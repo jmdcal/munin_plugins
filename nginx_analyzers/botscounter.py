@@ -11,7 +11,7 @@ class BotsCounter(BaseCounter):
   
   def __init__(self,title,group):
     super(BotsCounter,self).__init__("Nginx Bots: %s"%title,group)
-    self.label="number of call"
+    self.label="number of call in %s mins"%MINUTES
     self.counter=CacheCounter(CACHE_BOTS)
     
   def update_with(self,datas):    
@@ -24,7 +24,7 @@ class BotsCounter(BaseCounter):
     for l,v in self.counter.items():
       printer(id=l,
               value=v,
-              label="Number of pages asked by %s in %s mins"%(l,MINUTES),
+              label=l,
               warning=10,
               critical=30,
               )
