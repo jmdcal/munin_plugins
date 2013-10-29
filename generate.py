@@ -9,19 +9,18 @@ import re
 import subprocess
 import shutil
 
-from base64 import b16encode
 from etc.env import MUNIN_PLUGINS_CONFD
 from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
-from etc.env import NGINX_RUNNERS
+from etc.env import NGINX_SENSORS
+from etc.env import NGINX_LOG
 from etc.env import REQUIREMENTS
+from etc.env import TMP_CONFIG
+from etc.env import CONFIG_NAME
 
 conf_file=MUNIN_PLUGINS_CONFD
 plugins_path=MUNIN_PLUGINS
 sites_path=NGINX_SITES
-
-#get list of runner
-runners_custom=NGINX_RUNNERS
 
 def check_requirements():
   for k in REQUIREMENTS:
@@ -40,6 +39,19 @@ def check_requirements():
         res=err.output
     print "Checking %s: %s"%(k,res)
       
+def get_real_file(file_log):
+  res=None
+  fn=file_log.split('/')
+  if os.path.exists(file_log):
+    res=file_log
+  elif os.path.exists('/'.join([NGINX_LOG,file_log])):
+    res='/'.join([NGINX_LOG,file_log])
+  elif len(fn)>0 and os.path.exists('/'.join([NGINX_LOG,fn[-1]])):
+    res='/'.join([NGINX_LOG,fn[-1]])
+
+  if res is not None:
+     res=res.replace('//','/')
+  return res
 
 def parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
@@ -64,7 +76,9 @@ def parse_title_and_customlog(file_path):
         if open_par==0:
           in_server=False
           if len(title)>0 and len(access_log)>0:
-            res.append((title+'.'+port,access_log))
+            access_log=get_real_file(access_log)
+            if access_log is not None:
+              res.append((title+'.'+port,access_log))
       elif 'listen' in row:
         port=row.replace('listen','').strip()
       elif re.match('^server_name\s',row):
@@ -73,14 +87,6 @@ def parse_title_and_customlog(file_path):
       elif 'access_log' in row:
         access_log=row.strip().split()[1]
   return res
-
-def create_full_link_name(runner,title,customlog,path):
-  name,ext=runner.split('.')
-  log_file=b16encode(customlog.split('/')[-1])
-  title=b16encode(title)
-  link_name="%s_%s_nginx_%s"%(name,title,log_file)
-  link_name=link_name.replace('.','#')
-  return '/'.join([path,link_name])
  
 def create_link(orig,link):
   try:
@@ -89,6 +95,7 @@ def create_link(orig,link):
   except OSError:
     print "WARNING: %s\n"%link
 
+#take from ./config/ a file to copy in /etc/munin/plugin-conf.d/
 def config_env(fn,orig,dest):
   forig='/'.join([orig,'config',fn])
   fdest='/'.join([dest,fn])
@@ -97,14 +104,20 @@ def config_env(fn,orig,dest):
   if not os.path.isfile(fdest):
     shutil.copy(forig,fdest)
 
-def install(force_all,make_news,def_create,fun,pars={}):
+def install(fpy, syml,force_all,make_news):
+  orig='/'.join([os.getcwd(),fpy])
+  link='/'.join([MUNIN_PLUGINS,syml])
+  def_create=not os.path.exists(link)
+  pars=dict(orig=orig,link=link)
+  
   created=False
+   
   if force_all:       
-    fun(**pars)  
+    create_link(orig=orig,link=link)  
     created=True
   elif make_news:
     if def_create:
-      fun(**pars)
+      create_link(orig=orig,link=link)
       created=True
   else:
     if def_create:
@@ -112,21 +125,17 @@ def install(force_all,make_news,def_create,fun,pars={}):
     else:
       def_label='y/N'
 
-    print "\n\n"
-    for k,v in pars.items():
-      print "-->%s: %s"%(k,v)
-       
-    ans=raw_input("\nCreates munin plugin [%s]?"%def_label)
+    ans=raw_input("Creates munin plugin %s -> %s [%s]?"%(syml,fpy,def_label))
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
-      fun(**pars)      
+      create_link(orig=orig,link=link)      
       created=True
       
   return created
 
 
 check_requirements()
-created=False
+
 #do not make questions about creation but force all (-f option)
 force_all=False 
 #do not make questions about creation but force new ones (-n option)
@@ -146,33 +155,13 @@ if len(sys.argv)>1:
     print '\t-h, --help:\tshow this help'
     print '\t-f:\t\tforce creation of all symlinks without asking'
     print '\t-n:\t\tforce creation of new symlinks without asking'
-    
-if not help_asked:   
-  orig_name='/'.join([os.getcwd(),'plone_usage.py'])
-  link_name='/'.join([plugins_path,'plone_usage'])
-  def_create=not os.path.exists(link_name)
-  pars=dict(orig=orig_name,link=link_name)
-    
-  created=install(force_all,make_news,def_create,create_link,pars)
-  if created:
-    config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
-  
-  orig_name='/'.join([os.getcwd(),'monit_downtime.py'])
-  link_name='/'.join([plugins_path,'monit_downtime'])
-  def_create=not os.path.exists(link_name)
-  pars=dict(orig=orig_name,link=link_name)
-    
-  created=install(force_all,make_news,def_create,create_link,pars)
-  if created:
-    config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
-  
-  #configure plugins that use runner
-  #foreach virtualhost file in sites_path
-  created=False
-  tmp_file=open('/tmp/_munin_plugins','w')
-  tmp_file.write('[nginx_*]')
-  tmp_file.write('user root')
-  tmp_file.write('group root')
+   
+if not help_asked:      
+  #build config for nginx_*, they read from single file the list of access_logs
+  tmp_file=open(TMP_CONFIG,'w')
+  tmp_file.write('[nginx_*]\n')
+  tmp_file.write('user root\n')
+  tmp_file.write('group root\n')
   file_no=0
   
   for vh in os.listdir(sites_path):
@@ -180,17 +169,28 @@ if not help_asked:
     if os.path.isfile(fpath):
       to_create=parse_title_and_customlog(fpath)
       for title,access_log in to_create:
-        for runner in runners_custom: 
-                  
-          orig_name='/'.join([os.getcwd(),runner])
-          link_name=create_full_link_name(runner,title,access_log,plugins_path)
-          print "%s %s %s"%(title,access_log,link_name)
-          tmp_file.write('env.')
-          
-          def_create=not os.path.exists(link_name)        
-          pars=dict(orig=orig_name,link=link_name)        
-          created=install(force_all,make_news,def_create,create_link,pars) or created
-        
+        tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(file_no,title))
+        tmp_file.write('env.GRAPH_GROUP_%s %s\n'%(file_no,'nginx'))
+        tmp_file.write('env.GRAPH_ACCESS_%s %s\n'%(file_no,access_log))
+        file_no+=1
+
+  tmp_file.close()
+  if file_no>0:        
+    created=install('nginx_full.py','nginx_full',force_all,make_news)
+    if created:
+      shutil.copy(TMP_CONFIG,CONFIG_NAME)  
+    
+  try:
+    os.remove(TMP_CONFIG)
+  except OSError:
+    pass   
+    
+  created=install('plone_usage.py','plone_usage',force_all,make_news)
   if created:
-    config_env('runners',os.getcwd(),MUNIN_PLUGINS_CONFD)
+    config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+
+  created=install('monit_downtime.py','monit_downtime',force_all,make_news)
+  if created:
+    config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+
 
