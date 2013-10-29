@@ -63,4 +63,3 @@ because you have to configure all rights correctly. Usually, my choice is to
 put down, because the call of monit get error about access denied.
 
 
-2 - nginx_* plugins are under development so, do not use, they never works :)
