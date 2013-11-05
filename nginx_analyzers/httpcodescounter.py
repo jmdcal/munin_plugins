@@ -6,9 +6,10 @@ from base import BaseCounter
 
 class HttpCodesCounter(BaseCounter):
   id='httpcodescounter'
+  base_title="Nginx http codes"
   
   def __init__(self,title,group):
-    super(HttpCodesCounter,self).__init__("Nginx http codes: %s"%title,group)
+    super(HttpCodesCounter,self).__init__(title,group)
     self.label="q.ty in %s mins"%MINUTES
     self.counter=Counter(dict([(str(i),0) for i in HTTP_CODES.keys()]))
     

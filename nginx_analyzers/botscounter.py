@@ -8,9 +8,10 @@ from base import BaseCounter
 
 class BotsCounter(BaseCounter):
   id='botscounter'
+  base_title="Nginx Bots"
   
   def __init__(self,title,group):
-    super(BotsCounter,self).__init__("Nginx Bots: %s"%title,group)
+    super(BotsCounter,self).__init__(title,group)
     self.label="number of call in %s mins"%MINUTES
     self.counter=CacheCounter(CACHE_BOTS)
     

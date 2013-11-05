@@ -8,9 +8,10 @@ from base import BaseCounter
 
 class LatencyAggregator(BaseCounter):
   id='latencyaggregator'
+  base_title="Nginx latency"
   
   def __init__(self,title,group):    
-    super(LatencyAggregator,self).__init__("Nginx latency: %s"%title,group)
+    super(LatencyAggregator,self).__init__(title,group)
     self.label="number of pages in %s mins" %MINUTES
     self.counter=Counter(dict([(str(i),0) for i in INTERVALS]+[('others',0)]))
     

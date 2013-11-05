@@ -4,6 +4,7 @@ from collections import Counter
 #This class is a base for the others, do not use directly but make a subclass
 class BaseCounter(object):
   id='basecounter'
+  base_title="Base class"
 
   def __init__(self,title,group):
     self.title=title
@@ -33,7 +34,7 @@ class BaseCounter(object):
     pass
   
   def print_config_header(self):
-    print "graph_title %s"%self.title
+    print "graph_title %s: %s"%(self.base_title,self.title)
     print "graph_args --base 1000"
     print "graph_vlabel %s"%self.label
     print "graph_category %s"%self.group
