@@ -15,8 +15,11 @@ class BaseCounter(object):
   def __add__(self,other):
     new=None
     if self.__class__==other.__class__:
-      new=self.__class__(self.title,self.group)
-      new.counter=self.counter+other.counter
+      new=self.__class__(self.title,self.group)     
+      for k,v in self.counter.items():
+        new.counter[k]=v
+      for k,v in other.counter.items():
+        new.counter[k]=new.counter[k]+v
     else:
       raise "It's impossible to add %s object and %s object"%(self.__class__,other.__class__)
     return new
@@ -25,7 +28,11 @@ class BaseCounter(object):
     new=None
     if self.__class__==other.__class__:
       new=self.__class__(self.title,self.group)
-      new.counter=self.counter+other.counter
+      for k,v in self.counter.items():
+        new.counter[k]=v
+      for k,v in other.counter.items():
+        new.counter[k]=new.counter[k]+v
+
     else:
       raise "It's impossible to add %s object and %s object"%(self.__class__,other.__class__)
     return new
