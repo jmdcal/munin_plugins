@@ -56,7 +56,7 @@ else:
     full.print_data(printer)
     
     for title,filename,an in sitem:   
-      print "multigraph nginx_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_'))
+      print "multigraph nginx_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_').replace('-',''))
       if is_config:
         an.print_config_header()    
       an.print_data(printer)
