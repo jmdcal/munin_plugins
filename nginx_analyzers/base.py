@@ -1,3 +1,5 @@
+from collections import Counter
+
 
 #This class is a base for the others, do not use directly but make a subclass
 class BaseCounter(object):
@@ -7,7 +9,26 @@ class BaseCounter(object):
     self.title=title
     self.group=group
     self.label="Base class"
+    self.counter=Counter()
 
+  def __add__(self,other):
+    new=None
+    if self.__class__==other.__class__:
+      new=self.__class__(self.title,self.group)
+      new.counter=self.counter+other.counter
+    else:
+      raise "It's impossible to add %s object and %s object"%(self.__class__,other.__class__)
+    return new
+    
+  def __radd__(self,other):
+    new=None
+    if self.__class__==other.__class__:
+      new=self.__class__(self.title,self.group)
+      new.counter=self.counter+other.counter
+    else:
+      raise "It's impossible to add %s object and %s object"%(self.__class__,other.__class__)
+    return new
+     
   def update_with(self,datas):
     pass
   
