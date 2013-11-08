@@ -200,10 +200,12 @@ PLONE_GRAPHS={
   'connections':('Connections','len','get_connections'), 
   'io_counters':('Counters','split_counters','get_io_counters'),
   'swap':('Swap','get_swap','get_memory_maps'),
-  'storages':('Storages','get_storages','get_open_files')
+  'storages':('Storages','get_storages','get_open_files'),
+  'threads':('Threads','get_threads_percent','get_threads')
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-AREASTACK_SENSORS=['memory_percent','swap','storages']
+AREASTACK_SENSORS=['cpu_percent','memory_percent','swap','storages','threads']
+DERIVE_SENSORS=['cpu_percent']
 
 #Leave this on the bottom
 

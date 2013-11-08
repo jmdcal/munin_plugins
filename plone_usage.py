@@ -12,6 +12,7 @@ from utils import *
 from etc.env import PLONE_GRAPHS
 from etc.env import INSTANCES_CACHE
 from etc.env import AREASTACK_SENSORS
+from etc.env import DERIVE_SENSORS
 
 #Converters
 def identity(x):
@@ -32,6 +33,13 @@ def split_counters(vals):
 
 def get_swap(vals):
   return sum(i.swap for i in vals)
+
+def get_threads_percent(vals):
+  res=deque()
+  for thr in vals:
+    res.append(('%s_sys'%thr.id,thr.system_time))
+    res.append(('%s_user'%thr.id,thr.user_time))  
+  return dict(res)
 
 def cut(val):
   parts=val.split('/')
@@ -99,6 +107,10 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
   if field_name in AREASTACK_SENSORS: 
     graph="AREASTACK"
     
+  tpe=None
+  if field_name in DERIVE_SENSORS:
+    tpe='DERIVE'
+    
   for s,pd in ps_cache.items():
     fun=eval(conv)
     mthd=getattr(pd,mthd_name,None)
@@ -112,13 +124,15 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
         printer(id=id,
                 value=v,
                 label="%s %s"%(s,k),
-                draw=graph)
+                draw=graph,
+                type=tpe)
     else:
       id="%s_%s"%(s,field_name)
       printer(id=id,
               value=val,
               label=s,
-              draw=graph)
+              draw=graph,
+              type=tpe)
            
 ps_cache.store_in_cache()
 
