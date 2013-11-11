@@ -35,10 +35,7 @@ def get_swap(vals):
   return sum(i.swap for i in vals)
 
 def get_threads_percent(vals):
-  res=deque()
-  for thr in vals:
-    res.append(('%s_sys'%thr.id,thr.system_time))
-    res.append(('%s_user'%thr.id,thr.user_time))  
+  res=[('%s'%pos,thr.system_time+thr.user_time) for pos,thr in enumerate(vals)]
   return dict(res)
 
 def cut(val):
