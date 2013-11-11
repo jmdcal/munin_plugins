@@ -95,7 +95,6 @@ REQUIREMENTS={
   'Nginx':(['nginx','-v'],0),
 }
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py',]
-NGINX_SENSORS=['nginx_aggr.py', 'nginx_bots.py','nginx_http.py']
 TMP_CONFIG='/tmp/_munin_plugins'
 CONFIG_NAME='%s/munin_plugins'%MUNIN_PLUGINS_CONFD
 
@@ -195,13 +194,13 @@ MONIT_OPTS=[]
 
 #plone_usage
 PLONE_GRAPHS={
-  'cpu_percent':('Plone Cpu %','identity','get_cpu_percent'),
-  'memory_percent':('Plone Memory %','identity','get_memory_percent'),
-  'connections':('Connections','len','get_connections'), 
-  'io_counters':('Counters','split_counters','get_io_counters'),
-  'swap':('Swap','get_swap','get_memory_maps'),
-  'storages':('Storages','get_storages','get_open_files'),
-  'threads':('Threads','get_threads_percent','get_threads')
+  'cpu_percent':('cpu %','identity','get_cpu_percent'),
+  'memory_percent':('memory %','identity','get_memory_percent'),
+  'connections':('connections','len','get_connections'), 
+  'io_counters':('counters','split_counters','get_io_counters'),
+  'swap':('swap','get_swap','get_memory_maps'),
+  'storages':('storages','get_storages','get_open_files'),
+  'threads':('threads','get_threads_percent','get_threads')
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 AREASTACK_SENSORS=['cpu_percent','memory_percent','swap','storages','threads']
