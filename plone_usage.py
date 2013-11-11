@@ -85,7 +85,7 @@ for pd in psutil.process_iter():
     ps_cache[name]=pd
 
 is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
-title='Plone instances'
+title='Plone'
 group='plone'
 
 printer=print_data
