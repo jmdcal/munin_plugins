@@ -226,17 +226,17 @@ class Cache(object):
           self.load_value(i)
       fd.close()
 
-  def store_in_cache(self):   
+  def store_in_cache(self, clean=False):   
     exists=os.path.isfile(self.fn)
     mode='w'
-    if exists:
+    if exists and not clean:
       mode='r+'
       
     fd=open(self.fn,mode)    
     self._lock(fd)
     
     values=self.get_values()
-    if exists:
+    if exists and not clean:
       for i in fd:
         try:
           values.remove(i.strip())
@@ -275,3 +275,18 @@ class CacheCounter(Cache,Counter):
 
   def get_values(self):
     return self.keys()
+  
+#Cache based on Couner that stores labels and last values
+class CacheNumbers(Cache,Counter):
+  default=0
+  
+  def load_value(self,val):
+    try:    
+      label,num=val.split(' ')
+    except ValueError:
+      label=val
+      num=self.default
+      
+  def get_values(self):    
+    return ['%s %s'%el for el in self.items()]
+  
