@@ -120,7 +120,7 @@ for field_name,(label,conv,mthd_name,cache_file) in PLONE_GRAPHS.items():
     else:
       val=0
     if isinstance(val,dict):
-      for k,v in val.items():
+      for k,v in sorted(val.items()):
         id="%s_%s_%s"%(s,field_name,k)
           
         dff=v-previous_values[id]
