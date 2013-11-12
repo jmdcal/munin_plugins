@@ -34,7 +34,10 @@ def split_counters(vals):
 def get_swap(vals):
   return sum(i.swap for i in vals)
 
-def get_threads_percent(vals):
+def get_cpu_usage(vals):
+  return sum(vals)
+  
+def get_threads_usage(vals):    
   res=[('%s'%pos,thr.system_time+thr.user_time) for pos,thr in enumerate(vals)]
   return dict(res)
 
@@ -76,7 +79,7 @@ def build_sensor_name(command):
   return name
 
 #ps_cache: cmd -> process descriptor  
-ps_cache=CacheDict(INSTANCES_CACHE,def_value=(None,None,None))
+ps_cache=CacheDict(INSTANCES_CACHE,def_value=None)
 
 for pd in psutil.process_iter(): 
   name=build_sensor_name(pd.cmdline)
@@ -92,7 +95,8 @@ printer=print_data
 if is_config:
   printer=print_config
 
-for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():    
+for field_name,(label,conv,mthd_name,cache_file) in PLONE_GRAPHS.items():    
+  previous_values=CacheNumbers(cache_file)
   print "multigraph plone_%s"%field_name
   if is_config:
     print "graph_title %s %s"%(title,label)    
@@ -107,7 +111,7 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
   tpe=None
   if field_name in DERIVE_SENSORS:
     tpe='DERIVE'
-    
+  
   for s,pd in ps_cache.items():
     fun=eval(conv)
     mthd=getattr(pd,mthd_name,None)
@@ -118,19 +122,24 @@ for field_name,(label,conv,mthd_name) in PLONE_GRAPHS.items():
     if isinstance(val,dict):
       for k,v in val.items():
         id="%s_%s_%s"%(s,field_name,k)
+          
         printer(id=id,
-                value=v,
+                value=v-previous_values[id],
                 label="%s %s"%(s,k),
                 draw=graph,
                 type=tpe)
+        previous_values[id]=v
     else:
       id="%s_%s"%(s,field_name)
+      
       printer(id=id,
-              value=val,
+              value=val-previous_values[id],
               label=s,
               draw=graph,
               type=tpe)
-           
+      previous_values[id]=val
+  previous_values.store_in_cache()
+  
 ps_cache.store_in_cache()
 
 

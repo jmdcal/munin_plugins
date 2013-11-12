@@ -194,13 +194,14 @@ MONIT_OPTS=[]
 
 #plone_usage
 PLONE_GRAPHS={
-  'cpu_percent':('cpu %','identity','get_cpu_percent'),
-  'memory_percent':('memory %','identity','get_memory_percent'),
-  'connections':('connections','len','get_connections'), 
-  'io_counters':('counters','split_counters','get_io_counters'),
-  'swap':('swap','get_swap','get_memory_maps'),
-  'storages':('storages','get_storages','get_open_files'),
-  'threads':('threads','get_threads_percent','get_threads')
+  'cpu_percent':('cpu %','identity','get_cpu_percent',None),
+  'cpu_time':('cpu %','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
+  'memory_percent':('memory %','identity','get_memory_percent',None),
+  'connections':('connections','len','get_connections',None), 
+  'io_counters':('counters','split_counters','get_io_counters',None),
+  'swap':('swap','get_swap','get_memory_maps',None),
+  'storages':('storages','get_storages','get_open_files',None),
+  'threads':('threads','get_threads_usage','get_threads','%s/zopethreads'%CACHE)
 }
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 AREASTACK_SENSORS=['cpu_percent','memory_percent','swap','storages','threads']

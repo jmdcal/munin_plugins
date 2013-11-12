@@ -218,7 +218,7 @@ class Cache(object):
     fcntl.lockf(fd, fcntl.LOCK_UN)
 
   def load_from_cache(self):
-    if os.path.isfile(self.fn):
+    if self.fn is not None and os.path.isfile(self.fn):
       fd=open(self.fn,'r')
       for i in fd:
         i=i.strip()
@@ -227,29 +227,30 @@ class Cache(object):
       fd.close()
 
   def store_in_cache(self, clean=False):   
-    exists=os.path.isfile(self.fn)
-    mode='w'
-    if exists and not clean:
-      mode='r+'
+    if self.fn is not None:
+      exists=os.path.isfile(self.fn)
+      mode='w'
+      if exists and not clean:
+        mode='r+'
+        
+      fd=open(self.fn,mode)    
+      self._lock(fd)
       
-    fd=open(self.fn,mode)    
-    self._lock(fd)
-    
-    values=self.get_values()
-    if exists and not clean:
-      for i in fd:
-        try:
-          values.remove(i.strip())
-        except ValueError:
-          #We try to remove from values what is yet in cache file
-          pass
-      
-    #now in values we have only new values for cache and we will append to file
-    for l in values:
-      fd.write('%s\n'%l)
-      
-    self._unlock(fd)
-    fd.close()
+      values=self.get_values()
+      if exists and not clean:
+        for i in fd:
+          try:
+            values.remove(i.strip())
+          except ValueError:
+            #We try to remove from values what is yet in cache file
+            pass
+        
+      #now in values we have only new values for cache and we will append to file
+      for l in values:
+        fd.write('%s\n'%l)
+        
+      self._unlock(fd)
+      fd.close()
 
   #Methods to define in class
   def load_value(self,val):
@@ -283,10 +284,18 @@ class CacheNumbers(Cache,Counter):
   def load_value(self,val):
     try:    
       label,num=val.split(' ')
+      num=float(num)
     except ValueError:
       label=val
       num=self.default
-      
+    self[label]=num
+    
   def get_values(self):    
     return ['%s %s'%el for el in self.items()]
   
+  def store_in_cache(self,clean=True):
+    super(CacheNumbers,self).store_in_cache(True)
+
+
+    
+    
