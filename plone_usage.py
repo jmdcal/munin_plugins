@@ -123,8 +123,12 @@ for field_name,(label,conv,mthd_name,cache_file) in PLONE_GRAPHS.items():
       for k,v in val.items():
         id="%s_%s_%s"%(s,field_name,k)
           
+        dff=v-previous_values[id]
+        if dff<0:
+          dff=0
+          
         printer(id=id,
-                value=v-previous_values[id],
+                value=dff,
                 label="%s %s"%(s,k),
                 draw=graph,
                 type=tpe)
@@ -132,8 +136,12 @@ for field_name,(label,conv,mthd_name,cache_file) in PLONE_GRAPHS.items():
     else:
       id="%s_%s"%(s,field_name)
       
+      dff=val-previous_values[id]
+      if dff<0:
+        dff=0
+      
       printer(id=id,
-              value=val-previous_values[id],
+              value=dff,
               label=s,
               draw=graph,
               type=tpe)
