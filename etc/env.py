@@ -206,8 +206,8 @@ PLONE_GRAPHS={
 #Obsoleted 'cpu_percent':('cpu %','identity','get_cpu_percent',None),
 
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-AREASTACK_SENSORS=['cpu_percent','memory_percent','swap','storages','threads']
-DERIVE_SENSORS=['cpu_percent']
+AREASTACK_SENSORS=['cpu_time','memory_percent','swap','storages','threads']
+DERIVE_SENSORS=[]
 
 #Leave this on the bottom
 
