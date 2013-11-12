@@ -198,7 +198,7 @@ PLONE_GRAPHS={
   'cpu_time':('cpu %','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
   'memory_percent':('memory %','identity','get_memory_percent',None),
   'connections':('connections','len','get_connections',None), 
-  'io_counters':('counters','split_counters','get_io_counters',None),
+  'io_counters':('counters','split_counters','get_io_counters','%s/zopeios'%CACHE),
   'swap':('swap','get_swap','get_memory_maps',None),
   'storages':('storages','get_storages','get_open_files',None),
   'threads':('threads','get_threads_usage','get_threads','%s/zopethreads'%CACHE)
