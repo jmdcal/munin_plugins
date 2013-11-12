@@ -194,7 +194,6 @@ MONIT_OPTS=[]
 
 #plone_usage
 PLONE_GRAPHS={
-  'cpu_percent':('cpu %','identity','get_cpu_percent',None),
   'cpu_time':('cpu time','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
   'memory_percent':('memory %','identity','get_memory_percent',None),
   'connections':('connections','len','get_connections',None), 
@@ -203,6 +202,9 @@ PLONE_GRAPHS={
   'storages':('storages','get_storages','get_open_files',None),
   'threads':('threads time','get_threads_usage','get_threads','%s/zopethreads'%CACHE)
 }
+
+#Obsoleted 'cpu_percent':('cpu %','identity','get_cpu_percent',None),
+
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 AREASTACK_SENSORS=['cpu_percent','memory_percent','swap','storages','threads']
 DERIVE_SENSORS=['cpu_percent']
