@@ -10,9 +10,9 @@ from collections import deque
 from utils import *
 
 from etc.env import PLONE_GRAPHS
+from etc.env import PLONE_GRAPHS_ORDER
 from etc.env import INSTANCES_CACHE
 from etc.env import AREASTACK_SENSORS
-from etc.env import DERIVE_SENSORS
 
 #Converters
 def identity(x):
@@ -22,23 +22,33 @@ def identity(x):
   return res
 
 def split_counters(vals):
-  rb=0
-  wb=0
   try:
     rb=vals.read_bytes
     wb=vals.write_bytes
   except AttributeError:
-    pass
+    rb=0
+    wb=0
   return {'read':rb, 'write':wb}
 
 def get_swap(vals):
-  return sum(i.swap for i in vals)
+  try:
+    res=sum(i.swap for i in vals)
+  except TypeError:
+    res=0
+  return res
 
 def get_cpu_usage(vals):
-  return sum(vals)
+  try:
+    res=sum(vals)
+  except TypeError:
+    res=0  
+  return res 
   
 def get_threads_usage(vals):    
-  res=[('%s'%pos,thr.system_time+thr.user_time) for pos,thr in enumerate(vals)]
+  try:
+    res=[('%s'%thr.id,thr.system_time+thr.user_time) for thr in sorted(vals)]
+  except TypeError:
+    res=[]
   return dict(res)
 
 def cut(val):
@@ -49,7 +59,11 @@ def cut(val):
   return res
   
 def get_storages(vals):
-  return dict([(cut(i.path),os.path.getsize(i.path)) for i in vals])
+  try:
+    res=[(cut(i.path),os.path.getsize(i.path)) for i in vals if not re.match('^(.*)\.lock$',i.path)]
+  except TypeError:
+    res=[]
+  return dict(res) 
 
 def find_cfg(command):
   cfg=None
@@ -95,58 +109,58 @@ printer=print_data
 if is_config:
   printer=print_config
 
-for field_name,(label,conv,mthd_name,cache_file) in PLONE_GRAPHS.items():    
-  previous_values=CacheNumbers(cache_file)
-  print "multigraph plone_%s"%field_name
-  if is_config:
-    print "graph_title %s %s"%(title,label)    
-    print "graph_args --base 1000"
-    print "graph_vlabel usage %s"%label
-    print "graph_category %s"%group
-    
-  graph=None
-  if field_name in AREASTACK_SENSORS: 
-    graph="AREASTACK"
-    
-  tpe=None
-  if field_name in DERIVE_SENSORS:
-    tpe='DERIVE'
-  
-  for s,pd in ps_cache.items():
-    fun=eval(conv)
-    mthd=getattr(pd,mthd_name,None)
-    if mthd is not None:      
-      val=fun(mthd())
-    else:
-      val=0
-    if isinstance(val,dict):
-      for k,v in sorted(val.items()):
-        id="%s_%s_%s"%(s,field_name,k)
+for field_name in PLONE_GRAPHS_ORDER:
+  try:
+    label,conv,mthd_name,cache_file=PLONE_GRAPHS[field_name]
+  except KeyError:
+    pass
+  else:
+    previous_values=CacheNumbers(cache_file)
+    print "multigraph plone_%s"%field_name
+    if is_config:
+      print "graph_title %s %s"%(title,label)    
+      print "graph_args --base 1000"
+      print "graph_vlabel usage %s"%label
+      print "graph_category %s"%group
+      
+    graph=None
+    if field_name in AREASTACK_SENSORS: 
+      graph="AREASTACK"
           
-        dff=v-previous_values[id]
-        if dff<0:
-          dff=0
-          
+    for s,pd in ps_cache.items():
+      mthd=getattr(pd,mthd_name,None)
+      if mthd is not None:      
+        val=mthd()
+      else:
+        val=0
+
+      try:
+        fun=eval(conv)        
+        val=fun(val)
+      except NameError:
+        #this wrap not existing conv
+        val=0
+      except TypeError:
+        #this wrap if fun is None and fun is not applicable to val
+        val=0
+                      
+      if isinstance(val,dict):
+        for k,v in sorted(val.items()):
+          id="%s_%s_%s"%(s,field_name,k)
+          printer(id=id,
+                  value=diff_limit(v,previous_values[id]),
+                  label="%s %s"%(s,k),
+                  draw=graph)
+          previous_values[id]=v
+      elif isinstance(val,int) or isinstance(val,float):
+        id="%s_%s"%(s,field_name)
         printer(id=id,
-                value=dff,
-                label="%s %s"%(s,k),
-                draw=graph,
-                type=tpe)
-        previous_values[id]=v
-    else:
-      id="%s_%s"%(s,field_name)
-      
-      dff=val-previous_values[id]
-      if dff<0:
-        dff=0
-      
-      printer(id=id,
-              value=dff,
-              label=s,
-              draw=graph,
-              type=tpe)
-      previous_values[id]=val
-  previous_values.store_in_cache()
+                value=diff_limit(val,previous_values[id]),
+                label=s,
+                draw=graph)
+        previous_values[id]=val
+    if not is_config:
+      previous_values.store_in_cache()
   
 ps_cache.store_in_cache()
 

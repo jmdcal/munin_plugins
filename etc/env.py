@@ -195,19 +195,18 @@ MONIT_OPTS=[]
 #plone_usage
 PLONE_GRAPHS={
   'cpu_time':('cpu time','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
-  'memory_percent':('memory %','identity','get_memory_percent',None),
-  'connections':('connections','len','get_connections',None), 
-  'io_counters':('counters','split_counters','get_io_counters','%s/zopeios'%CACHE),
-  'swap':('swap','get_swap','get_memory_maps',None),
+  'threads':('threads time','get_threads_usage','get_threads','%s/zopethreads'%CACHE),
+  'memory_percent':('memory %','identity','get_memory_percent',None), 
+  'swap':('swap','get_swap','get_memory_maps',None), 
   'storages':('storages','get_storages','get_open_files',None),
-  'threads':('threads time','get_threads_usage','get_threads','%s/zopethreads'%CACHE)
+  'io_counters':('counters','split_counters','get_io_counters','%s/zopeios'%CACHE),
+  'connections':('connections','len','get_connections',None), 
 }
-
+PLONE_GRAPHS_ORDER=['cpu_time','threads','memory_percent','swap','storages','io_counters','connections']
 #Obsoleted 'cpu_percent':('cpu %','identity','get_cpu_percent',None),
 
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 AREASTACK_SENSORS=['cpu_time','memory_percent','swap','storages','threads']
-DERIVE_SENSORS=[]
 
 #Leave this on the bottom
 

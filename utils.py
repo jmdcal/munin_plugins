@@ -171,7 +171,10 @@ def mkoutput(**argv):
     del argv['id']
     for k,v in argv.items():
       if v is not None:
-        print "%s.%s %s"%(id,k,v)
+        try:
+          print "%s.%s %.3f"%(id,k,v)
+        except TypeError:
+          print "%s.%s %s"%(id,k,v)
 
 def print_data(**args):
   id=args.get('id',None)
@@ -192,6 +195,12 @@ def print_config(**args):
              critical=args.get('critical',None),
              colour=args.get('color',None),
              line=args.get('line',None),)
+    
+def diff_limit(v1,v2,min_limit=0):
+  v=v1-v2
+  if v<0:
+    v=0
+  return v
     
 #Mixin Cache Class
 class Cache(object): 
