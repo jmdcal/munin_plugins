@@ -82,6 +82,9 @@ def split_counters(vals,prevs,env):
   dff=act
   if prevs is not None:
     dff=dict([(k,fnz(v-prevs.get(k,0))) for k,v in act.items()])
+  else:
+    #if previous is None means there's no difference we can do so is 0
+    dff=dict([(k,0) for k,v in act.items()])
   return dff,act
 
 def get_size(vals,prevs,env):
