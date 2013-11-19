@@ -312,17 +312,26 @@ class CacheNumbers(Cache,dict):
     for k,dct in self.items():
       
       try:
-        vals=' '.join(['%s::%s'%el  for el in dct.items()])
+        vals=' '.join([concat(el)  for el in dct.items()])
       except AttributeError:
-        #check for namedtuple that has no items method
-        vals=' '.join(['%s::%s'%(i,getattr(dct,i)) for i in dct._fields])
-        
+        #check for namedtuple that has no items method        
+        vals=' '.join(namedtuple2list(dct,concat))
       res.append('%s %s'%(k,vals))
     return res
   
   def store_in_cache(self,clean=True):
     super(CacheNumbers,self).store_in_cache(True)
 
+def totuple(tp):
+  return tp
 
-    
+def concat(tp):
+  return '%s::%s'%tp
+
+def namedtuple2list(nt,conv):
+  return [conv((i,getattr(nt,i))) for i in nt._fields]
+
+def namedtuple2dict(nt,conv):
+  return dict(namedtuple2list(nt,conv))
+
     

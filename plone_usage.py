@@ -26,7 +26,7 @@ def get_percent_of(val,full):
   
 
 #Converters
-def identity(x,prevs):
+def identity(x,prevs,env):
   res=x
   if x is None:
     res=0 
@@ -36,8 +36,11 @@ def get_cpu_usage(vals,prevs,env):
   #env['system_usage_prev'] is a dict
   #env['system_usage_curr'] is a namedtuple
   sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())
-  
-  act=dict(user=vals.user,sys=vals.system)
+  try:
+    act=dict(user=vals.user,sys=vals.system)
+  except AttributeError:    
+    act=dict(user=0,sys=0)
+    
   if prevs is None:
     proc_u=sum(act.values())
   else:
@@ -160,9 +163,9 @@ try:
   env['system_usage_prev']=system_cache['cpu_times']
 except NameError:
   system_cache=None
-  env['system_usage_prev']=psutil.cpu_times()
+  env['system_usage_prev']=namedtuple2dict(psutil.cpu_times(),totuple)
 except KeyError:
-  env['system_usage_prev']=psutil.cpu_times()
+  env['system_usage_prev']=namedtuple2dict(psutil.cpu_times(),totuple)
   
 env['system_usage_curr']=psutil.cpu_times()
 system_cache['cpu_times']=env['system_usage_curr']
