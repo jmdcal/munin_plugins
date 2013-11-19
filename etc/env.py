@@ -193,15 +193,17 @@ CACHE_MONIT="%s/monit_messages"%CACHE
 MONIT_OPTS=[]
 
 #plone_usage
+SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CacheNumbers')
 PLONE_GRAPHS={
-  'cpu_time':('cpu time','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
-  'threads':('threads time','get_threads_usage','get_threads','%s/zopethreads'%CACHE),
+  'cpu_time':('cpu % usage','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
+  'threads':('threads % usage','get_threads_usage','get_threads','%s/zopethreads'%CACHE),
   'memory_percent':('memory %','identity','get_memory_percent',None), 
   'swap':('swap','get_swap','get_memory_maps',None), 
   'storages':('storages','get_storages','get_open_files',None),
   'io_counters':('counters','split_counters','get_io_counters','%s/zopeios'%CACHE),
-  'connections':('connections','len','get_connections',None), 
+  'connections':('connections','get_size','get_connections',None), 
 }
+
 PLONE_GRAPHS_ORDER=['cpu_time','threads','memory_percent','swap','storages','io_counters','connections']
 #Obsoleted 'cpu_percent':('cpu %','identity','get_cpu_percent',None),
 

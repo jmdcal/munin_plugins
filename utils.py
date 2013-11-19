@@ -287,20 +287,38 @@ class CacheCounter(Cache,Counter):
     return self.keys()
   
 #Cache based on Couner that stores labels and last values
-class CacheNumbers(Cache,Counter):
-  default=0
+class CacheNumbers(Cache,dict):
+  default={}
   
   def load_value(self,val):
-    try:    
-      label,num=val.split(' ')
-      num=float(num)
-    except ValueError:
-      label=val
-      num=self.default
-    self[label]=num
+    parts=val.split(' ')
+    label=parts[0]   
+    values={}
+    for el in parts[1:]:
+      lb,vl=el.split('::')
+      val=0
+      try:
+        val=int(vl)
+      except ValueError:
+        try:
+          val=float(vl)
+        except ValueError:
+          pass
+      values[lb]=val
+    self[label]=values
     
-  def get_values(self):    
-    return ['%s %s'%el for el in self.items()]
+  def get_values(self):
+    res=deque()
+    for k,dct in self.items():
+      
+      try:
+        vals=' '.join(['%s::%s'%el  for el in dct.items()])
+      except AttributeError:
+        #check for namedtuple that has no items method
+        vals=' '.join(['%s::%s'%(i,getattr(dct,i)) for i in dct._fields])
+        
+      res.append('%s %s'%(k,vals))
+    return res
   
   def store_in_cache(self,clean=True):
     super(CacheNumbers,self).store_in_cache(True)
