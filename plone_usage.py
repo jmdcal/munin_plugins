@@ -182,7 +182,7 @@ for field_name in PLONE_GRAPHS_ORDER:
     if is_config:
       print "graph_title %s %s"%(title,label)    
       print "graph_args --base 1000"
-      print "graph_vlabel usage %s"%label
+      print "graph_vlabel %s"%label
       print "graph_category %s"%group
       
     graph=None
