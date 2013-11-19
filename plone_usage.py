@@ -16,14 +16,6 @@ from etc.env import INSTANCES_CACHE
 from etc.env import AREASTACK_SENSORS
 from etc.env import SYSTEM_VALUE_CACHE
 
-def get_percent_of(val,full):
-  try:
-    percent = (val / full) * 100
-  except ZeroDivisionError:
-    # interval was too low
-    percent = 0.0
-  return percent
-  
 
 #Converters
 def identity(x,prevs,env):
@@ -40,12 +32,11 @@ def get_cpu_usage(vals,prevs,env):
     act=dict(user=vals.user,sys=vals.system)
   except AttributeError:    
     act=dict(user=0,sys=0)
-    
-  if prevs is None:
-    proc_u=sum(act.values())
-  else:
+
+  #if previous is None means there's no difference we can do so is 0
+  proc_u=0
+  if prevs is not None:
     proc_u=sum(act.values())-sum(prevs.values())
-  
 
   return get_percent_of(proc_u,sys_u),act
 
@@ -54,13 +45,16 @@ def get_threads_usage(vals,prevs,env):
   #env['system_usage_curr'] is a namedtuple
   sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())
   try:
-    res=[('%s'%thr.id,thr.system_time+thr.user_time) for thr in sorted(vals)]
+    act=dict([('%s'%thr.id,thr.system_time+thr.user_time) for thr in sorted(vals)])
   except TypeError:
-    res=[]
-  act=dict(res)
-  dff=act
+    act={}
+  
   if prevs is not None:
     dff=dict([(k,get_percent_of(fnz(v-prevs.get(k,0)),sys_u)) for k,v in act.items()])
+  else:
+    #if previous is None means there's no difference we can do so is 0
+    dff=dict([(k,0) for k,v in act.items()])
+
   return dff,act
 
 def get_swap(vals,prevs,env):
@@ -107,7 +101,7 @@ def cut(val):
   if len(parts)>0:
     res=parts[-1].replace('.','_')
   return res
-
+ 
 def find_cfg(command):
   cfg=None
   for i in command:
@@ -135,6 +129,25 @@ def build_sensor_name(command):
       name=name.replace('.','_')
   return name
 
+
+def load_env():
+  cpath,ctype=SYSTEM_VALUE_CACHE
+  env={}
+  try:
+    cclass=eval(ctype)
+    system_cache=cclass(cpath)
+    env['system_usage_prev']=system_cache['cpu_times']
+  except NameError:
+    system_cache=None
+    env['system_usage_prev']=namedtuple2dict(psutil.cpu_times())
+  except KeyError:
+    env['system_usage_prev']=namedtuple2dict(psutil.cpu_times())
+    
+  env['system_usage_curr']=psutil.cpu_times()
+  system_cache['cpu_times']=env['system_usage_curr']
+  
+  return env,system_cache
+
 #ps_cache: cmd -> process descriptor  
 ps_cache=CacheDict(INSTANCES_CACHE,def_value=None)
 
@@ -153,22 +166,7 @@ if is_config:
   printer=print_config
 
 
-cpath,ctype=SYSTEM_VALUE_CACHE
-
-env={}
-
-try:
-  cclass=eval(ctype)
-  system_cache=cclass(cpath)
-  env['system_usage_prev']=system_cache['cpu_times']
-except NameError:
-  system_cache=None
-  env['system_usage_prev']=namedtuple2dict(psutil.cpu_times(),totuple)
-except KeyError:
-  env['system_usage_prev']=namedtuple2dict(psutil.cpu_times(),totuple)
-  
-env['system_usage_curr']=psutil.cpu_times()
-system_cache['cpu_times']=env['system_usage_curr']
+env,system_cache=load_env()
 
 for field_name in PLONE_GRAPHS_ORDER:
   try:

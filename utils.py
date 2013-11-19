@@ -196,11 +196,22 @@ def print_config(**args):
              colour=args.get('color',None),
              line=args.get('line',None),)
     
-def diff_limit(v1,v2,min_limit=0):
-  v=v1-v2
-  if v<0:
-    v=0
-  return v
+def concat(tp):
+  return '%s::%s'%tp
+
+def namedtuple2list(nt,conv=lambda x: x):
+  return [conv((i,getattr(nt,i))) for i in nt._fields]
+
+def namedtuple2dict(nt,conv=lambda x: x):
+  return dict(namedtuple2list(nt,conv))
+
+def get_percent_of(val,full):
+  try:
+    percent = (val / full) * 100
+  except ZeroDivisionError:
+    # interval was too low
+    percent = 0.0
+  return percent
     
 #Mixin Cache Class
 class Cache(object): 
@@ -322,16 +333,6 @@ class CacheNumbers(Cache,dict):
   def store_in_cache(self,clean=True):
     super(CacheNumbers,self).store_in_cache(True)
 
-def totuple(tp):
-  return tp
 
-def concat(tp):
-  return '%s::%s'%tp
-
-def namedtuple2list(nt,conv):
-  return [conv((i,getattr(nt,i))) for i in nt._fields]
-
-def namedtuple2dict(nt,conv):
-  return dict(namedtuple2list(nt,conv))
 
     
