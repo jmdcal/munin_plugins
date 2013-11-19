@@ -200,8 +200,8 @@ PLONE_GRAPHS={
   'memory_percent':('memory (%)','identity','get_memory_percent',None), 
   'swap':('swap (Bytes)','get_swap','get_memory_maps',None), 
   'storages':('storages (Bytes)','get_storages','get_open_files',None),
-  'io_counters':('I/O usage (#)','split_counters','get_io_counters','%s/zopeios'%CACHE),
-  'connections':('connections (#)','get_size','get_connections',None), 
+  'io_counters':('I/O usage','split_counters','get_io_counters','%s/zopeios'%CACHE),
+  'connections':('connections','get_size','get_connections',None), 
 }
 
 PLONE_GRAPHS_ORDER=['cpu_time','threads','memory_percent','swap','storages','io_counters','connections']
