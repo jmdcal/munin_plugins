@@ -9,7 +9,6 @@ from collections import deque
 
 from utils import *
 
-from etc.env import MINUTES
 from etc.env import PLONE_GRAPHS
 from etc.env import PLONE_GRAPHS_ORDER
 from etc.env import INSTANCES_CACHE
