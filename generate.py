@@ -12,7 +12,6 @@ import shutil
 from etc.env import MUNIN_PLUGINS_CONFD
 from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
-from etc.env import NGINX_SENSORS
 from etc.env import NGINX_LOG
 from etc.env import REQUIREMENTS
 from etc.env import TMP_CONFIG
