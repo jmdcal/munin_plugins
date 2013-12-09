@@ -27,34 +27,43 @@ def identity(x,prevs,env):
 def get_cpu_usage(vals,prevs,env):
   #env['system_usage_prev'] is a dict
   #env['system_usage_curr'] is a namedtuple
-  sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())
+  fd=open('/tmp/debug_plone_usage.log','w+')
+  fd.write('================================')
+  
+  sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())  
+  fd.write('sys_u %s'%sys_u)  
   try:
     act=dict(user=vals.user,sys=vals.system)
   except AttributeError:    
     act=dict(user=0,sys=0)
-
+  fd.write('act %s'%act)
   #if previous is None means there's no difference we can do so is 0
   proc_u=0
   if prevs is not None:
     proc_u=sum(act.values())-sum(prevs.values())
-
-  return get_percent_of(proc_u,sys_u),act
+  
+  fd.write('proc_u %s'%proc_u)
+  
+  perc=get_percent_of(proc_u,sys_u)
+  
+  fd.write('perc %s'%perc)
+  fd.close()
+  return perc,act
 
 def get_threads_usage(vals,prevs,env):
   #env['system_usage_prev'] is a dict
   #env['system_usage_curr'] is a namedtuple
   sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())
+
   try:
     act=dict([('%s'%thr.id,thr.system_time+thr.user_time) for thr in sorted(vals)])
   except TypeError:
     act={}
-  
   if prevs is not None:
     dff=dict([(k,get_percent_of(fnz(v-prevs.get(k,0)),sys_u)) for k,v in act.items()])
   else:
     #if previous is None means there's no difference we can do so is 0
-    dff=dict([(k,0) for k,v in act.items()])
-
+    dff=dict([(k,0) for k,v in act.items()])  
   return dff,act
 
 def get_swap(vals,prevs,env):
@@ -167,7 +176,6 @@ group='plone'
 printer=print_data
 if is_config:
   printer=print_config
-
 
 env,system_cache=load_env()
 
