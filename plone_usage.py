@@ -28,25 +28,25 @@ def get_cpu_usage(vals,prevs,env):
   #env['system_usage_prev'] is a dict
   #env['system_usage_curr'] is a namedtuple
   fd=open('/tmp/debug_plone_usage.log','w+')
-  fd.write('================================')
+  fd.write('================================\n')
   
   sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())  
-  fd.write('sys_u %s'%sys_u)  
+  fd.write('sys_u %s\n'%sys_u)  
   try:
     act=dict(user=vals.user,sys=vals.system)
   except AttributeError:    
     act=dict(user=0,sys=0)
-  fd.write('act %s'%act)
+  fd.write('act %s\n'%act)
   #if previous is None means there's no difference we can do so is 0
   proc_u=0
   if prevs is not None:
     proc_u=sum(act.values())-sum(prevs.values())
   
-  fd.write('proc_u %s'%proc_u)
+  fd.write('proc_u %s\n'%proc_u)
   
   perc=get_percent_of(proc_u,sys_u)
   
-  fd.write('perc %s'%perc)
+  fd.write('perc %s\n'%perc)
   fd.close()
   return perc,act
 
