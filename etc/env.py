@@ -194,15 +194,22 @@ MONIT_OPTS=[]
 
 #plone_usage
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CacheNumbers')
+SYSTEM_DEFAULTS=['cpu_times','memory_percent','connections']
+
 PLONE_GRAPHS={
-  'cpu_time':('cpu usage (%)','get_cpu_usage','get_cpu_times','%s/zopeprocess'%CACHE),
-  'threads':('threads usage (%)','get_threads_usage','get_threads','%s/zopethreads'%CACHE),
-  'memory_percent':('memory (%)','identity','get_memory_percent',None), 
-  'swap':('swap (Bytes)','get_swap','get_memory_maps',None), 
-  'storages':('storages (Bytes)','get_storages','get_open_files',None),
-  'io_counters':('I/O usage','split_counters','get_io_counters','%s/zopeios'%CACHE),
-  'connections':('connections','get_size','get_connections',None), 
+  #'graph_id':(<title>,<cache file>,<id for system cache>,<psutil.proc_method>)
+  'cpu_time':('cpu usage (%)','%s/zopeprocess'%CACHE,'cpu_times','get_cpu_times'),  
+  'memory':('memory (%)',None,'memory_percent','get_memory_percent'),
+  'connections':('connections',None,'connections','get_connections'), 
+  
 }
+
+#PLONE_GRAPHS={
+#'threads':('threads usage (%)','%s/zopethreads'%CACHE,'threads_times','get_threads',),
+  #'swap':('swap (Bytes)','get_swap','get_memory_maps',None), 
+  #'storages':('storages (Bytes)','get_storages','get_open_files',None),
+  #'io_counters':('I/O usage','split_counters','get_io_counters','%s/zopeios'%CACHE),
+#}
 
 PLONE_GRAPHS_ORDER=['cpu_time','threads','memory_percent','swap','storages','io_counters','connections']
 #Obsoleted 'cpu_percent':('cpu %','identity','get_cpu_percent',None),

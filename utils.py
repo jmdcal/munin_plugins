@@ -200,7 +200,11 @@ def concat(tp):
   return '%s::%s'%tp
 
 def namedtuple2list(nt,conv=lambda x: x):
-  return [conv((i,getattr(nt,i))) for i in nt._fields]
+  try:
+    res=[conv((i,getattr(nt,i))) for i in nt._fields]
+  except AttributeError:
+    res=[]
+  return res
 
 def namedtuple2dict(nt,conv=lambda x: x):
   return dict(namedtuple2list(nt,conv))

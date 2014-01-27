@@ -13,12 +13,20 @@ from etc.env import PLONE_GRAPHS
 from etc.env import SYSTEM_VALUE_CACHE
 from etc.env import INSTANCES_CACHE
 
-def cpu_gen(sys_dff,prev,curr):
-    pdff=mkdiff(prev,curr)          
-    return get_percent_of(pdff,sys_dff)         
+def get_cpu_times(sys_dff,prev,curr):
+  pdff=mkdiff(prev,curr)          
+  return get_percent_of(pdff,sys_dff)         
     
-
-
+    
+#def get_threads(sys_dff,prev,curr):
+  #import pdb; pdb.set_trace()
+    
+def get_memory_percent(sys_dff,prev,curr):
+  return curr
+   
+def get_connections(sys_dff,prev,curr):
+  return len(curr)
+   
 def find_cfg(command):
   cfg=None
   for i in command:
@@ -114,45 +122,42 @@ for id,(title,cache,sys_id,mthd) in PLONE_GRAPHS.items():
   sys_dff=mkdiff(prev_sys_value,curr_sys_value)
     
   pcache=CacheNumbers(cache)
-  
-  ## da mettere esternamente per evitare di fargli ritrovare ogni volta gli stessi processi
-  #for pd in psutil.process_iter():
-    #name=build_sensor_name(pd.cmdline)
-    ##ppid>1 means that is a child: this check is useful for zeo process 
-    #if name is not None and pd.ppid>1:  
-      
-      
+        
   for name,pd in ps_cache.items():  
-   
     id="%s_%s"%(name,id)
-    
-    
+        
     curr_value=getattr(pd,mthd,lambda :())()
     try:
       prev_value=pcache[name]
     except KeyError:
+      #if isinstance(curr_value,list):
+        #pcache[name]=prev_value=[namedtuple2dict(i) for i in curr_value]
+      #else:
       pcache[name]=prev_value=namedtuple2dict(curr_value)
 
-    res=cpu_gen(sys_dff,prev_value,curr_value)
+    converter=eval(mthd)
+
+    res=converter(sys_dff,prev_value,curr_value)
 
     if isinstance(res,int) or isinstance(res,float):
       printer(id=id,
               value=res,
               label=name,
               draw=graph)
-      
+
+  
+  
+    #if isinstance(curr_value,list):
+      #pcache[name]=[namedtuple2dict(i) for i in curr_value]
+    #else:
     pcache[name]=namedtuple2dict(curr_value)
     
-    
-  
-  
   #Update
   if not is_config:
     #values are saved only if the call is not (as sys_cache)
     pcache.store_in_cache()
   
   sys_cache[sys_id]=namedtuple2dict(curr_sys_value)
-
   
 #Save
 if not is_config:
