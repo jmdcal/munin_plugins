@@ -4,7 +4,11 @@ import re
 import time
 import os
 import fcntl
+import pickle
+from base64 import b16encode
 from base64 import b16decode
+from base64 import b64encode
+from base64 import b64decode
 
 from collections import Counter
 from collections import deque
@@ -259,15 +263,10 @@ class Cache(object):
         
       fd=open(self.fn,mode)    
       self._lock(fd)
-      
+            
       values=self.get_values()
       if exists and not clean:
-        for i in fd:
-          try:
-            values.remove(i.strip())
-          except ValueError:
-            #We try to remove from values what is yet in cache file
-            pass
+        values=self.get_news(fd,values)
         
       #now in values we have only new values for cache and we will append to file
       for l in values:
@@ -276,12 +275,18 @@ class Cache(object):
       self._unlock(fd)
       fd.close()
 
+    
+    return values
+
   #Methods to define in class
   def load_value(self,val):
     pass
 
   def get_values(self):
     return []
+  
+  def get_news(self,fd,values):
+    return values
 
 #Simple cache based on a list of values
 class CacheDict(Cache,dict):  
@@ -290,6 +295,15 @@ class CacheDict(Cache,dict):
 
   def get_values(self):
     return self.keys()
+
+  def get_news(self,fd,values):
+    for i in fd:
+      try:
+        values.remove(i.strip())
+      except ValueError:
+        #We try to remove from values what is yet in cache file
+        pass
+    return values
 
 #Simple cache based on a Counter, a dictionary val: qty
 class CacheCounter(Cache,Counter):    
@@ -300,6 +314,15 @@ class CacheCounter(Cache,Counter):
 
   def get_values(self):
     return self.keys()
+
+  def get_news(self,fd,values):
+    for i in fd:
+      try:
+        values.remove(i.strip())
+      except ValueError:
+        #We try to remove from values what is yet in cache file
+        pass
+    return values
   
 #Cache based on Couner that stores labels and last values
 class CacheNumbers(Cache,dict):
@@ -324,8 +347,7 @@ class CacheNumbers(Cache,dict):
     
   def get_values(self):
     res=deque()
-    for k,dct in self.items():
-      
+    for k,dct in self.items():      
       try:
         vals=' '.join([concat(el)  for el in dct.items()])
       except AttributeError:
@@ -333,10 +355,23 @@ class CacheNumbers(Cache,dict):
         vals=' '.join(namedtuple2list(dct,concat))
       res.append('%s %s'%(k,vals))
     return res
+
+
+class CachePickle(Cache,dict):
+  default=()
   
-  def store_in_cache(self,clean=True):
-    super(CacheNumbers,self).store_in_cache(True)
+  def load_value(self,val):
+    try:
+      id,pickled=val.split(' ')
+      self[id]=pickle.loads(b64decode(pickled))
+    except:
+      self[val]=self.default
 
-
-
+  def get_values(self):
+    res=deque()
+    for k,data in self.items():
+      pickled=b64encode(pickle.dumps(data))
+      res.append("%s %s"%(k,pickled))
+    return res
+    
     

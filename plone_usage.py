@@ -1,7 +1,5 @@
 #!/usr/bin/python2.7
 
-# Usage plone_usage.py [config]
-
 import os
 import sys
 import psutil
@@ -9,110 +7,70 @@ from collections import deque
 
 from utils import *
 
+from etc.env import SYSTEM_DEFAULTS
 from etc.env import PLONE_GRAPHS
-from etc.env import PLONE_GRAPHS_ORDER
+from etc.env import SYSTEM_VALUE_CACHE
 from etc.env import INSTANCES_CACHE
 from etc.env import AREASTACK_SENSORS
-from etc.env import SYSTEM_VALUE_CACHE
+def get_cpu_times(sys_dff,prev,curr):
+  if prev==None:
+    prev=curr
 
-
-#Converters
-def identity(x,prevs,env):
-  res=x
-  if x is None:
-    res=0 
-  return res,None
-
-def get_cpu_usage(vals,prevs,env):
-  #env['system_usage_prev'] is a dict
-  #env['system_usage_curr'] is a namedtuple
+  pdff=mkdiff(prev,curr)          
+  return get_percent_of(pdff,sys_dff)         
+        
+def get_memory_percent(sys_dff,prev,curr):
+  return curr
+   
+def get_connections(sys_dff,prev,curr):
+  return len(curr)
+   
+def get_memory_maps(sys_dff,prev,curr):
+  return sum(i.swap for i in curr)
+   
+def get_open_files(sys_dff,prev,curr):
+  return [(cut(i.path),os.path.getsize(i.path)) for i in curr if not re.match('^(.*)\.lock$',i.path)]
+   
+def get_io_counters(sys_dff,prev,curr):
+  if prev is None:
+    prev={}
+  return [(k,mkdiff(prev.get(k,0),v)) for k,v in curr.__dict__.items()]
+   
+def get_threads(sys_dff,prev,curr):
+  curr_ids=[i.id for i in curr]
   
-  sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())  
-
-  try:
-    act=dict(user=vals.user,sys=vals.system)
-  except AttributeError:    
-    act=dict(user=0,sys=0)
+  if prev is None:
+    prev=[namedtuple2dict(i) for i in curr]
   
-  #if previous is None means there's no difference we can do so is 0
-  proc_u=0
-  if prevs is not None:
-    proc_u=sum(act.values())-sum(prevs.values())
+  prev_dct=dict([(p['id'],p['system_time']+p['user_time']) for p in prev])
+  res=deque()
+  rest=deque()
   
-  perc=get_percent_of(proc_u,sys_u)
-    
-  return perc,act
-
-def get_threads_usage(vals,prevs,env):
-  #env['system_usage_prev'] is a dict
-  #env['system_usage_curr'] is a namedtuple
-  sys_u=sum(env['system_usage_curr'])-sum(env['system_usage_prev'].values())
-
-  try:
-    act=dict([('%s'%thr.id,thr.system_time+thr.user_time) for thr in sorted(vals)])
-  except TypeError:
-    act={}
-  if prevs is not None:
-    dff=dict([(k,get_percent_of(fnz(v-prevs.get(k,0)),sys_u)) for k,v in act.items()])
-  else:
-    #if previous is None means there's no difference we can do so is 0
-    dff=dict([(k,0) for k,v in act.items()])  
-  return dff,act
-
-def get_swap(vals,prevs,env):
-  try:
-    res=sum(i.swap for i in vals)
-  except TypeError:
-    res=0
-  return res,None
-
-def get_storages(vals,prevs,env):
-  try:
-    res=[(cut(i.path),os.path.getsize(i.path)) for i in vals if not re.match('^(.*)\.lock$',i.path)]
-  except TypeError:
-    res=[]
-  return dict(res),None 
-
-def split_counters(vals,prevs,env):
-  try:
-    rb=vals.read_bytes
-    wb=vals.write_bytes
-  except AttributeError:
-    rb=0
-    wb=0
-  act={'read':rb, 'write':wb}
-  dff=act
-  if prevs is not None:
-    dff=dict([(k,fnz(v-prevs.get(k,0))) for k,v in act.items()])
-  else:
-    #if previous is None means there's no difference we can do so is 0
-    dff=dict([(k,0) for k,v in act.items()])
-  return dff,act
-
-def get_size(vals,prevs,env):
-  return len(vals),None
-
-def fnz(val):
-  res=round(val,2)
-  #This fix -0.0 numbers
-  if res==0.0:
-    res=0.0
-       
+  for c in curr:
+    cv=c.user_time+c.system_time
+    pv=prev_dct.get(c.id,cv)
+    dff=mkdiff(pv,cv)
+    res.append((c.id,dff*100/sys_dff))
+      
+  for k,v in prev_dct.items():
+    if k not in curr_ids:
+      res.append((k,0))
+        
   return res
-
+  
 def cut(val):
   parts=val.split('/')
   res='undefined'
   if len(parts)>0:
     res=parts[-1].replace('.','_')
   return res
- 
+
+   
 def find_cfg(command):
   cfg=None
   for i in command:
     if 'zope.conf' in i or 'zeo.conf' in i:
-      cfg=i
-     
+      cfg=i     
   return cfg
 
 def build_sensor_name(command):
@@ -135,32 +93,47 @@ def build_sensor_name(command):
   return name
 
 
-def load_env():
+def load_sys(defaults):
   cpath,ctype=SYSTEM_VALUE_CACHE
-  env={}
+
+  #Fetch from cache
   try:
     cclass=eval(ctype)
     system_cache=cclass(cpath)
-    env['system_usage_prev']=system_cache['cpu_times']
   except NameError:
     system_cache=None
-    env['system_usage_prev']=namedtuple2dict(psutil.cpu_times())
-  except KeyError:
-    env['system_usage_prev']=namedtuple2dict(psutil.cpu_times())
-    
-  env['system_usage_curr']=psutil.cpu_times()
-  system_cache['cpu_times']=env['system_usage_curr']
+  sys_curr={}
   
-  return env,system_cache
+  for k in defaults:
+    sys_curr[k]=namedtuple2dict(getattr(psutil,k,lambda : None)())
+    try:
+      system_cache[k]
+    except KeyError:  
+      system_cache[k]=sys_curr[k]
 
-#ps_cache: cmd -> process descriptor  
-ps_cache=CacheDict(INSTANCES_CACHE,def_value=None)
+  return system_cache,sys_curr
+  
 
-for pd in psutil.process_iter(): 
-  name=build_sensor_name(pd.cmdline)
-  #ppid>1 means that is a child: this check is useful for zeo process 
-  if name is not None and pd.ppid>1:
-    ps_cache[name]=pd
+def mktot(val):
+  if isinstance(val,dict):
+    tot=sum(val.values())  
+  elif isinstance(val,tuple):
+    tot=sum(val)
+  elif isinstance(val,int) or isinstance(val,float):
+    tot=val
+  else:
+    tot=0  
+  return tot
+
+def mkdiff(prev,curr):
+  tot_c=mktot(curr)
+  tot_p=mktot(prev)
+  dff=tot_c-tot_p
+  if dff<0:
+    #the process/system was restart
+    dff=tot_c
+  return dff
+
 
 is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
 title='Plone'
@@ -170,66 +143,77 @@ printer=print_data
 if is_config:
   printer=print_config
 
-env,system_cache=load_env()
+sys_prev,sys_curr=load_sys(SYSTEM_DEFAULTS)  
 
-for field_name in PLONE_GRAPHS_ORDER:
-  try:
-    label,conv,mthd_name,cache_file=PLONE_GRAPHS[field_name]
-  except KeyError:
-    pass
-  else:
-    previous_values=CacheNumbers(cache_file)
-    print "multigraph plone_%s"%field_name
-    if is_config:
-      print "graph_title %s %s"%(title,label)    
-      print "graph_args --base 1000"
-      print "graph_vlabel %s"%label
-      print "graph_category %s"%group
-      
-    graph=None
-    if field_name in AREASTACK_SENSORS: 
-      graph="AREASTACK"
-          
-    for s,pd in ps_cache.items():
-      id="%s_%s"%(s,field_name)
-      mthd=getattr(pd,mthd_name,None)
-      if mthd is not None:      
-        val=mthd()
-      else:
-        val=0
+ps_cache=CacheDict(INSTANCES_CACHE,def_value=None)
+for pd in psutil.process_iter(): 
+  name=build_sensor_name(pd.cmdline)
+  #ppid>1 means that is a child: this check is useful for zeo process 
+  if name is not None and pd.ppid>1:
+    ps_cache[name]=pd
 
-      try:
-        fun=eval(conv)        
-        val,to_store=fun(val,previous_values.get(id,None),env)
-      except NameError:
-        #this wrap not existing conv
-        val=0
-        to_store=None
-      except TypeError:
-        #this wrap if fun is None and fun is not applicable to val
-        val=0      
-        to_store=None
+def merge(main,sec,field_id):
+  res={}
+  if sec is not None:
+    for row in sec:
+      id=row.get(field_id)
+      res[id]=row
+  if main is not None:
+    for row in main:
+      id=row.get(field_id)
+      res[id]=row
 
-      if isinstance(val,dict):
-        for k,v in sorted(val.items()):
-          printer(id='%s_%s'%(id,k),
-                  value=v,
-                  label="%s %s"%(s,k),
-                  draw=graph)
-        if to_store is not None:  
-          previous_values[id]=to_store
-      elif isinstance(val,int) or isinstance(val,float):        
-        printer(id=id,
-                value=val,
-                label=s,
-                draw=graph)
-        if to_store is not None:  
-          previous_values[id]=to_store
-          
-    if not is_config:
-      previous_values.store_in_cache()
+  return res.values()
+
+
+for id,(label,cache,sys_id,mthd) in PLONE_GRAPHS.items():
+  sys_dff=mkdiff(sys_prev[sys_id],sys_curr[sys_id])   
+  pcache=CachePickle(cache)
   
-ps_cache.store_in_cache()
-if system_cache is not None:
-  system_cache.store_in_cache()
+  print "multigraph plone_%s"%id
+  if is_config:
+    print "graph_title %s %s"%(title,label)    
+    print "graph_args --base 1000"
+    print "graph_vlabel %s"%label
+    print "graph_category %s"%group
+    
+  graph=None
+  if id in AREASTACK_SENSORS: 
+    graph="AREASTACK"
+    
+  for name,pd in ps_cache.items():  
+    id="%s_%s"%(name,id)
+    curr_value=getattr(pd,mthd,lambda : None)()    
+    prev_value=pcache.get(name,None)
+    converter=eval(mthd)
+    res=converter(sys_dff,prev_value,curr_value)
 
+    if isinstance(res,int) or isinstance(res,float):
+      printer(id=id,
+              value=res,
+              label=name,
+              draw=graph)
+    elif isinstance(res,list) or isinstance(res,deque):
+      for fd,row in res:
+        printer(id='%s-%s'%(id,fd),
+                value=row,
+                label='%s %s '%(name,fd),
+                draw=graph)
+        
+    if isinstance(curr_value,list):
+      pcache[name]=merge([namedtuple2dict(cv) for cv in curr_value],prev_value,'id')
+    else:
+      pcache[name]=namedtuple2dict(curr_value)  
+
+    ##Update
+    if not is_config:
+      ##values are saved only if the call is not (as sys_prev)
+      pcache.store_in_cache()
+    
+if not is_config:    
+  #align prev with curr
+  for k,v in sys_curr.items():    
+    sys_prev[k]=v
+  #store in the file
+  sys_prev.store_in_cache(clean=True)
+        
