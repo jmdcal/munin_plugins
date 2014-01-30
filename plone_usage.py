@@ -183,20 +183,20 @@ for id,(label,cache,sys_id,mthd) in PLONE_GRAPHS.items():
     graph="AREASTACK"
     
   for name,pd in ps_cache.items():  
-    id="%s_%s"%(name,id)
+    ids="%s_%s"%(name,id)
     curr_value=getattr(pd,mthd,lambda : None)()    
     prev_value=pcache.get(name,None)
     converter=eval(mthd)
     res=converter(sys_dff,prev_value,curr_value)
 
     if isinstance(res,int) or isinstance(res,float):
-      printer(id=id,
+      printer(id=ids,
               value=res,
               label=name,
               draw=graph)
     elif isinstance(res,list) or isinstance(res,deque):
       for fd,row in res:
-        printer(id='%s-%s'%(id,fd),
+        printer(id='%s-%s'%(ids,fd),
                 value=row,
                 label='%s %s '%(name,fd),
                 draw=graph)
