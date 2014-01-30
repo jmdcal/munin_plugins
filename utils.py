@@ -275,8 +275,6 @@ class Cache(object):
       self._unlock(fd)
       fd.close()
 
-    
-    return values
 
   #Methods to define in class
   def load_value(self,val):

@@ -44,13 +44,15 @@ def get_threads(sys_dff,prev,curr):
   
   prev_dct=dict([(p['id'],p['system_time']+p['user_time']) for p in prev])
   res=deque()
-  rest=deque()
   
   for c in curr:
     cv=c.user_time+c.system_time
     pv=prev_dct.get(c.id,cv)
     dff=mkdiff(pv,cv)
-    res.append((c.id,dff*100/sys_dff))
+    if sys_dff==0:
+      res.append((c.id,0))
+    else:
+      res.append((c.id,dff*100/sys_dff))
       
   for k,v in prev_dct.items():
     if k not in curr_ids:
@@ -64,7 +66,6 @@ def cut(val):
   if len(parts)>0:
     res=parts[-1].replace('.','_')
   return res
-
    
 def find_cfg(command):
   cfg=None
