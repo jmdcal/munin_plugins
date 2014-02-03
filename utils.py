@@ -132,7 +132,7 @@ def get_short_agent(agent):
     res=agent.lower().replace('/','_')    
     
 
-  return res.replace('.','_').replace('@','_at_').remove('(',' ').remove(')',' ')
+  return res.replace('.','_').replace('@','_at_').replace('(',' ').replace(')',' ')
        
 def ft(time_ft):
   # this function is needed in apache because latency is not in seconds
