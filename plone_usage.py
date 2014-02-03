@@ -34,7 +34,7 @@ def get_open_files(sys_dff,prev,curr):
 def get_io_counters(sys_dff,prev,curr):
   if prev is None:
     prev={}
-  return [(k,mkdiff(prev.get(k,0),v)) for k,v in curr.__dict__.items()]
+  return [(k,mkdiff(prev.get(k,0),v)) for k,v in namedtuple2dict(curr).items()]
    
 def get_threads(sys_dff,prev,curr):
   curr_ids=[i.id for i in curr]
