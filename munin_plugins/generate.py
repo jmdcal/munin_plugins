@@ -133,63 +133,65 @@ def install(fpy, syml,force_all,make_news):
   return created
 
 
-check_requirements()
+def call():
+  check_requirements()
 
-#do not make questions about creation but force all (-f option)
-force_all=False 
-#do not make questions about creation but force new ones (-n option)
-make_news=False
-#avoid symlinks creation
-help_asked=False
-if len(sys.argv)>1:
-  opts=sys.argv[1:]
-  if '-f' in opts:
-    force_all=True
-  elif '-n' in opts:
-    make_news=True
-  elif '-h' in opts or '--help' in opts:
-    help_asked=True
-    print 'USAGE:\n\tgenerate.py [opts]\n'
-    print '  Options:'
-    print '\t-h, --help:\tshow this help'
-    print '\t-f:\t\tforce creation of all symlinks without asking'
-    print '\t-n:\t\tforce creation of new symlinks without asking'
-   
-if not help_asked:      
-  #build config for nginx_*, they read from single file the list of access_logs
-  tmp_file=open(TMP_CONFIG,'w')
-  tmp_file.write('[nginx_*]\n')
-  tmp_file.write('user root\n')
-  tmp_file.write('group root\n')
-  file_no=0
-  
-  for vh in os.listdir(sites_path):
-    fpath=sites_path+'/'+vh
-    if os.path.isfile(fpath):
-      to_create=parse_title_and_customlog(fpath)
-      for title,access_log in to_create:
-        tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(file_no,title))
-        tmp_file.write('env.GRAPH_GROUP_%s %s\n'%(file_no,'nginx'))
-        tmp_file.write('env.GRAPH_ACCESS_%s %s\n'%(file_no,access_log))
-        file_no+=1
+  #do not make questions about creation but force all (-f option)
+  force_all=False 
+  #do not make questions about creation but force new ones (-n option)
+  make_news=False
+  #avoid symlinks creation
+  help_asked=False
+  if len(sys.argv)>1:
+    opts=sys.argv[1:]
+    if '-f' in opts:
+      force_all=True
+    elif '-n' in opts:
+      make_news=True
+    elif '-h' in opts or '--help' in opts:
+      help_asked=True
+      print 'USAGE:\n\tgenerate.py [opts]\n'
+      print '  Options:'
+      print '\t-h, --help:\tshow this help'
+      print '\t-f:\t\tforce creation of all symlinks without asking'
+      print '\t-n:\t\tforce creation of new symlinks without asking'
+    
+  if not help_asked:      
+    #build config for nginx_*, they read from single file the list of access_logs
+    tmp_file=open(TMP_CONFIG,'w')
+    tmp_file.write('[nginx_*]\n')
+    tmp_file.write('user root\n')
+    tmp_file.write('group root\n')
+    file_no=0
+    
+    for vh in os.listdir(sites_path):
+      fpath=sites_path+'/'+vh
+      if os.path.isfile(fpath):
+        to_create=parse_title_and_customlog(fpath)
+        for title,access_log in to_create:
+          tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(file_no,title))
+          tmp_file.write('env.GRAPH_GROUP_%s %s\n'%(file_no,'nginx'))
+          tmp_file.write('env.GRAPH_ACCESS_%s %s\n'%(file_no,access_log))
+          file_no+=1
 
-  tmp_file.close()
-  if file_no>0:        
-    created=install('nginx_full.py','nginx_full',force_all,make_news)
+    tmp_file.close()
+    if file_no>0:        
+      created=install('nginx_full.py','nginx_full',force_all,make_news)
+      if created:
+        shutil.copy(TMP_CONFIG,CONFIG_NAME)  
+      
+    try:
+      os.remove(TMP_CONFIG)
+    except OSError:
+      pass   
+      
+    created=install('plone_usage.py','plone_usage',force_all,make_news)
     if created:
-      shutil.copy(TMP_CONFIG,CONFIG_NAME)  
-    
-  try:
-    os.remove(TMP_CONFIG)
-  except OSError:
-    pass   
-    
-  created=install('plone_usage.py','plone_usage',force_all,make_news)
-  if created:
-    config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+      config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 
-  created=install('monit_downtime.py','monit_downtime',force_all,make_news)
-  if created:
-    config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+    created=install('monit_downtime.py','monit_downtime',force_all,make_news)
+    if created:
+      config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 
+call()
 

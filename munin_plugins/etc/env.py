@@ -4,7 +4,7 @@
 import re
 
 #Daemons
-NGINX_BASE='/opt/nginx'
+NGINX_BASE='/etc/nginx'
 NGINX_LOG='%s/logs' % NGINX_BASE
 NGINX_SITES='%s/sites-enabled'%NGINX_BASE
 NGINX_CONFD='%s/conf.d'%NGINX_BASE
@@ -27,7 +27,6 @@ VALID_CTYPES=['text/html']
 #
 # This is an example about the nginx log row
 # 192.107.92.74 - - [25/Jun/2013:03:51:59 +0200]  "GET /++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png HTTP/1.1" 499 0 "-" "Serf/1.1.0 mod_pagespeed/1.5.27.3-3005" [[2.554]]
-
 
 _ip_pattern=r'^([0-9]+(?:\.[0-9]+){3})'
 _user_pattern=r'\s+\-\s(.*?)'
@@ -53,20 +52,6 @@ nginx_pattern= \
 row_pattern=nginx_pattern+_latency_pattern #latency
 NGINX_PARSER=re.compile(nginx_pattern)
 ROW_PARSER=re.compile(row_pattern)
-
-# row_pattern produce:
-# ('192.107.92.74',
-#  '-',
-#  '25/Jun/2013:03:51:59',
-#  'GET',
-#  '/++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png',
-#  ' HTTP/1.1',
-#  '499',
-#  '0',
-#  '-',
-#  'Serf/1.1.0 mod_pagespeed/1.5.27.3-3005',
-#  '2.554')
-# so row_mapping is the follow
 
 ROW_MAPPING={
   'ip':0,
@@ -94,6 +79,7 @@ REQUIREMENTS={
   'Munin node':(['munin-node-configure','--version',],1),
   'Nginx':(['nginx','-v'],0),
 }
+
 NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py',]
 TMP_CONFIG='/tmp/_munin_plugins'
 CONFIG_NAME='%s/munin_plugins'%MUNIN_PLUGINS_CONFD

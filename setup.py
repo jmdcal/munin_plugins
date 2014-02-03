@@ -13,18 +13,21 @@ setup(name='munin_plugins',
         'Programming Language :: Python :: 2.7',
         'Topic :: System :: Monitoring',
         'Topic :: System :: Systems Administration', 
-	],
+	    ],
       keywords='plone nginx monit munin sensors',
       author='Cippino',
       author_email='cippinofg <at> gmail <dot> com',
       url='https://github.com/cippino/munin_plugins',
       license='GPLv2',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      packages=find_packages(),
       include_package_data=True,
       zip_safe=True,
       install_requires=[
         'psutil'
       ],
-      entry_points="""
-      """,
+      entry_points={
+        'console':[
+          'generate = munin_plugins.generate:call'
+          ],        
+        },
       )
