@@ -181,23 +181,11 @@ MONIT_OPTS=[]
 #plone_usage
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
 SYSTEM_DEFAULTS=['cpu_times','memory_percent','connections','swap','storages','iocounters']
-
-PLONE_GRAPHS={
-  #'graph_id':(<title>,<cache file>,<id for system cache>,<psutil.proc_method>)
-  'cpu_time':('cpu usage (%)','%s/zopeprocess'%CACHE,'cpu_times','get_cpu_times'),  
-  'memory':('memory (%)',None,'memory_percent','get_memory_percent'),
-  'connections':('connections',None,'connections','get_connections'), 
-  'swap':('swap',None,'swap','get_memory_maps'),
-  'storages':('file',None,'storages','get_open_files'),
-  'io_counters':('I/O usage','%s/zopeios'%CACHE,'iocounters','get_io_counters'),
-  'threads':('threads usage (%)','%s/zopethreads'%CACHE,'cpu_times','get_threads')
-}
-
 PLONE_GRAPHS_ORDER=['cpu_time','threads','memory_percent','swap','storages','io_counters','connections']
 
 
 INSTANCES_CACHE='%s/zope_instances'%CACHE
-AREASTACK_SENSORS=['cpu_time','memory_percent','swap','storages','threads']
+
 
 #Leave this on the bottom
 
