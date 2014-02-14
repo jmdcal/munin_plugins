@@ -1,7 +1,7 @@
 from collections import Counter
 
-from etc.env import HTTP_CODES
-from etc.env import MINUTES
+from munin_plugins.etc.env import HTTP_CODES
+from munin_plugins.etc.env import MINUTES
 from base import BaseCounter
 
 class HttpCodesCounter(BaseCounter):

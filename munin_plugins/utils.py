@@ -227,6 +227,10 @@ def fixargs(argv):
     argv = sys.argv[1:]
   return argv
 
+def check_config(argv):
+  argv=fixargs(argv)
+  return (len(argv)>0 and argv[0]=='config')
+
     
 #Mixin Cache Class
 class Cache(object): 

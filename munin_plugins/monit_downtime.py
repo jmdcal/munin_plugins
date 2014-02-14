@@ -1,22 +1,20 @@
 #!/usr/bin/python2.7
 
-# Usage monit_downtime.py [config]
-
 import re  
 
 import fcntl
 import time
 import subprocess
 
-from utils import *
-from etc.env import MONIT_STATUS
-from etc.env import MONIT_FIRSTS
-from etc.env import MONIT_LASTESTS
-from etc.env import MONIT_PARSER
-from etc.env import MONIT_PERCENTAGE_GRAPH
-from etc.env import MONIT_FULL
-from etc.env import MONIT_OPTS
-from etc.env import CACHE_MONIT
+from munin_plugins.utils import *
+from munin_plugins.etc.env import MONIT_STATUS
+from munin_plugins.etc.env import MONIT_FIRSTS
+from munin_plugins.etc.env import MONIT_LASTESTS
+from munin_plugins.etc.env import MONIT_PARSER
+from munin_plugins.etc.env import MONIT_PERCENTAGE_GRAPH
+from munin_plugins.etc.env import MONIT_FULL
+from munin_plugins.etc.env import MONIT_OPTS
+from munin_plugins.etc.env import CACHE_MONIT
 
 def graph_order(alls,pre,post):
   to_exclude=pre+post
@@ -48,10 +46,7 @@ def parse_monit_row(row):
     status=groups[2].lower().strip()
   return status
 
-
-def main(argv=None, **kw)):
-  argv=fixargv(argv)
-  
+def main(argv=None, **kw): 
   #We init at least with failedtest counter
   to_init=['monit down',]
   if MONIT_FULL:
@@ -61,7 +56,7 @@ def main(argv=None, **kw)):
   for i in to_init:
     counts[i]=0
 
-  if len(argv)>1 and argv[1]=='config':
+  if check_config(argv):
     print_config('Monit status','monit',counts.keys())
   else:  
     csensors=1

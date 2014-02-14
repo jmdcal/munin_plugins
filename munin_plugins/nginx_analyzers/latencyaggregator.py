@@ -1,8 +1,8 @@
 from collections import Counter
-from utils import ft
-from etc.env import INTERVALS
-from etc.env import MINUTES
-from etc.env import COLORS
+from munin_plugins.utils import ft
+from munin_plugins.etc.env import INTERVALS
+from munin_plugins.etc.env import MINUTES
+from munin_plugins.etc.env import COLORS
 
 from base import BaseCounter
 

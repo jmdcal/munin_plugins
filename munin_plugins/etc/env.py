@@ -14,7 +14,7 @@ MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
 MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
 
 #common 
-CACHE="/opt/munin_plugins/cache"
+CACHE="/var/cache/munin_plugins"
 
 #utils.py
 WRONG_AGENTS='%s/bad_signature'%CACHE

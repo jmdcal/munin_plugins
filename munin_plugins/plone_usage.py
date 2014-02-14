@@ -4,13 +4,13 @@ import os
 import psutil
 from collections import deque
 
-from utils import *
+from munin_plugins.utils import *
 
-from etc.env import SYSTEM_DEFAULTS
-from etc.env import PLONE_GRAPHS
-from etc.env import SYSTEM_VALUE_CACHE
-from etc.env import INSTANCES_CACHE
-from etc.env import AREASTACK_SENSORS
+from munin_plugins.etc.env import SYSTEM_DEFAULTS
+from munin_plugins.etc.env import PLONE_GRAPHS
+from munin_plugins.etc.env import SYSTEM_VALUE_CACHE
+from munin_plugins.etc.env import INSTANCES_CACHE
+from munin_plugins.etc.env import AREASTACK_SENSORS
 
 def get_cpu_times(sys_dff,prev,curr):
   if prev==None:
@@ -135,10 +135,8 @@ def mkdiff(prev,curr):
     dff=tot_c
   return dff
 
-def main(argv=None, **kw)):    
-  argv=fixargv(argv)
-  
-  is_config=(len(argv)>1 and argv[1]=='config')
+def main(argv=None, **kw):     
+  is_config=check_config(argv)
   title='Plone'
   group='plone'
 
