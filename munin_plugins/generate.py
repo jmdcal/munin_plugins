@@ -15,6 +15,7 @@ from etc.env import NGINX_LOG
 from etc.env import REQUIREMENTS
 from etc.env import TMP_CONFIG
 from etc.env import CONFIG_NAME
+from etc.env import CACHE
 
 def check_requirements():
   for k in REQUIREMENTS:
@@ -106,6 +107,10 @@ def install(fpy, syml,force_all,make_news):
   
   created=False
    
+  if not os.path.exists(CACHE):
+    os.makedirs(CACHE)
+   
+   
   if force_all:       
     create_link(orig=orig,link=link)  
     created=True
@@ -173,7 +178,7 @@ def main(argv=None, **kw):
 
     tmp_file.close()
     if file_no>0:        
-      created=install('nginx_full.py','nginx_full',force_all,make_news)
+      created=install('nginx_full','nginx_full',force_all,make_news)
       if created:
         shutil.copy(TMP_CONFIG,CONFIG_NAME)  
       
@@ -182,11 +187,11 @@ def main(argv=None, **kw):
     except OSError:
       pass   
       
-    created=install('plone_usage.py','plone_usage',force_all,make_news)
+    created=install('plone_usage','plone_usage',force_all,make_news)
     if created:
       config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 
-    created=install('monit_downtime.py','monit_downtime',force_all,make_news)
+    created=install('monit_downtime','monit_downtime',force_all,make_news)
     if created:
       config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 

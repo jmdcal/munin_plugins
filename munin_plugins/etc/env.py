@@ -80,7 +80,7 @@ REQUIREMENTS={
   'Nginx':(['nginx','-v'],0),
 }
 
-NGINX_RUNNERS=['runner_aggr.py','runner_http.py','runner_bots.py',]
+
 TMP_CONFIG='/tmp/_munin_plugins'
 CONFIG_NAME='%s/munin_plugins'%MUNIN_PLUGINS_CONFD
 
