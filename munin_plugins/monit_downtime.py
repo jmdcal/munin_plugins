@@ -3,7 +3,7 @@
 # Usage monit_downtime.py [config]
 
 import re  
-import sys
+
 import fcntl
 import time
 import subprocess
@@ -16,14 +16,12 @@ from etc.env import MONIT_PARSER
 from etc.env import MONIT_PERCENTAGE_GRAPH
 from etc.env import MONIT_FULL
 from etc.env import MONIT_OPTS
-
 from etc.env import CACHE_MONIT
 
 def graph_order(alls,pre,post):
   to_exclude=pre+post
   middle=[i for i in alls if i not in to_exclude]  
   return [i.strip().replace(' ','_') for i in  pre+middle+post]
-
 
 def print_config(title,group,vals):
   print "graph_title %s"%title
@@ -50,40 +48,46 @@ def parse_monit_row(row):
     status=groups[2].lower().strip()
   return status
 
-#We init at least with failedtest counter
-to_init=['monit down',]
-if MONIT_FULL:
-  to_init+=MONIT_STATUS.keys()
 
-counts=CacheCounter(CACHE_MONIT)
-for i in to_init:
-  counts[i]=0
-
-if len(sys.argv)>1 and sys.argv[1]=='config':
-  print_config('Monit status','monit',counts.keys())
-else:  
-  csensors=1
-  try:
-    pid=int(subprocess.check_output(['pidof','monit'],stderr=subprocess.STDOUT).strip())
-  except (subprocess.CalledProcessError, ValueError):
-    #if fails means that the process is not running
-    counts['monit down']=1
-  else:
-    csensors=0
-    sensors=subprocess.check_output(['monit','summary']+MONIT_OPTS,stderr=subprocess.STDOUT)
-    for row in sensors.split('\n'):
-      status=parse_monit_row(row)
-      if status is not None:
-        counts[status]=counts[status]+1
-        csensors+=1
-
-  norm=lambda x:x
-  if MONIT_PERCENTAGE_GRAPH:
-    norm=lambda x:(x*100/csensors)
-    
-  for l,v in counts.items():
-    id=l.replace(' ','_')
-    print "%s.value %s"% (id,norm(v))
-      
-counts.store_in_cache()
+def main(argv=None, **kw)):
+  argv=fixargv(argv)
   
+  #We init at least with failedtest counter
+  to_init=['monit down',]
+  if MONIT_FULL:
+    to_init+=MONIT_STATUS.keys()
+
+  counts=CacheCounter(CACHE_MONIT)
+  for i in to_init:
+    counts[i]=0
+
+  if len(argv)>1 and argv[1]=='config':
+    print_config('Monit status','monit',counts.keys())
+  else:  
+    csensors=1
+    try:
+      pid=int(subprocess.check_output(['pidof','monit'],stderr=subprocess.STDOUT).strip())
+    except (subprocess.CalledProcessError, ValueError):
+      #if fails means that the process is not running
+      counts['monit down']=1
+    else:
+      csensors=0
+      sensors=subprocess.check_output(['monit','summary']+MONIT_OPTS,stderr=subprocess.STDOUT)
+      for row in sensors.split('\n'):
+        status=parse_monit_row(row)
+        if status is not None:
+          counts[status]=counts[status]+1
+          csensors+=1
+
+    norm=lambda x:x
+    if MONIT_PERCENTAGE_GRAPH:
+      norm=lambda x:(x*100/csensors)
+      
+    for l,v in counts.items():
+      id=l.replace(' ','_')
+      print "%s.value %s"% (id,norm(v))
+        
+  counts.store_in_cache()
+    
+if __name__ == '__main__':
+  main()

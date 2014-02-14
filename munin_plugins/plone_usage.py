@@ -1,7 +1,6 @@
 #!/usr/bin/python2.7
 
 import os
-import sys
 import psutil
 from collections import deque
 
@@ -12,6 +11,7 @@ from etc.env import PLONE_GRAPHS
 from etc.env import SYSTEM_VALUE_CACHE
 from etc.env import INSTANCES_CACHE
 from etc.env import AREASTACK_SENSORS
+
 def get_cpu_times(sys_dff,prev,curr):
   if prev==None:
     prev=curr
@@ -135,86 +135,88 @@ def mkdiff(prev,curr):
     dff=tot_c
   return dff
 
-
-is_config=(len(sys.argv)>1 and sys.argv[1]=='config')
-title='Plone'
-group='plone'
-
-printer=print_data
-if is_config:
-  printer=print_config
-
-sys_prev,sys_curr=load_sys(SYSTEM_DEFAULTS)  
-
-ps_cache=CacheDict(INSTANCES_CACHE,def_value=None)
-for pd in psutil.process_iter(): 
-  name=build_sensor_name(pd.cmdline)
-  #ppid>1 means that is a child: this check is useful for zeo process 
-  if name is not None and pd.ppid>1:
-    ps_cache[name]=pd
-
-def merge(main,sec,field_id):
-  res={}
-  if sec is not None:
-    for row in sec:
-      id=row.get(field_id)
-      res[id]=row
-  if main is not None:
-    for row in main:
-      id=row.get(field_id)
-      res[id]=row
-
-  return res.values()
-
-
-for id,(label,cache,sys_id,mthd) in PLONE_GRAPHS.items():
-  sys_dff=mkdiff(sys_prev[sys_id],sys_curr[sys_id])   
-  pcache=CachePickle(cache)
+def main(argv=None, **kw)):    
+  argv=fixargv(argv)
   
-  print "multigraph plone_%s"%id
+  is_config=(len(argv)>1 and argv[1]=='config')
+  title='Plone'
+  group='plone'
+
+  printer=print_data
   if is_config:
-    print "graph_title %s %s"%(title,label)    
-    print "graph_args --base 1000"
-    print "graph_vlabel %s"%label
-    print "graph_category %s"%group
-    
-  graph=None
-  if id in AREASTACK_SENSORS: 
-    graph="AREASTACK"
-    
-  for name,pd in ps_cache.items():  
-    ids="%s_%s"%(name,id)
-    curr_value=getattr(pd,mthd,lambda : None)()    
-    prev_value=pcache.get(name,None)
-    converter=eval(mthd)
-    res=converter(sys_dff,prev_value,curr_value)
+    printer=print_config
 
-    if isinstance(res,int) or isinstance(res,float):
-      printer(id=ids,
-              value=res,
-              label=name,
-              draw=graph)
-    elif isinstance(res,list) or isinstance(res,deque):
-      for fd,row in res:
-        printer(id='%s-%s'%(ids,fd),
-                value=row,
-                label='%s %s '%(name,fd),
+  sys_prev,sys_curr=load_sys(SYSTEM_DEFAULTS)  
+
+  ps_cache=CacheDict(INSTANCES_CACHE,def_value=None)
+  for pd in psutil.process_iter(): 
+    name=build_sensor_name(pd.cmdline)
+    #ppid>1 means that is a child: this check is useful for zeo process 
+    if name is not None and pd.ppid>1:
+      ps_cache[name]=pd
+
+  def merge(main,sec,field_id):
+    res={}
+    if sec is not None:
+      for row in sec:
+        id=row.get(field_id)
+        res[id]=row
+    if main is not None:
+      for row in main:
+        id=row.get(field_id)
+        res[id]=row
+
+    return res.values()
+
+
+  for id,(label,cache,sys_id,mthd) in PLONE_GRAPHS.items():
+    sys_dff=mkdiff(sys_prev[sys_id],sys_curr[sys_id])   
+    pcache=CachePickle(cache)
+    
+    print "multigraph plone_%s"%id
+    if is_config:
+      print "graph_title %s %s"%(title,label)    
+      print "graph_args --base 1000"
+      print "graph_vlabel %s"%label
+      print "graph_category %s"%group
+      
+    graph=None
+    if id in AREASTACK_SENSORS: 
+      graph="AREASTACK"
+      
+    for name,pd in ps_cache.items():  
+      ids="%s_%s"%(name,id)
+      curr_value=getattr(pd,mthd,lambda : None)()    
+      prev_value=pcache.get(name,None)
+      converter=eval(mthd)
+      res=converter(sys_dff,prev_value,curr_value)
+
+      if isinstance(res,int) or isinstance(res,float):
+        printer(id=ids,
+                value=res,
+                label=name,
                 draw=graph)
-        
-    if isinstance(curr_value,list):
-      pcache[name]=merge([namedtuple2dict(cv) for cv in curr_value],prev_value,'id')
-    else:
-      pcache[name]=namedtuple2dict(curr_value)  
+      elif isinstance(res,list) or isinstance(res,deque):
+        for fd,row in res:
+          printer(id='%s-%s'%(ids,fd),
+                  value=row,
+                  label='%s %s '%(name,fd),
+                  draw=graph)
+          
+      if isinstance(curr_value,list):
+        pcache[name]=merge([namedtuple2dict(cv) for cv in curr_value],prev_value,'id')
+      else:
+        pcache[name]=namedtuple2dict(curr_value)  
 
-    ##Update
-    if not is_config:
-      ##values are saved only if the call is not (as sys_prev)
-      pcache.store_in_cache()
-    
-if not is_config:    
-  #align prev with curr
-  for k,v in sys_curr.items():    
-    sys_prev[k]=v
-  #store in the file
-  sys_prev.store_in_cache(clean=True)
+      ##Update
+      if not is_config:
+        ##values are saved only if the call is not (as sys_prev)
+        pcache.store_in_cache()
+      
+  if not is_config:    
+    #align prev with curr
+    for k,v in sys_curr.items():    
+      sys_prev[k]=v
+    #store in the file
+    sys_prev.store_in_cache(clean=True)
         

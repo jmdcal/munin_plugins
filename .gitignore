@@ -8,7 +8,9 @@
 .*.swp
 # CSSEdit backups
 ._*
-less/
 *.mo
 cache/*
-etc/custom.py
+munin_plugins/etc/custom.py
+build/
+dist/
+

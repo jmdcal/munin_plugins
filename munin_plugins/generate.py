@@ -1,14 +1,13 @@
 #!/usr/bin/python2.7
 
 #Script generator
-# see ./generate.sh -h for usage
 
-import sys 
 import os
 import re
 import subprocess
 import shutil
 
+from utils import fixargs
 from etc.env import MUNIN_PLUGINS_CONFD
 from etc.env import MUNIN_PLUGINS
 from etc.env import NGINX_SITES
@@ -16,10 +15,6 @@ from etc.env import NGINX_LOG
 from etc.env import REQUIREMENTS
 from etc.env import TMP_CONFIG
 from etc.env import CONFIG_NAME
-
-conf_file=MUNIN_PLUGINS_CONFD
-plugins_path=MUNIN_PLUGINS
-sites_path=NGINX_SITES
 
 def check_requirements():
   for k in REQUIREMENTS:
@@ -133,7 +128,9 @@ def install(fpy, syml,force_all,make_news):
   return created
 
 
-def call():
+def main(argv=None, **kw):
+  argv=fixargs(argv)
+  
   check_requirements()
 
   #do not make questions about creation but force all (-f option)
@@ -142,8 +139,8 @@ def call():
   make_news=False
   #avoid symlinks creation
   help_asked=False
-  if len(sys.argv)>1:
-    opts=sys.argv[1:]
+  if len(argv)>1:
+    opts=argv[1:]
     if '-f' in opts:
       force_all=True
     elif '-n' in opts:
@@ -164,8 +161,8 @@ def call():
     tmp_file.write('group root\n')
     file_no=0
     
-    for vh in os.listdir(sites_path):
-      fpath=sites_path+'/'+vh
+    for vh in os.listdir(NGINX_SITES):
+      fpath=NGINX_SITES+'/'+vh
       if os.path.isfile(fpath):
         to_create=parse_title_and_customlog(fpath)
         for title,access_log in to_create:
@@ -193,5 +190,6 @@ def call():
     if created:
       config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
 
-call()
+if __name__ == '__main__':
+  main()
 

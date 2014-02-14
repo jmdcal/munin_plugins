@@ -5,6 +5,7 @@ import time
 import os
 import fcntl
 import pickle
+import sys
 from base64 import b16encode
 from base64 import b16decode
 from base64 import b64encode
@@ -220,6 +221,12 @@ def get_percent_of(val,full):
     # interval was too low
     percent = 0.0
   return percent
+    
+def fixargs(argv):
+  if argv is None:
+    argv = sys.argv[1:]
+  return argv
+
     
 #Mixin Cache Class
 class Cache(object): 
