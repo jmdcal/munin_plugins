@@ -34,10 +34,10 @@ Install
 
 The fast way to install, is using generate.py. The help can show you the options
 
-# generate.py -h 
+# generate -h 
 
 USAGE:
-        generate.py [opts]
+        generate [opts]
 
   Options:
         -h, --help:     show this help
@@ -52,6 +52,8 @@ Restart munin-node, munin-async (if you use that) and enjoy.
 More details at
 
 http://cippino.wordpress.com/tag/munin/
+https://github.com/cippino/munin_plugins
+https://pypi.python.org/pypi/munin_plugins
 
 
 ~~~~~~~~~~~~~~
