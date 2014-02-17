@@ -7,10 +7,8 @@ from collections import deque
 from munin_plugins.utils import *
 
 from munin_plugins.etc.env import SYSTEM_DEFAULTS
-from munin_plugins.etc.env import PLONE_GRAPHS
 from munin_plugins.etc.env import SYSTEM_VALUE_CACHE
 from munin_plugins.etc.env import INSTANCES_CACHE
-from munin_plugins.etc.env import AREASTACK_SENSORS
 
 from munin_plugins.plone_analyzers import cpu_usage_snsr
 from munin_plugins.plone_analyzers import memory_snsr
@@ -67,7 +65,7 @@ def build_sensor_name(command):
   return name
 
 
-def load_process()
+def load_process():
   cache=CacheDict(INSTANCES_CACHE,def_value=None)
   for pd in psutil.process_iter(): 
     name=build_sensor_name(pd.cmdline)
@@ -91,9 +89,10 @@ def main(argv=None, **kw):
   analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,threads_snsr)
   
   for cl in analyzer_classes:
+    print cl.__name__
     sensor=cl(sys_prev,sys_curr)
 
-    print "multigraph plone_%s"%sensor.__name__
+    print "multigraph plone_%s"%cl.__name__
     if is_config:
       print "graph_title %s %s"%(title,sensor.label)    
       print "graph_args --base 1000"
@@ -102,9 +101,9 @@ def main(argv=None, **kw):
     
     graph=sensor.graphType()
     for name,pd in ps_cache.items():  
-      ids="%s_%s"%(name,sensor.__name__)
+      ids="%s_%s"%(name,cl.__name__)
       curr_value=getattr(pd,sensor.proc_mtd,lambda : None)()    
-      prev_value=pcache.get(naeme,None)
+      prev_value=sensor.getValue(name)
       
       res=sensor.calculate(name,curr_value)
 

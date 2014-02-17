@@ -12,7 +12,7 @@ class storages_snsr(sensor):
   proc_mtd='get_open_files'
   graph="AREASTACK"
   
-  def _evaluate(cache_id,curr):
+  def _evaluate(self,cache_id,curr):
     return [(self._cut(i.path),os.path.getsize(i.path)) for i in curr if not re.match('^(.*)\.lock$',i.path)]
   
   

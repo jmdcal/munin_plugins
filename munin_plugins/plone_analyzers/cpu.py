@@ -1,8 +1,7 @@
 from munin_plugins.plone_analyzers.base import sensor
 
-from munin_plugins.utils import CACHE
+from munin_plugins.etc.env import CACHE
 from munin_plugins.utils import get_percent_of
-from munin_plugins.utils import namedtuple2dict
 
 class cpu_usage_snsr(sensor):
   label='cpu usage (%)'
@@ -11,8 +10,8 @@ class cpu_usage_snsr(sensor):
   proc_mtd='get_cpu_times'
   graph="AREASTACK"
   
-  def _evaluate(cache_id,curr):    
-    prev=self.pcache.get(cache_id,curr)    
-    pdff=self.mkdiff(prev,curr)          
+  def _evaluate(self,cache_id,curr):    
+    prev=self.getValue(cache_id,curr)    
+    pdff=self._mkdiff(prev,curr)          
     return get_percent_of(pdff,self._sysdiff()) 
     

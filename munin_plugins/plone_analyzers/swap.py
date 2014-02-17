@@ -7,7 +7,7 @@ class swap_snsr(sensor):
   proc_mtd='get_memory_maps'
   graph="AREASTACK"
   
-  def _evaluate(cache_id,curr):
+  def _evaluate(self,ache_id,curr):
     return sum(i.swap for i in curr)
 
   

@@ -9,6 +9,6 @@ class memory_snsr(sensor):
   proc_mtd='get_memory_percent'
   graph="AREASTACK"
   
-  def _evaluate(cache_id,curr):
+  def _evaluate(self, cache_id,curr):
     return curr
   

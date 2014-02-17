@@ -8,7 +8,7 @@ class connections_snsr(sensor):
   sys_mtd='connections'
   proc_mtd='get_connections'
   
-  def _evaluate(cache_id,curr):
+  def _evaluate(self,cache_id,curr):
     return len(curr)
 
   

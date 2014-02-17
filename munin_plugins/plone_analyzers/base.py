@@ -1,6 +1,7 @@
 from collections import deque
 
-from munin_plugins.utils import CACHE
+from munin_plugins.etc.env import CACHE
+from munin_plugins.utils import CachePickle
 from munin_plugins.utils import get_percent_of
 from munin_plugins.utils import namedtuple2dict
 
@@ -13,30 +14,42 @@ class sensor(object):
   proc_mtd='generic_sensor'
   graph=None
   
-  def __init__(sys_prev,sys_curr):
+  def __init__(self,sys_prev,sys_curr):
     self.sys_prev=sys_prev
     self.sys_curr=sys_curr
-    self.pcache=CachePickle(cache)
+    self._pcache=CachePickle(self.cache)
 
-  def calculate(cache_id,curr):
-    res=self.evaluate(cache_id,curr)
+  def calculate(self,cache_id,curr):
+    res=self._evaluate(cache_id,curr)
+    
     if isinstance(curr,list):
-      pcache[name]=self._merge([namedtuple2dict(cv) for cv in curr],self.pcache[cache_id],'id')
+      try:
+        val=self._merge([namedtuple2dict(cv) for cv in curr],self._pcache.get(cache_id),'id')
+      except:
+        import pdb; pdb.set_trace()    
     else:
-      pcache[name]=namedtuple2dict(curr)  
+      val=namedtuple2dict(curr)  
+      
+    self.setValue(cache_id,val)
     return res
   
-  def graphType():
+  def graphType(self):
     return self.graph   
   
-  def store_in_cache():
-     self.pcache.store_in_cache()
+  def store_in_cache(self):
+     self._pcache.store_in_cache()
+  
+  def getValue(self,key, df=None):
+    return self._pcache.get(key,df)
+  
+  def setValue(self,key,val):
+    self._pcache[key]=val
   
   #To implement in derived classes
-  def _evaluate(cache_id,curr):    
+  def _evaluate(self,cache_id,curr):    
     return 0
   
-  def _merge(main,sec,field_id):
+  def _merge(self,main,sec,field_id):
     res={}
     if sec is not None:
       for row in sec:
@@ -48,7 +61,7 @@ class sensor(object):
         res[id]=row
     return res.values()
  
-  def _mkdiff(prev,curr):
+  def _mkdiff(self,prev,curr):
     tot_c=self._mktot(curr)
     tot_p=self._mktot(prev)
     dff=tot_c-tot_p
@@ -57,10 +70,10 @@ class sensor(object):
       dff=tot_c
     return dff  
   
-  def _sysdiff():
+  def _sysdiff(self):
     return self._mkdiff(self.sys_prev[self.sys_mtd],self.sys_curr[self.sys_mtd])
   
-  def _mktot(val):
+  def _mktot(self,val):
     if isinstance(val,dict):
       tot=sum(val.values())  
     elif isinstance(val,tuple):
@@ -71,7 +84,7 @@ class sensor(object):
       tot=0  
     return tot
 
-  def _cut(val):
+  def _cut(self,val):
     parts=val.split('/')
     res='undefined'
     if len(parts)>0:
