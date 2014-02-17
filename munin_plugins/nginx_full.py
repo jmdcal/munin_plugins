@@ -54,13 +54,13 @@ def main(argv=None, **kw):
         
       if is_config:
         full.print_config_header()
-      full.print_data(printer)
+      full.print_data(printer,300,1000)
       
       for title,filename,an in sitem:   
         print "multigraph nginx_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_').replace('-',''))
         if is_config:
           an.print_config_header()    
-        an.print_data(printer)
+        an.print_data(printer,10,30)
         an.update_cache()
         
     

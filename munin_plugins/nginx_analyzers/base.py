@@ -46,7 +46,7 @@ class BaseCounter(object):
     print "graph_vlabel %s"%self.label
     print "graph_category %s"%self.group
   
-  def print_data(self, printer):
+  def print_data(self, printer, w=None,c=None):
     pass
 
   def update_cache(self):

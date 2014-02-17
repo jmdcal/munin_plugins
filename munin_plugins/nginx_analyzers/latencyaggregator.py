@@ -31,7 +31,7 @@ class LatencyAggregator(BaseCounter):
       else:
         self.counter['others']=1+self.counter['others']
             
-  def print_data(self, printer):
+  def print_data(self, printer, w=None,c=None):
     for threshould in INTERVALS:
       printer(id="numbers%s"%str(threshould).replace('.',''),
               value=self.counter[str(threshould)],

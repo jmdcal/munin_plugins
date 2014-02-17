@@ -18,7 +18,7 @@ class HttpCodesCounter(BaseCounter):
       code=datas.get_code()
       self.counter[code]=self.counter[code]+1
               
-  def print_data(self, printer):
+  def print_data(self, printer, w=None, c=None):
     for k,l in sorted(HTTP_CODES.items()):      
       printer(id="code%s"%k,
               value=self.counter[str(k)],
