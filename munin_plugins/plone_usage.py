@@ -89,7 +89,6 @@ def main(argv=None, **kw):
   analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,threads_snsr)
   
   for cl in analyzer_classes:
-    print cl.__name__
     sensor=cl(sys_prev,sys_curr)
 
     print "multigraph plone_%s"%cl.__name__
