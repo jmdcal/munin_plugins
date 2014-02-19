@@ -23,10 +23,7 @@ class sensor(object):
     res=self._evaluate(cache_id,curr)
     
     if isinstance(curr,list):
-      try:
-        val=self._merge([namedtuple2dict(cv) for cv in curr],self._pcache.get(cache_id),'id')
-      except:
-        import pdb; pdb.set_trace()    
+      val=self._merge([namedtuple2dict(cv) for cv in curr],self._pcache.get(cache_id),'id')
     else:
       val=namedtuple2dict(curr)  
       
