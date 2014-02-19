@@ -2,6 +2,19 @@
 #USE etc/custom.py TO OVERRIDE ALL VARIABLES
 
 import re
+from os.path import join
+from sys import prefix
+
+NAME='munin_plugins'
+
+EGG_CONFIG_DIR='config'
+EGG_CONFIG_EXT_DIR='config_ext'
+EGG_CACHE_DIR='cache'
+
+SYS_VAR_PATH=join(prefix,'var',NAME)
+SYS_CONFIG_DIR=join(SYS_VAR_PATH,EGG_CONFIG_DIR)
+SYS_CONFIG_EXT_DIR=join(SYS_VAR_PATH,EGG_CONFIG_EXT_DIR)
+SYS_CACHE_DIR=join(SYS_VAR_PATH,EGG_CACHE_DIR)
 
 #Daemons
 NGINX_BASE='/etc/nginx'
@@ -14,7 +27,7 @@ MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
 MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
 
 #common 
-CACHE="/var/cache/munin_plugins"
+CACHE=SYS_CACHE_DIR
 
 #utils.py
 WRONG_AGENTS='%s/bad_signature'%CACHE

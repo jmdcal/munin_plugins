@@ -1,28 +1,39 @@
 from setuptools import setup, find_packages
-import sys, os
+
+from os.path import join
+from os.path import dirname
+from os.path import abspath
+from os import listdir
+
+
+from munin_plugins.etc.env import NAME
+from munin_plugins.etc.env import SYS_CONFIG_DIR
+from munin_plugins.etc.env import SYS_CONFIG_EXT_DIR
+from munin_plugins.etc.env import SYS_CACHE_DIR
+from munin_plugins.etc.env import EGG_CONFIG_DIR
+from munin_plugins.etc.env import EGG_CONFIG_EXT_DIR
+from munin_plugins.etc.env import EGG_CACHE_DIR
 
 version = '4.0.1'
 
-name='munin_plugins'
-
-current=os.path.abspath(os.path.dirname(__file__))
+current=abspath(dirname(__file__))
   
-config_dir='config'
-config_path=os.path.join(current,name,config_dir)
-config_files=[os.path.join(name,config_dir,f) for f in os.listdir(config_path)]
+config_dir=EGG_CONFIG_DIR
+config_path=join(current,NAME,config_dir)
+config_files=[join(NAME,config_dir,f) for f in listdir(config_path)]
 
-config_ext_dir='config_ext'
-config_ext_path=os.path.join(current,name,config_ext_dir)
-config_ext_files=[os.path.join(name,config_ext_dir,f) for f in os.listdir(config_ext_path)]
+config_ext_dir=EGG_CONFIG_EXT_DIR
+config_ext_path=join(current,NAME,config_ext_dir)
+config_ext_files=[join(NAME,config_ext_dir,f) for f in listdir(config_ext_path)]
 
-cache_dir='cache'
-cache_path=os.path.join(current,name,cache_dir)
-cache_files=[os.path.join(name,cache_dir,f) for f in os.listdir(cache_path)]
+cache_dir=EGG_CACHE_DIR
+cache_path=join(current,NAME,cache_dir)
+cache_files=[join(NAME,cache_dir,f) for f in listdir(cache_path)]
 
-setup(name=name,
+setup(name=NAME,
       version=version,
       description="Sensors for munin",
-      long_description=open('README').read(),
+      long_description=open(join(current,'README')).read(),
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: System Administrators',
@@ -36,9 +47,9 @@ setup(name=name,
       url='https://github.com/cippino/munin_plugins',
       license='LICENSE.txt',
       packages=find_packages(),
-      data_files = [(os.path.join(sys.prefix,'var',name,config_dir) ,config_files),
-                    (os.path.join(sys.prefix,'var',name,config_ext_dir) ,config_ext_files),
-                    (os.path.join(sys.prefix,'var',name,cache_dir) ,cache_files),],
+      data_files = [(SYS_CONFIG_DIR,config_files),
+                    (SYS_CONFIG_EXT_DIR,config_ext_files),
+                    (SYS_CACHE_DIR,cache_files),],
       include_package_data=True,
       zip_safe=True,
       install_requires=[

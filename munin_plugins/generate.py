@@ -1,11 +1,17 @@
 #!/usr/bin/python2.7
 
-#Script generator
-
-import os
 import re
 import subprocess
-import shutil
+from shutil import copy
+
+from os import listdir
+from os import symlink
+from os import remove
+from os.path import join
+from os.path import sep
+from os.path import exists
+from os.path import isfile
+from sys import prefix
 
 from utils import fixargs
 from etc.env import MUNIN_PLUGINS_CONFD
@@ -36,16 +42,16 @@ def check_requirements():
       
 def get_real_file(file_log):
   res=None
-  fn=file_log.split('/')
-  if os.path.exists(file_log):
+  fn=file_log.split(sep)
+  if exists(file_log):
     res=file_log
-  elif os.path.exists('/'.join([NGINX_LOG,file_log])):
-    res='/'.join([NGINX_LOG,file_log])
-  elif len(fn)>0 and os.path.exists('/'.join([NGINX_LOG,fn[-1]])):
-    res='/'.join([NGINX_LOG,fn[-1]])
-
+  elif exists(join(NGINX_LOG,file_log)):
+    res=join(NGINX_LOG,file_log)
+  elif len(fn)>0 and exists(join(NGINX_LOG,fn[-1])):
+    res=join(NGINX_LOG,fn[-1])
+  
   if res is not None:
-     res=res.replace('//','/')
+     res=res.replace('%s%s'%(sep,sep),sep)
   return res
 
 def parse_title_and_customlog(file_path):
@@ -85,32 +91,29 @@ def parse_title_and_customlog(file_path):
  
 def create_link(orig,link):
   try:
-    os.symlink(orig,link)
+    symlink(orig,link)
     print "CREATED: %s\n"%link
   except OSError:
     print "WARNING: %s\n"%link
 
 #take from ./config/ a file to copy in /etc/munin/plugin-conf.d/
 def config_env(fn,orig,dest):
-  forig='/'.join([orig,'config',fn])
-  fdest='/'.join([dest,fn])
+  forig=join(orig,'config',fn)
+  fdest=join(dest,fn)
   
   #checking if file exists
-  if not os.path.isfile(fdest):
-    shutil.copy(forig,fdest)
+  if not isfile(fdest):
+    copy(forig,fdest)
 
-def install(fpy, syml,force_all,make_news):
-  orig='/'.join([os.getcwd(),fpy])
-  link='/'.join([MUNIN_PLUGINS,syml])
-  def_create=not os.path.exists(link)
+def install(fpy, syml,force_all,make_news):  
+  orig=join(prefix,'bin',fpy)
+  link=join(MUNIN_PLUGINS,syml)
+  
+  def_create=not exists(link)
   pars=dict(orig=orig,link=link)
   
   created=False
-   
-  if not os.path.exists(CACHE):
-    os.makedirs(CACHE)
-   
-   
+        
   if force_all:       
     create_link(orig=orig,link=link)  
     created=True
@@ -166,9 +169,9 @@ def main(argv=None, **kw):
     tmp_file.write('group root\n')
     file_no=0
     
-    for vh in os.listdir(NGINX_SITES):
+    for vh in listdir(NGINX_SITES):
       fpath=NGINX_SITES+'/'+vh
-      if os.path.isfile(fpath):
+      if isfile(fpath):
         to_create=parse_title_and_customlog(fpath)
         for title,access_log in to_create:
           tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(file_no,title))
@@ -180,20 +183,20 @@ def main(argv=None, **kw):
     if file_no>0:        
       created=install('nginx_full','nginx_full',force_all,make_news)
       if created:
-        shutil.copy(TMP_CONFIG,CONFIG_NAME)  
+        copy(TMP_CONFIG,CONFIG_NAME)  
       
     try:
-      os.remove(TMP_CONFIG)
+      remove(TMP_CONFIG)
     except OSError:
       pass   
       
     created=install('plone_usage','plone_usage',force_all,make_news)
     if created:
-      config_env('plone_usage',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+      config_env('plone_usage',prefix,MUNIN_PLUGINS_CONFD)   
 
     created=install('monit_downtime','monit_downtime',force_all,make_news)
     if created:
-      config_env('monit_downtime',os.getcwd(),MUNIN_PLUGINS_CONFD)   
+      config_env('monit_downtime',prefix,MUNIN_PLUGINS_CONFD)   
 
 if __name__ == '__main__':
   main()
