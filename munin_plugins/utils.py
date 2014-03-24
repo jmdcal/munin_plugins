@@ -265,22 +265,13 @@ class Cache(object):
           self.load_value(i)
       fd.close()
 
-  def store_in_cache(self, clean=False):   
+  def store_in_cache(self):   
     if self.fn is not None:
-      exists=os.path.isfile(self.fn)
-      mode='w'
-      if exists and not clean:
-        mode='r+'
-        
-      fd=open(self.fn,mode)    
+      fd=open(self.fn,'w')    
       self._lock(fd)
-            
-      values=self.get_values()
-      if exists and not clean:
-        values=self.get_news(fd,values)
-        
+                   
       #now in values we have only new values for cache and we will append to file
-      for l in values:
+      for l in self.get_values():
         fd.write('%s\n'%l)
         
       self._unlock(fd)
@@ -294,8 +285,6 @@ class Cache(object):
   def get_values(self):
     return []
   
-  def get_news(self,fd,values):
-    return values
 
 #Simple cache based on a list of values
 class CacheDict(Cache,dict):  
@@ -304,15 +293,6 @@ class CacheDict(Cache,dict):
 
   def get_values(self):
     return self.keys()
-
-  def get_news(self,fd,values):
-    for i in fd:
-      try:
-        values.remove(i.strip())
-      except ValueError:
-        #We try to remove from values what is yet in cache file
-        pass
-    return values
 
 #Simple cache based on a Counter, a dictionary val: qty
 class CacheCounter(Cache,Counter):    
@@ -324,14 +304,6 @@ class CacheCounter(Cache,Counter):
   def get_values(self):
     return self.keys()
 
-  def get_news(self,fd,values):
-    for i in fd:
-      try:
-        values.remove(i.strip())
-      except ValueError:
-        #We try to remove from values what is yet in cache file
-        pass
-    return values
   
 #Cache based on Couner that stores labels and last values
 class CacheNumbers(Cache,dict):
@@ -372,7 +344,7 @@ class CachePickle(Cache,dict):
   def load_value(self,val):
     try:
       id,pickled=val.split(' ')
-      self[id]=pickle.loads(b64decode(pickled))
+      self[id]=pickle.loads(b64decode(pickled))  
     except:
       self[val]=self.default
 
