@@ -11,11 +11,20 @@ class threads_snsr(sensor):
   sys_mtd='cpu_times'
   proc_mtd='get_threads'
   graph="AREASTACK"
+  id_column="id"
 
   def _evaluate(self,cache_id,curr):    
     sys_dff=self._sysdiff()
-    curr_ids=[i.id for i in curr]
-    prev=self.getValue(cache_id,[namedtuple2dict(i) for i in curr])    
+    
+    curr_ids=[]
+    tpls=[]
+    if curr is not None:
+      for i in curr:
+        curr_ids.append(i.id)
+        tpls.append(namedtuple2dict(i))
+    else:
+      curr=[]
+    prev=self.getValue(cache_id,tpls)    
     
     prev_dct=dict([(p['id'],p['system_time']+p['user_time']) for p in prev])
     res=deque()

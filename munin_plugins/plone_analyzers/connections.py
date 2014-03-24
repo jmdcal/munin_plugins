@@ -9,6 +9,11 @@ class connections_snsr(sensor):
   proc_mtd='get_connections'
   
   def _evaluate(self,cache_id,curr):
-    return len(curr)
+    res=0
+    try:
+      res=len(curr)
+    except:
+      pass
+    return res 
 
   

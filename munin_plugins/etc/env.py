@@ -7,14 +7,15 @@ from sys import prefix
 
 NAME='munin_plugins'
 
-EGG_CONFIG_DIR='config'
-EGG_CONFIG_EXT_DIR='config_ext'
+EGG_CONFIG_MUNIN_DIR='config_munin'
+EGG_CONFIG_NGINX_DIR='config_nginx'
 EGG_CACHE_DIR='cache'
 
 SYS_VAR_PATH=join(prefix,'var',NAME)
-SYS_CONFIG_DIR=join(SYS_VAR_PATH,EGG_CONFIG_DIR)
-SYS_CONFIG_EXT_DIR=join(SYS_VAR_PATH,EGG_CONFIG_EXT_DIR)
+SYS_CONFIG_MUNIN_DIR=join(SYS_VAR_PATH,EGG_CONFIG_MUNIN_DIR)
+SYS_CONFIG_NGINX_DIR=join(SYS_VAR_PATH,EGG_CONFIG_NGINX_DIR)
 SYS_CACHE_DIR=join(SYS_VAR_PATH,EGG_CACHE_DIR)
+
 
 #Daemons
 NGINX_BASE='/etc/nginx'
@@ -193,8 +194,7 @@ MONIT_OPTS=[]
 
 #plone_usage
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
-SYSTEM_DEFAULTS=['cpu_times','memory_percent','connections','swap','storages','iocounters']
-PLONE_GRAPHS_ORDER=['cpu_time','threads','memory_percent','swap','storages','io_counters','connections']
+SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 
 
 INSTANCES_CACHE='%s/zope_instances'%CACHE
@@ -202,7 +202,8 @@ INSTANCES_CACHE='%s/zope_instances'%CACHE
 
 #Leave this on the bottom
 
-try:
-  from custom import *
-except ImportError:  
-  pass
+
+#try:
+  #from custom import *
+#except ImportError:  
+  #pass

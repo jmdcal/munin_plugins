@@ -35,7 +35,6 @@ def load_sys(defaults):
       system_cache[k]
     except KeyError:  
       system_cache[k]=sys_curr[k]
-
   return system_cache,sys_curr
   
 def find_cfg(command):
@@ -68,7 +67,7 @@ def build_sensor_name(command):
 def load_process():
   cache=CacheDict(INSTANCES_CACHE,def_value=None)
   for pd in psutil.process_iter(): 
-    name=build_sensor_name(pd.cmdline)
+    name=build_sensor_name(pd.cmdline())
     #ppid>1 means that is a child: this check is useful for zeo process 
     if name is not None and pd.ppid>1:
       cache[name]=pd
@@ -86,7 +85,9 @@ def main(argv=None, **kw):
 
   sys_prev,sys_curr=load_sys(SYSTEM_DEFAULTS)  
   ps_cache=load_process()
-  analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,threads_snsr)
+  #analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,threads_snsr)
+  #analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,
+  analyzer_classes=(storages_snsr,)
   
   for cl in analyzer_classes:
     sensor=cl(sys_prev,sys_curr)
@@ -102,7 +103,6 @@ def main(argv=None, **kw):
     for name,pd in ps_cache.items():  
       ids="%s_%s"%(name,cl.__name__)
       curr_value=getattr(pd,sensor.proc_mtd,lambda : None)()    
-      prev_value=sensor.getValue(name)
       
       res=sensor.calculate(name,curr_value)
 
@@ -116,8 +116,7 @@ def main(argv=None, **kw):
           printer(id='%s-%s'%(ids,fd),
                   value=row,
                   label='%s %s '%(name,fd),
-                  draw=graph)
-      
+                  draw=graph)        
     if not is_config:        
       sensor.store_in_cache()
 
@@ -126,6 +125,6 @@ def main(argv=None, **kw):
     for k,v in sys_curr.items():    
       sys_prev[k]=v
     #store in the file
-    sys_prev.store_in_cache(clean=True)
-
+    sys_prev.store_in_cache()
+    ps_cache.store_in_cache();
 

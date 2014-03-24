@@ -1,7 +1,6 @@
-from munin_plugins.plone_analyzers.base import sensor
-
 from munin_plugins.etc.env import CACHE
 from munin_plugins.utils import get_percent_of
+from munin_plugins.plone_analyzers.base import sensor
 
 class cpu_usage_snsr(sensor):
   label='cpu usage (%)'

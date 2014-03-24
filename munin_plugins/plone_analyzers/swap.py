@@ -8,6 +8,11 @@ class swap_snsr(sensor):
   graph="AREASTACK"
   
   def _evaluate(self,ache_id,curr):
-    return sum(i.swap for i in curr)
+    res=0
+    try:
+      res=sum(i.swap for i in curr)
+    except TypeError:
+      pass
+    return res 
 
   

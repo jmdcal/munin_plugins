@@ -7,24 +7,24 @@ from os import listdir
 
 
 from munin_plugins.etc.env import NAME
-from munin_plugins.etc.env import SYS_CONFIG_DIR
-from munin_plugins.etc.env import SYS_CONFIG_EXT_DIR
+from munin_plugins.etc.env import SYS_CONFIG_MUNIN_DIR
+from munin_plugins.etc.env import SYS_CONFIG_NGINX_DIR
 from munin_plugins.etc.env import SYS_CACHE_DIR
-from munin_plugins.etc.env import EGG_CONFIG_DIR
-from munin_plugins.etc.env import EGG_CONFIG_EXT_DIR
+from munin_plugins.etc.env import EGG_CONFIG_MUNIN_DIR
+from munin_plugins.etc.env import EGG_CONFIG_NGINX_DIR
 from munin_plugins.etc.env import EGG_CACHE_DIR
 
-version = '4.0.1'
+version = '4.0.2'
 
 current=abspath(dirname(__file__))
   
-config_dir=EGG_CONFIG_DIR
-config_path=join(current,NAME,config_dir)
-config_files=[join(NAME,config_dir,f) for f in listdir(config_path)]
+config_munin_dir=EGG_CONFIG_MUNIN_DIR
+config_munin_dir=join(current,NAME,config_munin_dir)
+config_munin_files=[join(NAME,config_munin_dir,f) for f in listdir(config_munin_dir)]
 
-config_ext_dir=EGG_CONFIG_EXT_DIR
-config_ext_path=join(current,NAME,config_ext_dir)
-config_ext_files=[join(NAME,config_ext_dir,f) for f in listdir(config_ext_path)]
+config_nginx_dir=EGG_CONFIG_NGINX_DIR
+config_nginx_path=join(current,NAME,config_nginx_dir)
+config_nginx_files=[join(NAME,config_nginx_dir,f) for f in listdir(config_nginx_path)]
 
 cache_dir=EGG_CACHE_DIR
 cache_path=join(current,NAME,cache_dir)
@@ -47,13 +47,13 @@ setup(name=NAME,
       url='https://github.com/cippino/munin_plugins',
       license='LICENSE.txt',
       packages=find_packages(),
-      data_files = [(SYS_CONFIG_DIR,config_files),
-                    (SYS_CONFIG_EXT_DIR,config_ext_files),
+      data_files = [(SYS_CONFIG_MUNIN_DIR,config_munin_files),
+                    (SYS_CONFIG_NGINX_DIR,config_nginx_files),
                     (SYS_CACHE_DIR,cache_files),],
       include_package_data=True,
       zip_safe=True,
       install_requires=[
-        'psutil >= 1.0.1'
+        'psutil >= 2.0.0'
       ],
       entry_points={
         "console_scripts":[
