@@ -6,42 +6,18 @@ from munin_plugins.etc.env import CACHE
 from munin_plugins.utils import namedtuple2dict
   
 class threads_snsr(sensor):
-  label='threads usage (%)'
+  label='threads #'
   cache='%s/zopethreads'%CACHE
   sys_mtd='cpu_times'
   proc_mtd='get_threads'
   graph="AREASTACK"
   id_column="id"
 
-  def _evaluate(self,cache_id,curr):    
-    sys_dff=self._sysdiff()
-    
-    curr_ids=[]
-    tpls=[]
+  def _evaluate(self,cache_id,curr):              
+    res=0
     if curr is not None:
-      for i in curr:
-        curr_ids.append(i.id)
-        tpls.append(namedtuple2dict(i))
-    else:
-      curr=[]
-    prev=self.getValue(cache_id,tpls)    
-    
-    prev_dct=dict([(p['id'],p['system_time']+p['user_time']) for p in prev])
-    res=deque()
-    
-    for c in curr:
-      cv=c.user_time+c.system_time
-      pv=prev_dct.get(c.id,cv)
-      dff=self._mkdiff(pv,cv)
-      if sys_dff==0:
-        res.append((c.id,0))
-      else:
-        res.append((c.id,dff*100/sys_dff))
-        
-    for k,v in prev_dct.items():
-      if k not in curr_ids:
-        res.append((k,0))
-          
+      res=len(curr)
+      
     return res
 
   
