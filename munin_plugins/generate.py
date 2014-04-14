@@ -164,6 +164,8 @@ def main(argv=None, **kw):
   if not help_asked:      
     #build config for nginx_*, they read from single file the list of access_logs
     tmp_file=open(TMP_CONFIG,'w')
+    tmp_file.write('[*]\n')
+    tmp_file.write('env.PYTHON_EGG_CACHE /var/lib/munin/.python-eggs\n\n')
     tmp_file.write('[nginx_*]\n')
     tmp_file.write('user root\n')
     tmp_file.write('group root\n')
