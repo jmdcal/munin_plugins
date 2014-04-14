@@ -123,12 +123,20 @@ HTTP_CODES={
   400:"Bad Request",
   401:"Unauthorized",
   403:"Forbidden",
+  404:"Not Found",
+  405:"Method not allowed",
+  406:"Not acceptable",
+  407:"Proxy Authentication Required",
+  408:"Request timeout",
+  413:"Request Entity Too Large",
   444:"No Response for malware",
+  499:"Client closed the connection",
   500:"Internal Server Error",
   502:"Bad Gateway",
   503:"Service Unavailable",
   504:"Gateway Timeout",
 }
+
 
 #monit_downtime.py
 MONIT_STATUS={
