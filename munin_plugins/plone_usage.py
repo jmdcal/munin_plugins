@@ -111,7 +111,7 @@ def main(argv=None, **kw):
                 value=res,
                 label=name,
                 draw=graph)
-      elif isinstance(res,list) or isinstance(res,deque):
+      elif isinstance(res,list) or isinstance(res,deque) or isinstance(res,set):
         for fd,row in res:
           printer(id='%s-%s'%(ids,fd),
                   value=row,

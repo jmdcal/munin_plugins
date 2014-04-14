@@ -16,25 +16,20 @@ class storages_snsr(sensor):
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,curr)
     res=[]
-    
-    if curr is not None:
-      res=[(self._cut(i.path),os.path.getsize(i.path)) for i in curr if re.match('.*((Data\.fs)|(\.log)).*',i.path)]
+    if curr is not None and len(curr)>0:      
+      res=set([(self._cut(i.path),os.path.getsize(i.path)) for i in curr if re.match('.*((Data\.fs)|(\.log)).*',i.path)])
     elif prev is not None:
       for i in prev:
-        size=0
-        try:
-          size=os.path.getsize(i.get('path'))
-        except OSError:
-          #file not found (usually a pid file or lock)
-          pass
-        res.append((self._cut(i.get('path')),size))
+        path=getattr(i,'path',i.get('path'))          
+        if re.match('.*((Data\.fs)|(\.log)).*',path):
+          size=0
+          try:
+            size=os.path.getsize(path)
+          except OSError:
+            #file not found (usually a pid file or lock)
+            pass
+          res.append((self._cut(path),size))
     else:            
       res=()
     return res 
-  
-  #def _filter(self,curr):
-    #res=None
-    #if curr is not None:
-      #res=[(self._cut(i.path),os.path.getsize(i.path)) for i in curr if re.match('.*((Data\.fs)|(\.log)).*',i.path)]
     
-    #return res
