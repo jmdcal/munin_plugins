@@ -205,10 +205,10 @@ MONIT_OPTS=[]
 #plone_usage
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
 SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
-
-
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 
+PSTORAGES_FILE_RE='.*((Data\.fs)|(\.log)).*'
+PSTORAGES_FILE_PARSER=re.compile(PSTORAGES_FILE_RE)
 
 #Leave this on the bottom
 
