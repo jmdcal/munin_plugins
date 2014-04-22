@@ -29,6 +29,14 @@ class BotsCounter(BaseCounter):
               warning=w,
               critical=c,
               )
+    if len(self.counter.items())==0:
+      printer(id='none',
+              value=0,
+              label='none',
+              warning=w,
+              critical=c,
+              )
+      
 
   def update_cache(self):
     self.counter.store_in_cache()
