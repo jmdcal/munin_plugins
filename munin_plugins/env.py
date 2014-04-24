@@ -39,8 +39,11 @@ MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
 config = ConfigParser.SafeConfigParser()
 config.readfp(open(CONFIG_FILE))
 for k,v in config.items('config'):
-  vars()[k.upper()]=v
-
+  try:
+    vars()[k.upper()]=eval(v)
+  except SyntaxError,NameError:
+    vars()[k.upper()]=v
+    
 try:  
   for section in SECTIONS.split():
     for k,v in config.items(section):
@@ -57,8 +60,7 @@ if isinstance(MINUTES,str):
     MINUTES=int(MINUTES)
   except ValueError:
     MINUTES=5
-
-
+    
 
 TMP_CONFIG='/tmp/_%s'%NAME
 WRONG_AGENTS='%s/bad_signature'%CACHE
