@@ -303,40 +303,6 @@ class CacheCounter(Cache,Counter):
   def get_values(self):
     return self.keys()
 
-  
-#Cache based on Couner that stores labels and last values
-class CacheNumbers(Cache,dict):
-  default={}
-  
-  def load_value(self,val):
-    parts=val.split(' ')
-    label=parts[0]   
-    values={}
-    for el in parts[1:]:
-      lb,vl=el.split('::')
-      val=0
-      try:
-        val=int(vl)
-      except ValueError:
-        try:
-          val=float(vl)
-        except ValueError:
-          pass
-      values[lb]=val
-    self[label]=values
-    
-  def get_values(self):
-    res=deque()
-    for k,dct in self.items():      
-      try:
-        vals=' '.join([concat(el)  for el in dct.items()])
-      except AttributeError:
-        #check for namedtuple that has no items method        
-        vals=' '.join(namedtuple2list(dct,concat))
-      res.append('%s %s'%(k,vals))
-    return res
-
-
 class CachePickle(Cache,dict):
   default=()
   
