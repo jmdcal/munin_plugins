@@ -1,10 +1,8 @@
 import os
-import re
 
-from collections import deque
-from munin_plugins.etc.env import CACHE
-from munin_plugins.etc.env import PSTORAGES_FILE_PARSER
-from munin_plugins.plone_analyzers.base import sensor
+from .base import sensor
+from ..env import CACHE
+from ..env import PSTORAGES_FILE_PARSER
 
 class storages_snsr(sensor):
   label='file'

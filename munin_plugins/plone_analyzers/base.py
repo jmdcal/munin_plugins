@@ -1,9 +1,5 @@
-from collections import deque
-
-from munin_plugins.etc.env import CACHE
-from munin_plugins.utils import CachePickle
-from munin_plugins.utils import get_percent_of
-from munin_plugins.utils import namedtuple2dict
+from ..utils import CachePickle
+from ..utils import namedtuple2dict
 
 #Base class: used to inherit
 class sensor(object):

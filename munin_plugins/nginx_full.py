@@ -3,10 +3,10 @@
 import sys
 from collections import deque
 
-from munin_plugins.utils import *
-from munin_plugins.nginx_analyzers import LatencyAggregator
-from munin_plugins.nginx_analyzers import BotsCounter
-from munin_plugins.nginx_analyzers import HttpCodesCounter
+from utils import *
+from nginx_analyzers import LatencyAggregator
+from nginx_analyzers import BotsCounter
+from nginx_analyzers import HttpCodesCounter
        
 def main(argv=None, **kw):    
   argv=fixargs(argv)

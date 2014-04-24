@@ -1,9 +1,5 @@
-from munin_plugins.plone_analyzers.base import sensor
-
-from collections import deque
-from munin_plugins.etc.env import CACHE
-
-from munin_plugins.utils import namedtuple2dict
+from .base import sensor
+from ..env import CACHE
   
 class threads_snsr(sensor):
   label='threads #'

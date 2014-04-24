@@ -1,6 +1,5 @@
 from collections import Counter
 
-
 #This class is a base for the others, do not use directly but make a subclass
 class BaseCounter(object):
   id='basecounter'

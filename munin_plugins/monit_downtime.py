@@ -6,15 +6,14 @@ import fcntl
 import time
 import subprocess
 
-from munin_plugins.utils import *
-from munin_plugins.etc.env import MONIT_STATUS
-from munin_plugins.etc.env import MONIT_FIRSTS
-from munin_plugins.etc.env import MONIT_LASTESTS
-from munin_plugins.etc.env import MONIT_PARSER
-from munin_plugins.etc.env import MONIT_PERCENTAGE_GRAPH
-from munin_plugins.etc.env import MONIT_FULL
-from munin_plugins.etc.env import MONIT_OPTS
-from munin_plugins.etc.env import CACHE_MONIT
+from .utils import *
+from .env import MONIT_STATUS
+from .env import MONIT_FIRSTS
+from .env import MONIT_LASTESTS
+from .env import MONIT_PARSER
+from .env import MONIT_PERCENTAGE_GRAPH
+from .env import MONIT_FULL
+from .env import CACHE_MONIT
 
 def graph_order(alls,pre,post):
   to_exclude=pre+post
@@ -67,7 +66,7 @@ def main(argv=None, **kw):
       counts['monit down']=1
     else:
       csensors=0
-      sensors=subprocess.check_output(['monit','summary']+MONIT_OPTS,stderr=subprocess.STDOUT)
+      sensors=subprocess.check_output(['monit','summary'],stderr=subprocess.STDOUT)
       for row in sensors.split('\n'):
         status=parse_monit_row(row)
         if status is not None:

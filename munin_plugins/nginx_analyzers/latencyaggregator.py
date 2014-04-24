@@ -1,9 +1,9 @@
 from collections import Counter
-from munin_plugins.utils import ft
-from munin_plugins.etc.env import NLATENCY_INTERVALS
-from munin_plugins.etc.env import MINUTES
-from munin_plugins.etc.env import NLATENCY_COLORS
-from munin_plugins.etc.env import NLATENCY_CODES
+from ..utils import ft
+from ..env import NLATENCY_INTERVALS
+from ..env import MINUTES
+from ..env import NLATENCY_COLORS
+from ..env import NLATENCY_CODES
 
 from base import BaseCounter
 

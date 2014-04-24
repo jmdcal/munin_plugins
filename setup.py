@@ -5,18 +5,23 @@ from os.path import dirname
 from os.path import abspath
 from os import listdir
 
+from munin_plugins.base_info import NAME
+from munin_plugins.base_info import SYS_CONFIG_MUNIN_DIR
+from munin_plugins.base_info import SYS_CONFIG_NGINX_DIR
+from munin_plugins.base_info import SYS_CACHE_DIR
+from munin_plugins.base_info import SYS_VAR_PATH
+from munin_plugins.base_info import EGG_CONFIG_DIR
+from munin_plugins.base_info import EGG_CONFIG_MUNIN_DIR
+from munin_plugins.base_info import EGG_CONFIG_NGINX_DIR
+from munin_plugins.base_info import EGG_CACHE_DIR
 
-from munin_plugins.etc.env import NAME
-from munin_plugins.etc.env import SYS_CONFIG_MUNIN_DIR
-from munin_plugins.etc.env import SYS_CONFIG_NGINX_DIR
-from munin_plugins.etc.env import SYS_CACHE_DIR
-from munin_plugins.etc.env import EGG_CONFIG_MUNIN_DIR
-from munin_plugins.etc.env import EGG_CONFIG_NGINX_DIR
-from munin_plugins.etc.env import EGG_CACHE_DIR
-
-version = '4.0.2'
+version = '4.1'
 
 current=abspath(dirname(__file__))
+  
+config_base_dir=EGG_CONFIG_DIR
+config_base_dir=join(current,NAME,config_base_dir)
+config_base_files=[join(NAME,config_base_dir,f) for f in listdir(config_base_dir)]
   
 config_munin_dir=EGG_CONFIG_MUNIN_DIR
 config_munin_dir=join(current,NAME,config_munin_dir)
@@ -49,7 +54,8 @@ setup(name=NAME,
       packages=find_packages(),
       data_files = [(SYS_CONFIG_MUNIN_DIR,config_munin_files),
                     (SYS_CONFIG_NGINX_DIR,config_nginx_files),
-                    (SYS_CACHE_DIR,cache_files),],
+                    (SYS_CACHE_DIR,cache_files),
+                    (SYS_VAR_PATH,config_base_files)],
       include_package_data=True,
       zip_safe=True,
       install_requires=[

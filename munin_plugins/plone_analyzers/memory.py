@@ -1,7 +1,4 @@
-from collections import deque
-
-from munin_plugins.etc.env import CACHE
-from munin_plugins.plone_analyzers.base import sensor
+from .base import sensor
   
 class memory_snsr(sensor):
   label='memory (%)'

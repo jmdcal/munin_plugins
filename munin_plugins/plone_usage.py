@@ -4,19 +4,17 @@ import os
 import psutil
 from collections import deque
 
-from munin_plugins.utils import *
-
-from munin_plugins.etc.env import SYSTEM_DEFAULTS
-from munin_plugins.etc.env import SYSTEM_VALUE_CACHE
-from munin_plugins.etc.env import INSTANCES_CACHE
-
-from munin_plugins.plone_analyzers import cpu_usage_snsr
-from munin_plugins.plone_analyzers import memory_snsr
-from munin_plugins.plone_analyzers import connections_snsr
-from munin_plugins.plone_analyzers import swap_snsr
-from munin_plugins.plone_analyzers import storages_snsr
-from munin_plugins.plone_analyzers import io_counters_snsr
-from munin_plugins.plone_analyzers import threads_snsr
+from .utils import *
+from .env import SYSTEM_DEFAULTS
+from .env import SYSTEM_VALUE_CACHE
+from .env import INSTANCES_CACHE
+from .plone_analyzers import cpu_usage_snsr
+from .plone_analyzers import memory_snsr
+from .plone_analyzers import connections_snsr
+from .plone_analyzers import swap_snsr
+from .plone_analyzers import storages_snsr
+from .plone_analyzers import io_counters_snsr
+from .plone_analyzers import threads_snsr
 
 def load_sys(defaults):
   cpath,ctype=SYSTEM_VALUE_CACHE

@@ -1,9 +1,6 @@
-from collections import deque
-
-from munin_plugins.plone_analyzers.base import sensor
-
-from munin_plugins.etc.env import CACHE
-from munin_plugins.utils import namedtuple2dict
+from .base import sensor
+from ..env import CACHE
+from ..utils import namedtuple2dict
   
 class io_counters_snsr(sensor):
   label='I/O usage'

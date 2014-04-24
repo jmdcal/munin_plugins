@@ -14,15 +14,14 @@ from base64 import b64decode
 from collections import Counter
 from collections import deque
 
-from etc.env import NGINX_LOG
-from etc.env import MINUTES
-from etc.env import VALID_CTYPES
-from etc.env import ROW_PARSER
-from etc.env import ROW_MAPPING
-from etc.env import NGINX_PARSER
-from etc.env import EMAIL_PARSER
-from etc.env import DOM_PARSER
-from etc.env import WRONG_AGENTS
+from .env import NGINX_LOG
+from .env import MINUTES
+from .env import ROW_PARSER
+from .env import ROW_MAPPING
+from .env import NGINX_PARSER
+from .env import EMAIL_PARSER
+from .env import DOM_PARSER
+from .env import WRONG_AGENTS
 
 def getlimit(minutes=MINUTES):
   actual_time=datetime.today()

@@ -13,15 +13,15 @@ from os.path import exists
 from os.path import isfile
 from sys import prefix
 
-from utils import fixargs
-from etc.env import MUNIN_PLUGINS_CONFD
-from etc.env import MUNIN_PLUGINS
-from etc.env import NGINX_SITES
-from etc.env import NGINX_LOG
-from etc.env import REQUIREMENTS
-from etc.env import TMP_CONFIG
-from etc.env import CONFIG_NAME
-from etc.env import CACHE
+from .utils import fixargs
+from .env import MUNIN_PLUGINS_CONFD
+from .env import MUNIN_PLUGINS
+from .env import NGINX_SITES
+from .env import NGINX_LOG
+from .env import REQUIREMENTS
+from .env import TMP_CONFIG
+from .env import CONFIG_NAME
+from .env import CACHE
 
 def check_requirements():
   for k in REQUIREMENTS:

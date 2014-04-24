@@ -1,7 +1,7 @@
 from munin_plugins.utils import *
 
-from munin_plugins.etc.env import CACHE_BOTS
-from munin_plugins.etc.env import MINUTES
+from ..env import CACHE_BOTS
+from ..env import MINUTES
 
 from base import BaseCounter
 

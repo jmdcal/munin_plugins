@@ -1,3 +1,3 @@
-from munin_plugins.nginx_analyzers.latencyaggregator import LatencyAggregator
-from munin_plugins.nginx_analyzers.botscounter import BotsCounter
-from munin_plugins.nginx_analyzers.httpcodescounter import HttpCodesCounter
+from latencyaggregator import LatencyAggregator
+from botscounter import BotsCounter
+from httpcodescounter import HttpCodesCounter
