@@ -8,25 +8,36 @@ Requirements
 - Munin-node
 - Nginx
 
+~~~~~~~~~~~
+Install Egg
+~~~~~~~~~~~
+
+As usual, egg is installable using setuptools or pip, choice what you like. 
+It is better and strongly suggested to use a virtualenv.
 
 ~~~~~~~~~
 Configure
 ~~~~~~~~~
 
-Go in ./etc and create custom.py file. All variable in custom.py will override 
-env.py value. Modify the path in according of your host setup.
+Once you get a virtualenv with munin_plugins installed, you can access to 
 
-To use runner_aggr, you have to configure nginx log in this way:
-- add the following new log define
+<virtualenv_path>/var/munin_plugins/munin_plugins.conf 
+
+an modify the main options as nginx/munin/monit locations.
+
+To use nginx_full sensor, you need to add a new log format in Nginx as following
 
     log_format combined2 '$remote_addr - $remote_user [$time_local]  '
                     '"$request" $status $body_bytes_sent '
                     '"$http_referer" "$http_user_agent" [[$request_time]]';
 
-- change every access_log directive in virtualhost, adding combined2 at the end
-  
-    access_log /some/where/<somename>.log combined2;
+You can get a file to add in conf.d nginx directory in 
 
+<virtualenv_path>/var/munin_plugins/config_nginx
+
+After that, you have to change nginx access_log directive from combined to combined2
+  
+access_log /some/where/<somename>.log combined2;
     
 ~~~~~~~
 Install 
@@ -55,6 +66,20 @@ http://cippino.wordpress.com/tag/munin/
 https://github.com/cippino/munin_plugins
 https://pypi.python.org/pypi/munin_plugins
 
+~~~~~~~~~
+Changelog
+~~~~~~~~~
+
+4.1.1 
+- Fixed Documentation
+
+4.1 
+- Refactor of env.py and configuration
+- Refactor of plone_usage from monolithic implementation to modular
+- Reduced number of Cache classes
+
+4.0
+- First Egg release
 
 ~~~~~~~~~~~~~~
 Known Problems

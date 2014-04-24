@@ -15,7 +15,7 @@ from munin_plugins.base_info import EGG_CONFIG_MUNIN_DIR
 from munin_plugins.base_info import EGG_CONFIG_NGINX_DIR
 from munin_plugins.base_info import EGG_CACHE_DIR
 
-version = '4.1'
+version = '4.1.1'
 
 current=abspath(dirname(__file__))
   
