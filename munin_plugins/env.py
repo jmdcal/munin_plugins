@@ -34,6 +34,8 @@ MUNIN_BASE='/etc/munin'
 MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
 MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
 
+#Repmgr config file overrideble from munin_plugins.conf
+REPMGR_CONF='/etc/repmgr.conf'
 
 #Parsing munin_plugins.conf
 config = ConfigParser.SafeConfigParser()
@@ -53,7 +55,7 @@ except ConfigParser.NoOptionError as e:
   #This means there's no Sections specifications, we can live without
   pass
 
-#Fixing Overrydes
+#Fixing Overrides
 # -> Minutes needs to be a int
 if isinstance(MINUTES,str):
   try:
@@ -127,6 +129,7 @@ REQUIREMENTS={
   'Monit':(['monit','-V'],0),
   'Munin node':(['munin-node-configure','--version',],1),
   'Nginx':(['nginx','-v'],0),
+  'Repmgr':(['repmgr','--version'],0),
 }
 
 #nginx_analyzers/latencyaggregator.py
@@ -224,6 +227,10 @@ MONIT_RE=(
 #plone_usage
 SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 PSTORAGES_FILE_RE='.*((Data\.fs)|(\.log)).*'
+
+#repmgr
+REPMGR_STATES=[('failed','FAILED','FF0000'),('master','master','00FF00'),('standby','standby','FFFF00')]
+
 
 #RegEx Compilation
 NGINX_PARSER=re.compile(NGINX_LOG_RE)

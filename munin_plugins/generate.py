@@ -101,6 +101,7 @@ def config_env(fn,orig,dest):
   forig=join(orig,'config',fn)
   fdest=join(dest,fn)
   
+  print "Coping %s -> %s"%(forig,fdest)
   #checking if file exists
   if not isfile(fdest):
     copy(forig,fdest)
@@ -193,12 +194,19 @@ def main(argv=None, **kw):
       pass   
       
     created=install('plone_usage','plone_usage',force_all,make_news)
+    
     if created:
+      print "Plone created... following config"
       config_env('plone_usage',prefix,MUNIN_PLUGINS_CONFD)   
 
     created=install('monit_downtime','monit_downtime',force_all,make_news)
     if created:
       config_env('monit_downtime',prefix,MUNIN_PLUGINS_CONFD)   
+
+    created=install('repmgr','repmgr',force_all,make_news)
+    if created:
+      config_env('repmgr',prefix,MUNIN_PLUGINS_CONFD)   
+
 
 if __name__ == '__main__':
   main()
