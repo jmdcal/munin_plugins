@@ -14,6 +14,7 @@ from .plone_analyzers import connections_snsr
 from .plone_analyzers import swap_snsr
 from .plone_analyzers import storages_snsr
 from .plone_analyzers import io_counters_snsr
+from .plone_analyzers import io_counters_abs_snsr
 from .plone_analyzers import threads_snsr
 
 def load_sys(defaults):
@@ -83,7 +84,7 @@ def main(argv=None, **kw):
 
   sys_prev,sys_curr=load_sys(SYSTEM_DEFAULTS)  
   ps_cache=load_process()
-  analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,threads_snsr)
+  analyzer_classes=(cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr)
   
   for cl in analyzer_classes:
     sensor=cl(sys_prev,sys_curr)
