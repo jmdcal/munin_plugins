@@ -1,4 +1,4 @@
-from munin_plugins.utils import *
+from ..utils import *
 
 from ..env import CACHE_BOTS
 from ..env import MINUTES
@@ -22,14 +22,15 @@ class BotsCounter(BaseCounter):
         self.counter[agent]=1+self.counter[agent]
       
   def print_data(self, printer, w=10,c=30):
-    for l,v in self.counter.items():
-      printer(id=l,
-              value=v,
-              label=l,
-              warning=w,
-              critical=c,
-              )
-    if len(self.counter.items())==0:
+    if len(self.counter.items())>0:
+      for l,v in self.counter.items():
+        printer(id=l,
+                value=v,
+                label=l,
+                warning=w,
+                critical=c,
+                )
+    else:
       printer(id='none',
               value=0,
               label='none',
