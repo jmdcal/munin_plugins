@@ -1,6 +1,6 @@
 from ..utils import *
 
-from ..env import CACHE_BOTS
+from ..env import CACHE_APACHE_BOTS
 from ..env import MINUTES
 
 from .base import BaseCounter
@@ -12,7 +12,7 @@ class BotsCounter(BaseCounter):
   def __init__(self,title,group):
     super(BotsCounter,self).__init__(title,group)
     self.label="number of call in %s mins"%MINUTES
-    self.counter=CacheCounter(CACHE_BOTS)
+    self.counter=CacheCounter(CACHE_APACHE_BOTS)
     
   def update_with(self,datas):    
     if datas.get_int_code() in [200,]:

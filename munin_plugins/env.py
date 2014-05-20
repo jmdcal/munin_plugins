@@ -74,6 +74,7 @@ if isinstance(MINUTES,str):
 TMP_CONFIG='/tmp/_%s'%NAME
 WRONG_AGENTS='%s/bad_signature'%CACHE
 CACHE_BOTS="%s/bots"%CACHE
+CACHE_APACHE_BOTS="%s/bots_apache"%CACHE
 CACHE_MONIT="%s/monit_messages"%CACHE
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
 INSTANCES_CACHE='%s/zope_instances'%CACHE
@@ -139,9 +140,10 @@ REQUIREMENTS={
   'Munin node':(['munin-node-configure','--version',],1),
   'Nginx':(['nginx','-v'],0),
   'Repmgr':(['repmgr','--version'],0),
+  'Apache':(['apachectl','-v'],0),
 }
 
-#nginx_analyzers/latencyaggregator.py
+#*_analyzers/latencyaggregator.py
 NLATENCY_INTERVALS=(.5,1,2,5)    
 NLATENCY_LIMITS={
   '05':dict(w=500,c=1000),
@@ -157,7 +159,7 @@ NLATENCY_COLORS={
 }
 NLATENCY_CODES = [200,]
 
-#httpcodescounter.py
+#*_analyzers/httpcodescounter.py
 HTTP_CODES={
   100:"Continue",
   101:"Switching Protocols",
@@ -204,7 +206,7 @@ HTTP_CODES={
   505:"HTTP Version Not Supported",
 }
 CACHE_HTTP_CODES="%s/httpcodes"%CACHE
-
+CACHE_APACHE_HTTP_CODES="%s/httpcodes_apache"%CACHE
 #monit_downtime.py
 MONIT_STATUS={
   "monit down":'757575',

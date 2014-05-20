@@ -18,6 +18,8 @@ from .env import MUNIN_PLUGINS_CONFD
 from .env import MUNIN_PLUGINS
 from .env import NGINX_SITES
 from .env import NGINX_LOG
+from .env import APACHE_SITES
+from .env import APACHE_LOG
 from .env import REQUIREMENTS
 from .env import TMP_CONFIG
 from .env import CONFIG_NAME
@@ -40,21 +42,20 @@ def check_requirements():
         res=err.output
     print "Checking %s: %s"%(k,res)
       
-def get_real_file(file_log):
+def get_real_file(file_log,base_log):
   res=None
   fn=file_log.split(sep)
   if exists(file_log):
     res=file_log
-  elif exists(join(NGINX_LOG,file_log)):
-    res=join(NGINX_LOG,file_log)
-  elif len(fn)>0 and exists(join(NGINX_LOG,fn[-1])):
-    res=join(NGINX_LOG,fn[-1])
-  
+  elif exists(join(base_log,file_log)):
+    res=join(base_log,file_log)
+  elif len(fn)>0 and exists(join(base_log,fn[-1])):
+    res=join(base_log,fn[-1])  
   if res is not None:
      res=res.replace('%s%s'%(sep,sep),sep)
   return res
 
-def parse_title_and_customlog(file_path):
+def nginx_parse_title_and_customlog(file_path):
   fd=open(file_path,'r')
   in_server=False
   res=[]
@@ -77,7 +78,7 @@ def parse_title_and_customlog(file_path):
         if open_par==0:
           in_server=False
           if len(title)>0 and len(access_log)>0:
-            access_log=get_real_file(access_log)
+            access_log=get_real_file(access_log,NGINX_LOG)
             if access_log is not None:
               res.append((title+'.'+port,access_log))
       elif 'listen' in row:
@@ -87,6 +88,38 @@ def parse_title_and_customlog(file_path):
         title=aliases[0]
       elif 'access_log' in row:
         access_log=row.strip().split()[1]
+  return res
+
+def apache_parse_title_and_customlog(file_path):
+  fd=open(file_path,'r')
+  in_virtualhost=False
+  res=[]
+  for row in fd:
+    if re.match('^#',row.strip()) or len(row.strip())==0:
+      pass #this is a comment    
+    elif not in_virtualhost:
+      if re.match('<VirtualHost (.*):(.*)>',row):
+        in_virtualhost=True
+        title='Default'
+        access_log=''
+        port=re.match('<VirtualHost (.*):(.*)>',row).group(2)
+    else:
+      row=row.strip()
+      if re.match('</VirtualHost>',row):
+        in_virtualhost=False
+        if len(title)>0 and len(access_log)>0:          
+          access_log=get_real_file(access_log,APACHE_LOG)
+          if access_log is not None:
+            res.append((title+'.'+port,access_log))
+      elif re.match('^ServerName\s',row):        
+        aliases=row.replace('ServerName','').split()
+        title=aliases[0]
+      elif re.match('^ServerAlias\s',row) and title=='Default':        
+        aliases=row.replace('ServerAlias','').split()
+        title=aliases[0]
+      elif 'CustomLog' in row:
+        access_log=row.strip().split()[1]
+        
   return res
  
 def create_link(orig,link):
@@ -163,38 +196,56 @@ def main(argv=None, **kw):
       print '\t-n:\t\tforce creation of new symlinks without asking'
     
   if not help_asked:      
-    #build config for nginx_*, they read from single file the list of access_logs
+    #build config for nginx_full and apache, they read from single file the list of access_logs
     tmp_file=open(TMP_CONFIG,'w')
     tmp_file.write('[*]\n')
     tmp_file.write('env.PYTHON_EGG_CACHE /var/lib/munin/.python-eggs\n\n')
-    tmp_file.write('[nginx_*]\n')
+    tmp_file.write('[nginx_full]\n')
     tmp_file.write('user root\n')
     tmp_file.write('group root\n')
-    file_no=0
-    
+
+    n_file_no=0
+    a_file_no=0
     for vh in listdir(NGINX_SITES):
       fpath=NGINX_SITES+'/'+vh
       if isfile(fpath):
-        to_create=parse_title_and_customlog(fpath)
+        to_create=nginx_parse_title_and_customlog(fpath)
         for title,access_log in to_create:
-          tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(file_no,title))
-          tmp_file.write('env.GRAPH_GROUP_%s %s\n'%(file_no,'nginx'))
-          tmp_file.write('env.GRAPH_ACCESS_%s %s\n'%(file_no,access_log))
-          file_no+=1
-
-    tmp_file.close()
-    if file_no>0:        
+          tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(n_file_no,title))
+          tmp_file.write('env.GRAPH_GROUP_%s %s\n'%(n_file_no,'nginx'))
+          tmp_file.write('env.GRAPH_ACCESS_%s %s\n'%(n_file_no,access_log))
+          n_file_no+=1
+          
+    tmp_file.write('\n[apache]\n')
+    tmp_file.write('user root\n')
+    tmp_file.write('group root\n')
+    for vh in listdir(APACHE_SITES):
+      fpath=APACHE_SITES+'/'+vh
+      if isfile(fpath):
+        to_create=apache_parse_title_and_customlog(fpath)
+        for title,access_log in to_create:
+          tmp_file.write('env.GRAPH_TITLE_%s %s\n'%(a_file_no,title))
+          tmp_file.write('env.GRAPH_GROUP_%s %s\n'%(a_file_no,'apache'))
+          tmp_file.write('env.GRAPH_ACCESS_%s %s\n'%(a_file_no,access_log))
+          a_file_no+=1
+    
+    tmp_file.close()    
+    
+    if n_file_no>0:        
       created=install('nginx_full','nginx_full',force_all,make_news)
-      if created:
-        copy(TMP_CONFIG,CONFIG_NAME)  
-      
+    
+    if a_file_no>0:        
+      created = created or install('apache','apache',force_all,make_news)
+
+    if created:
+      copy(TMP_CONFIG,CONFIG_NAME)  
+
     try:
       remove(TMP_CONFIG)
     except OSError:
       pass   
       
-    created=install('plone_usage','plone_usage',force_all,make_news)
-    
+    created=install('plone_usage','plone_usage',force_all,make_news)    
     if created:
       print "Plone created... following config"
       config_env('plone_usage',prefix,MUNIN_PLUGINS_CONFD)   
