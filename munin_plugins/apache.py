@@ -4,10 +4,10 @@ import sys
 from collections import deque
 
 from .utils import *
-from .nginx_analyzers import LatencyAggregator
-from .nginx_analyzers import BotsCounter
-from .nginx_analyzers import HttpCodesCounter
-       
+from .apache_analyzers import LatencyAggregator
+from .apache_analyzers import BotsCounter
+from .apache_analyzers import HttpCodesCounter
+
 def main(argv=None, **kw):    
   argv=fixargs(argv)
   is_config=check_config(argv)
@@ -23,7 +23,6 @@ def main(argv=None, **kw):
 
   # For each class we store a list of tuples (title,analyzer)
   results=dict([(cl,deque()) for cl in analyzer_classes])
-
   if len(files)<1:
     sys.stderr.write('Not configured: see documentation')
   else:     
@@ -43,7 +42,7 @@ def main(argv=None, **kw):
       #store 
       for an in an_objs:
         results[an.__class__].append((title,filename,an))
-        
+
     #prints
     for cl,item in results.items():    
       print "multigraph nginx_%s"%(cl.id)
@@ -62,18 +61,8 @@ def main(argv=None, **kw):
           an.print_config_header()    
         an.print_data(printer,10,30)
         an.update_cache()
-        
+
 if __name__ == '__main__':
   main()
-
-    
-    
-
-
-
-
-
-
-
 
 

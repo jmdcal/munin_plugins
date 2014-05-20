@@ -68,6 +68,7 @@ setup(name=NAME,
           "nginx_full = munin_plugins.nginx_full:main",
           "plone_usage = munin_plugins.plone_usage:main",
           "repmgr = munin_plugins.repmgr:main",
+          "apache = munin_plugins.apache:main",
         ]
       },
 )

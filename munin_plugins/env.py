@@ -29,6 +29,13 @@ NGINX_LOG='%s/logs' % NGINX_BASE
 NGINX_SITES='%s/sites-enabled'%NGINX_BASE
 NGINX_CONFD='%s/conf.d'%NGINX_BASE
 
+#Apache 
+APACHE_BASE='/etc/apache2'
+APACHE_LOG='/var/log/apache2/'
+APACHE_SITES='%s/sites-enabled'%APACHE_BASE
+APACHE_CONF_EN='%s/conf-enabled'%APACHE_BASE
+APACHE_CONF_AV='%s/conf-available'%APACHE_BASE
+
 #Munin defaults overrideble from munin_plugins.conf
 MUNIN_BASE='/etc/munin'
 MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
@@ -103,6 +110,8 @@ NGINX_LOG_RE= \
   NGINX_SIGN_RE
 
 NGINX_LOG2_RE=NGINX_LOG_RE+NGINX_LATENCY_RE #latency
+
+APACHE_LOG2_RE=NGINX_LOG_RE+NGINX_LATENCY_RE #latency
 
 ROW_MAPPING={
   'ip':0,
@@ -264,6 +273,7 @@ REPMGR_STATES=[('failed','FAILED','FF0000'),('master','master','00FF00'),('stand
 #RegEx Compilation
 NGINX_PARSER=re.compile(NGINX_LOG_RE)
 ROW_PARSER=re.compile(NGINX_LOG2_RE)
+AROW_PARSER=re.compile(APACHE_LOG2_RE)
 EMAIL_PARSER=re.compile(EMAIL_RE)
 DOM_PARSER=re.compile(DOM_RE)
 MONIT_PARSER=re.compile(MONIT_RE)

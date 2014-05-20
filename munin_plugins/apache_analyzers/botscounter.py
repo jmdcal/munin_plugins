@@ -7,7 +7,7 @@ from .base import BaseCounter
 
 class BotsCounter(BaseCounter):
   id='botscounter'
-  base_title="Nginx Bots"
+  base_title="Apache Bots"
   
   def __init__(self,title,group):
     super(BotsCounter,self).__init__(title,group)

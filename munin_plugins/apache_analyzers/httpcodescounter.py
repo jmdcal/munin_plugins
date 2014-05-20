@@ -6,7 +6,7 @@ from .base import BaseCounter
 
 class HttpCodesCounter(BaseCounter):
   id='httpcodescounter'
-  base_title="Nginx http codes"
+  base_title="Apache http codes"
   
   def __init__(self,title,group):
     super(HttpCodesCounter,self).__init__(title,group)
