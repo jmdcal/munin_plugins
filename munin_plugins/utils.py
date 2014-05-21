@@ -29,8 +29,9 @@ def getlimit(minutes=MINUTES):
   return actual_time-delay
 
 class RowParser(object):
-  def __init__(self,row):
+  def __init__(self,row,time_scale=1):
     self.row=row
+    self.time_scale=time_scale
     try:
       self.parsed=ROW_PARSER.search(row).groups()
     except AttributeError:
@@ -94,7 +95,10 @@ class RowParser(object):
 
   def get_latency(self):
     return self._get_val('latency')
-
+  
+  def get_float_latency(self):
+    return float(self.get_latency())/self.time_scale
+  
   def is_valid_line(self,https=[]):
     try:
       code=int(self.get_code())

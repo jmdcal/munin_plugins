@@ -17,13 +17,12 @@ class LatencyAggregator(BaseCounter):
     self.counter=Counter(dict([(str(i),0) for i in NLATENCY_INTERVALS]+[('others',0)]))
     
   def update_with(self,datas):
-    lat=datas.get_latency()
+    lat=datas.get_float_latency()
      
     #aggr evaluate
     if lat is not None and datas.get_bytes()>0 and datas.get_int_code() in NLATENCY_CODES:
-      md=ft(lat)
       pos=0
-      while pos<len(NLATENCY_INTERVALS) and NLATENCY_INTERVALS[pos]<md:
+      while pos<len(NLATENCY_INTERVALS) and NLATENCY_INTERVALS[pos]<lat:
         pos+=1
 
       if pos<len(NLATENCY_INTERVALS):

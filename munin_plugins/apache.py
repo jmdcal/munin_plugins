@@ -33,7 +33,7 @@ def main(argv=None, **kw):
       #read from files valid rows
       fi=open(filename,'r')
       for row in fi:
-        datas=RowParser(row)
+        datas=RowParser(row,1000)
         if datas.get_date()>limit:                      
           for an in an_objs:
             an.update_with(datas)
