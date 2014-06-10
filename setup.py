@@ -69,6 +69,7 @@ setup(name=NAME,
           "plone_usage = munin_plugins.plone_usage:main",
           "repmgr = munin_plugins.repmgr:main",
           "apache = munin_plugins.apache:main",
+          "java = munin_plugins.java:main",
         ]
       },
 )
