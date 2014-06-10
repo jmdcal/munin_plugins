@@ -8,14 +8,14 @@ from .utils import *
 from .env import SYSTEM_DEFAULTS
 from .env import SYSTEM_VALUE_CACHE
 from .env import JAVA_INSTANCES_CACHE
-from .zope_analyzers import cpu_usage_snsr
-from .zope_analyzers import memory_snsr
-from .zope_analyzers import connections_snsr
-from .zope_analyzers import swap_snsr
-from .zope_analyzers import storages_snsr
-from .zope_analyzers import io_counters_snsr
-from .zope_analyzers import io_counters_abs_snsr
-from .zope_analyzers import threads_snsr
+from .java_analyzers import cpu_usage_snsr
+from .java_analyzers import memory_snsr
+from .java_analyzers import connections_snsr
+from .java_analyzers import swap_snsr
+from .java_analyzers import storages_snsr
+from .java_analyzers import io_counters_snsr
+from .java_analyzers import io_counters_abs_snsr
+from .java_analyzers import threads_snsr
 
 def load_sys(defaults):
   cpath,ctype=SYSTEM_VALUE_CACHE
