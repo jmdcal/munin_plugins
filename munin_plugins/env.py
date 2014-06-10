@@ -79,6 +79,8 @@ CACHE_MONIT="%s/monit_messages"%CACHE
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 
+
+JAVA_INSTANCES_CACHE='%s/java_instances'%CACHE
 CONFIG_NAME='%s/munin_plugins'%MUNIN_PLUGINS_CONFD
 
 #Forced Option, may be one day I move these in mmunin_plugins.conf
@@ -267,6 +269,7 @@ MONIT_RE=(
 #plone_usage
 SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 PSTORAGES_FILE_RE='.*((Data\.fs)|(\.log)).*'
+JSTORAGES_FILE_RE=''
 
 #repmgr
 REPMGR_STATES=[('failed','FAILED','FF0000'),('master','master','00FF00'),('standby','standby','FFFF00')]
@@ -280,4 +283,4 @@ EMAIL_PARSER=re.compile(EMAIL_RE)
 DOM_PARSER=re.compile(DOM_RE)
 MONIT_PARSER=re.compile(MONIT_RE)
 PSTORAGES_FILE_PARSER=re.compile(PSTORAGES_FILE_RE)
-
+JSTORAGES_FILE_PARSER=re.compile(JSTORAGES_FILE_RE)
