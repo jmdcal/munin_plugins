@@ -1,4 +1,8 @@
-from setuptools import setup, find_packages
+try:
+  from setuptools import setup, find_packages
+except:
+  from ez_setup import use_setuptools
+  use_setuptools()  
 
 from os.path import join
 from os.path import dirname
@@ -15,7 +19,7 @@ from munin_plugins.base_info import EGG_CONFIG_MUNIN_DIR
 from munin_plugins.base_info import EGG_CONFIG_NGINX_DIR
 from munin_plugins.base_info import EGG_CACHE_DIR
 
-version = '4.1.1'
+version = '4.1.3'
 
 current=abspath(dirname(__file__))
   
@@ -52,12 +56,13 @@ setup(name=NAME,
       url='https://github.com/cippino/munin_plugins',
       license='LICENSE.txt',
       packages=find_packages(),
+      package_data={'': ['config*/*',]},
       data_files = [(SYS_CONFIG_MUNIN_DIR,config_munin_files),
                     (SYS_CONFIG_NGINX_DIR,config_nginx_files),
                     (SYS_CACHE_DIR,cache_files),
                     (SYS_VAR_PATH,config_base_files)],
       include_package_data=True,
-      zip_safe=True,
+      zip_safe=False,
       install_requires=[
         'psutil >= 2.0.0'
       ],
