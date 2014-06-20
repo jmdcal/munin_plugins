@@ -7,37 +7,12 @@ except:
 from os.path import join
 from os.path import dirname
 from os.path import abspath
-from os import listdir
 
 from munin_plugins.base_info import NAME
-from munin_plugins.base_info import SYS_CONFIG_MUNIN_DIR
-from munin_plugins.base_info import SYS_CONFIG_NGINX_DIR
-from munin_plugins.base_info import SYS_CACHE_DIR
-from munin_plugins.base_info import SYS_VAR_PATH
-from munin_plugins.base_info import EGG_CONFIG_DIR
-from munin_plugins.base_info import EGG_CONFIG_MUNIN_DIR
-from munin_plugins.base_info import EGG_CONFIG_NGINX_DIR
-from munin_plugins.base_info import EGG_CACHE_DIR
 
 version = '4.1.3'
 
 current=abspath(dirname(__file__))
-  
-config_base_dir=EGG_CONFIG_DIR
-config_base_dir=join(current,NAME,config_base_dir)
-config_base_files=[join(NAME,config_base_dir,f) for f in listdir(config_base_dir)]
-  
-config_munin_dir=EGG_CONFIG_MUNIN_DIR
-config_munin_dir=join(current,NAME,config_munin_dir)
-config_munin_files=[join(NAME,config_munin_dir,f) for f in listdir(config_munin_dir)]
-
-config_nginx_dir=EGG_CONFIG_NGINX_DIR
-config_nginx_path=join(current,NAME,config_nginx_dir)
-config_nginx_files=[join(NAME,config_nginx_dir,f) for f in listdir(config_nginx_path)]
-
-cache_dir=EGG_CACHE_DIR
-cache_path=join(current,NAME,cache_dir)
-cache_files=[join(NAME,cache_dir,f) for f in listdir(cache_path)]
 
 setup(name=NAME,
       version=version,
@@ -56,11 +31,7 @@ setup(name=NAME,
       url='https://github.com/cippino/munin_plugins',
       license='LICENSE.txt',
       packages=find_packages(),
-      package_data={'': ['config*/*',]},
-      data_files = [(SYS_CONFIG_MUNIN_DIR,config_munin_files),
-                    (SYS_CONFIG_NGINX_DIR,config_nginx_files),
-                    (SYS_CACHE_DIR,cache_files),
-                    (SYS_VAR_PATH,config_base_files)],
+      package_data={'': ['config*/*','cache/*']},
       include_package_data=True,
       zip_safe=False,
       install_requires=[

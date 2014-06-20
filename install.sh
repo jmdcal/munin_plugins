@@ -1,6 +1,10 @@
 #!/bin/bash
 
-rm -fr /opt/munin/lib/python2.7/site-packages/munin_plugins-*
+rm -fr /opt/munin/
 rm -fr build dist
-/opt/munin/bin/python setup.py build
-/opt/munin/bin/python setup.py install
+
+virtualenv /opt/munin
+
+/opt/munin/bin/python setup.py bdist_egg
+
+/opt/munin/bin/easy_install dist/munin_plugins-4.1.3-py2.7.egg

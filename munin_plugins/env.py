@@ -2,21 +2,13 @@ import re
 import ConfigParser
 from os.path import join
 
-from munin_plugins.base_info import NAME
-from munin_plugins.base_info import EGG_CONFIG_DIR
-from munin_plugins.base_info import EGG_CONFIG_MUNIN_DIR
-from munin_plugins.base_info import EGG_CONFIG_NGINX_DIR
-from munin_plugins.base_info import EGG_CACHE_DIR
+from .base_info import NAME
+from .base_info import SYS_VAR_PATH
 
-from munin_plugins.base_info import SYS_VAR_PATH
-from munin_plugins.base_info import SYS_CONFIG_MUNIN_DIR
-from munin_plugins.base_info import SYS_CONFIG_NGINX_DIR
-from munin_plugins.base_info import SYS_CACHE_DIR
-
-CONFIG_FILE=join(SYS_VAR_PATH,'munin_plugins.conf')
+CONFIG_FILE=join(SYS_VAR_PATH,'config','munin_plugins.conf')
 
 #Defaults values overrideble from munin_plugins.conf
-CACHE=SYS_CACHE_DIR
+CACHE=join(SYS_VAR_PATH,'cache')
 MINUTES=5
 
 #Monit_downtime defaults overrideble from munin_plugins.conf
@@ -46,21 +38,28 @@ REPMGR_CONF='/etc/repmgr.conf'
 
 #Parsing munin_plugins.conf
 config = ConfigParser.SafeConfigParser()
-config.readfp(open(CONFIG_FILE))
-for k,v in config.items('config'):
-  try:
-    vars()[k.upper()]=eval(v)
-  except SyntaxError,NameError:
-    vars()[k.upper()]=v
-    
-try:  
-  for section in SECTIONS.split():
-    for k,v in config.items(section):
+try:
+  config.readfp(open(CONFIG_FILE))
+  for k,v in config.items('config'):
+    try:
+      vars()[k.upper()]=eval(v)
+    except SyntaxError,NameError:
       vars()[k.upper()]=v
-  
-except ConfigParser.NoOptionError as e:
-  #This means there's no Sections specifications, we can live without
+
+  try:  
+    for section in SECTIONS.split():
+      for k,v in config.items(section):
+        vars()[k.upper()]=v
+    
+  except (ConfigParser.NoOptionError,NameError) as e:
+    #This means there's no Sections specifications, we can live without
+    pass
+      
+except IOError:
+  #File does not exist
   pass
+  
+    
 
 #Fixing Overrides
 # -> Minutes needs to be a int
@@ -138,11 +137,7 @@ DOM_RE='http://(.*?)(/|\))'
 REQUIREMENTS={
   'Python2.7':(['python2.7','-V'],0),
   'psutil':(['python2.7','-c','import psutil; print psutil.__version__'],0),
-  'Monit':(['monit','-V'],0),
   'Munin node':(['munin-node-configure','--version',],1),
-  'Nginx':(['nginx','-v'],0),
-  'Repmgr':(['repmgr','--version'],0),
-  'Apache':(['apachectl','-v'],0),
 }
 
 #*_analyzers/latencyaggregator.py

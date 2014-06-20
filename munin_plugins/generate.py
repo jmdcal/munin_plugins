@@ -3,14 +3,19 @@
 import re
 import subprocess
 from shutil import copy
+from shutil import copytree
 
 from os import listdir
 from os import symlink
 from os import remove
+
+from os import makedirs
 from os.path import join
 from os.path import sep
 from os.path import exists
 from os.path import isfile
+from os.path import dirname
+from os.path import realpath
 from sys import prefix
 
 from .utils import fixargs
@@ -24,6 +29,11 @@ from .env import REQUIREMENTS
 from .env import TMP_CONFIG
 from .env import CONFIG_NAME
 from .env import CACHE
+
+from .base_info import EGG_CONFIG_FOLDERS
+from .base_info import SYS_VAR_PATH
+
+
 
 def check_requirements():
   for k in REQUIREMENTS:
@@ -170,10 +180,26 @@ def install(fpy, syml,force_all,make_news):
   return created
 
 
+def create_config_tree(folders,dest):
+  import pdb; pdb.set_trace()
+
+  if not exists(dest):
+    makedirs(dest) 
+  
+  base_src=dirname(realpath(__file__))
+  for f in folders:
+    fpath=join(base_src,f)
+    if exists(fpath):
+      copytree(fpath,join(dest,f))
+  
+
 def main(argv=None, **kw):
   argv=fixargs(argv)
   
   check_requirements()
+    
+  create_config_tree(EGG_CONFIG_FOLDERS,SYS_VAR_PATH)
+  print 'Configuration is in installed in %s'%SYS_VAR_PATH
 
   #do not make questions about creation but force all (-f option)
   force_all=False 
