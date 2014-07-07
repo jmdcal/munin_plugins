@@ -1,12 +1,85 @@
 #!/usr/bin/python2.7
 
+import subprocess
+import re
 import sys
 from collections import deque
+
+from os import listdir
+from os.path import sep
+from os.path import isfile
 
 from .utils import *
 from .apache_analyzers import LatencyAggregator
 from .apache_analyzers import BotsCounter
 from .apache_analyzers import HttpCodesCounter
+
+def install(plugins_dir,plug_config_dir):  
+  out=''
+  try:
+    #debian and derivated
+    out=subprocess.check_output(['apachectl','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
+  except OSError:
+    pass
+  
+  if len(out)<1:
+    try:
+      #RH and derivated
+      out=subprocess.check_output(['httpd','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
+    except OSError:
+      pass
+      
+  ptn='\((.*):(.*)\)'
+
+  a_file_no=0
+  extended={} 
+  parsed=[]
+  print "Scanning Apache for VirtualHosts.."
+  for row in out.split('\n'):
+    fnds=re.search(ptn,row)
+    if fnds is not None:
+      vh=re.search(ptn,row).group(1)
+      if vh not in parsed:
+        to_create=_apache_parse_title_and_customlog(vh)
+        for title,access_log in to_create:
+          print "..found %s [%s].."%(title,access_log)
+          extended['env.GRAPH_TITLE_%s'%a_file_no]=title
+          extended['env.GRAPH_GROUP_%s'%a_file_no]='apache'
+          extended['env.GRAPH_ACCESS_%s'%a_file_no]=access_log
+          a_file_no+=1
+        parsed.append(vh)
+  print "..done."
+  install_plugin('apache',plugins_dir,plug_config_dir,extended)
+
+def _apache_parse_title_and_customlog(file_path):
+  fd=open(file_path,'r')
+  in_virtualhost=False
+  res=[]
+  for row in fd:
+    if re.match('^#',row.strip()) or len(row.strip())==0:
+      pass #this is a comment    
+    elif not in_virtualhost:
+      if re.match('<VirtualHost (.*):(.*)>',row):
+        in_virtualhost=True
+        title='Default'
+        access_log=''
+        port=re.match('<VirtualHost (.*):(.*)>',row).group(2)
+    else:
+      row=row.strip()
+      if re.match('</VirtualHost>',row):
+        in_virtualhost=False
+        if len(title)>0 and len(access_log)>0:
+          res.append((title+'.'+port,access_log))
+      elif re.match('^ServerName\s',row):        
+        aliases=row.replace('ServerName','').split()
+        title=aliases[0]
+      elif re.match('^ServerAlias\s',row) and title=='Default':        
+        aliases=row.replace('ServerAlias','').split()
+        title=aliases[0]
+      elif 'CustomLog' in row:
+        access_log=row.strip().split()[1]
+        
+  return res
 
 def main(argv=None, **kw):    
   argv=fixargs(argv)

@@ -73,6 +73,9 @@ def load_process():
   return cache
 
 
+def install(plugins_dir,plug_config_dir):
+  install_plugin('plone_usage',plugins_dir,plug_config_dir,dict(timeout=120))
+
 def main(argv=None, **kw):     
   is_config=check_config(argv)
   title='Plone'

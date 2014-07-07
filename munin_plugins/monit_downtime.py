@@ -34,6 +34,9 @@ def print_config(title,group,vals):
     print "%s.draw AREASTACK" % id
     if c is not None:
       print "%s.colour %s"  % (id,c)
+
+def install(plugins_dir,plug_config_dir):
+  install_plugin('monit_downtime',plugins_dir,plug_config_dir)
     
 def parse_monit_row(row):
   status=None

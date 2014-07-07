@@ -4,9 +4,11 @@ import sys
 import subprocess
 from collections import Counter
 
-from .env import REPMGR_CONF
+from os.path import exists
+
 from .env import REPMGR_STATES
 from .utils import check_config
+from .utils import install_plugin
 
 def print_config(title,group,vals):
   print 'graph_title %s' % title
@@ -17,16 +19,25 @@ def print_config(title,group,vals):
     print "%s.label %s" %(id,lab)
     print "%s.draw AREASTACK"%id
     print "%s.colour %s"%(id,col)
-      
+    
+def install(plugins_dir,plug_config_dir):
+  conf='/etc/nginx'
+  while not exists(conf):
+    conf=raw_input('Insert a valid path for repmgr config files [%s]'%conf)
+  
+  install_plugin('repmgr',plugins_dir,plug_config_dir,{'env.conf':conf})
+    
 def main(argv=None, **kw):   
   if check_config(argv):
     print_config('Repmgr status',"repmgr",REPMGR_STATES)
   else: 
+    conf=os.environ.get('conf','/etc/repmgr.conf')
+    
     counters=Counter()
     for id,lab,col in REPMGR_STATES:
       counters[id]=0
     try:
-      out=subprocess.check_output(["repmgr","cluster","show","-f",REPMGR_CONF],stderr=subprocess.STDOUT)
+      out=subprocess.check_output(["repmgr","cluster","show","-f",conf],stderr=subprocess.STDOUT)
     except (subprocess.CalledProcessError, ValueError,OSError):
       #if fails means that the process is not running
       pass

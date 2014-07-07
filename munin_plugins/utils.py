@@ -14,7 +14,9 @@ from base64 import b64decode
 from collections import Counter
 from collections import deque
 
-from .env import NGINX_LOG
+from os.path import join
+from os.path import exists
+
 from .env import MINUTES
 from .env import ROW_PARSER
 from .env import ROW_MAPPING
@@ -147,16 +149,6 @@ def change_format(dt):
   date=time.strptime('%s/%s/%s'%(dd,month,year),'%d/%b/%Y')
   return "%s %s.000000"%(time.strftime('%Y-%m-%d',date),tm)
 
-def getparams(this):
-  script_name=this.split('/')[-1]
-  full_path=os.path.realpath(this)
-  real_name=full_path.split('/')[-1][:-3]
-  parts=script_name.replace(real_name+'_','').split('_')
-  title=b16decode(parts[0])
-  group=parts[1]
-  filename=b16decode(parts[2])
-  return full_path.replace('runner','worker'),title,group,'%s/%s'%(NGINX_LOG,filename)
-
 def getparams_from_config():
   files=deque()
   end=False
@@ -233,6 +225,9 @@ def check_config(argv):
   argv=fixargs(argv)
   return (len(argv)>0 and argv[0]=='config')
 
+def check_install(argv):
+  argv=fixargs(argv)
+  return (len(argv)>0 and argv[0]=='install')
     
 #Mixin Cache Class
 class Cache(object): 
@@ -324,3 +319,33 @@ class CachePickle(Cache,dict):
     return res
     
     
+    
+def install_plugin(id,plugins_dir,plug_config_dir,extended={}):
+  orig=join(sys.prefix,'bin',id)
+  link=join(plugins_dir,id)
+  def_create=not exists(link)
+  
+  if def_create:
+    def_label='Y/n'
+  else:
+    def_label='y/N'
+  
+  ans=raw_input("Link %s -> %s [%s]?"%(orig,link,def_label))
+  if (len(ans)==0 and def_create) or \
+    (len(ans)>0 and ans.lower()=='y'):
+    try:        
+      os.symlink(orig,link)
+      print "%s installed [%s,%s]\n"%(id.capitalize(),orig,link)
+    except OSError:
+      print "%s NOT updated [%s,%s]\n"%(id.capitalize(),orig,link)
+
+    config_file=join(plug_config_dir,id)
+      
+    with open(config_file,'w') as fd:
+      fd.write('[%s]\n'%id)
+      fd.write('user root\n')
+      fd.write('group root\n')
+      if extended is not None:
+        for k,v in extended.items():
+          fd.write('%s %s\n'%(k,v))
+    print "%s configured [%s]"%(id.capitalize(),config_file)

@@ -1,9 +1,15 @@
 import re
 import ConfigParser
 from os.path import join
+from sys import prefix
 
 from .base_info import NAME
-from .base_info import SYS_VAR_PATH
+
+# these are installed only if necessary 'config_apache','config_nginx'
+#EGG_CONFIG_FOLDERS=['cache','config',]
+#NGINX_CONFIG_FOLDER='config_nginx'
+#APACHE_CONFIG_FOLDER='config_apache'
+SYS_VAR_PATH=join(prefix,'var',NAME)
 
 CONFIG_FILE=join(SYS_VAR_PATH,'config','munin_plugins.conf')
 
@@ -14,60 +20,6 @@ MINUTES=5
 #Monit_downtime defaults overrideble from munin_plugins.conf
 MONIT_PERCENTAGE_GRAPH=True
 MONIT_FULL=False 
-
-#Nginx_full defaults overrideble from munin_plugins.conf
-NGINX_BASE='/etc/nginx'
-NGINX_LOG='%s/logs' % NGINX_BASE
-NGINX_SITES='%s/sites-enabled'%NGINX_BASE
-NGINX_CONFD='%s/conf.d'%NGINX_BASE
-
-#Apache 
-APACHE_BASE='/etc/apache2'
-APACHE_LOG='/var/log/apache2/'
-APACHE_SITES='%s/sites-enabled'%APACHE_BASE
-APACHE_CONF_EN='%s/conf-enabled'%APACHE_BASE
-APACHE_CONF_AV='%s/conf-available'%APACHE_BASE
-
-#Munin defaults overrideble from munin_plugins.conf
-MUNIN_BASE='/etc/munin'
-MUNIN_PLUGINS_CONFD='%s/plugin-conf.d' % MUNIN_BASE
-MUNIN_PLUGINS='%s/plugins' % MUNIN_BASE
-
-#Repmgr config file overrideble from munin_plugins.conf
-REPMGR_CONF='/etc/repmgr.conf'
-
-#Parsing munin_plugins.conf
-config = ConfigParser.SafeConfigParser()
-try:
-  config.readfp(open(CONFIG_FILE))
-  for k,v in config.items('config'):
-    try:
-      vars()[k.upper()]=eval(v)
-    except SyntaxError,NameError:
-      vars()[k.upper()]=v
-
-  try:  
-    for section in SECTIONS.split():
-      for k,v in config.items(section):
-        vars()[k.upper()]=v
-    
-  except (ConfigParser.NoOptionError,NameError) as e:
-    #This means there's no Sections specifications, we can live without
-    pass
-      
-except IOError:
-  #File does not exist
-  pass
-  
-    
-
-#Fixing Overrides
-# -> Minutes needs to be a int
-if isinstance(MINUTES,str):
-  try:
-    MINUTES=int(MINUTES)
-  except ValueError:
-    MINUTES=5
     
 
 TMP_CONFIG='/tmp/_%s'%NAME
@@ -80,7 +32,6 @@ INSTANCES_CACHE='%s/zope_instances'%CACHE
 
 
 JAVA_INSTANCES_CACHE='%s/java_instances'%CACHE
-CONFIG_NAME='%s/munin_plugins'%MUNIN_PLUGINS_CONFD
 
 #Forced Option, may be one day I move these in mmunin_plugins.conf
 
