@@ -10,7 +10,7 @@ from os.path import abspath
 
 from munin_plugins.base_info import NAME
 
-version = '4.1.3'
+version = '4.2'
 
 current=abspath(dirname(__file__))
 
@@ -45,7 +45,7 @@ setup(name=NAME,
           "plone_usage = munin_plugins.plone_usage:main",
           "repmgr = munin_plugins.repmgr:main",
           "apache = munin_plugins.apache:main",
-          "java = munin_plugins.java:main",
+          #"java = munin_plugins.java:main",
         ]
       },
 )

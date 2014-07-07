@@ -70,6 +70,9 @@ https://pypi.python.org/pypi/munin_plugins
 Changelog
 ~~~~~~~~~
 
+4.2
+- Refactor setup and sensor using classes
+
 4.1.3
 - Fixed VAR folder creation
 

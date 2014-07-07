@@ -8,12 +8,9 @@ from os import makedirs
 from os.path import exists
 from os.path import join
 
-from .utils import fixargs
 from .env import SYS_VAR_PATH
 
-def main(argv=None, **kw):
-  argv=fixargs(argv)
-  
+def main(argv=None, **kw):  
   check_python()
   check_psutil()
   check_cache()
@@ -21,24 +18,24 @@ def main(argv=None, **kw):
   m_plugins,m_plugins_c=get_munin_base()
     
   #apache
-  import apache
-  apache.install(m_plugins,m_plugins_c)
+  from apache import Apache
+  Apache().install(m_plugins,m_plugins_c)
   
   #nginx_full
-  import nginx_full
-  nginx_full.install(m_plugins,m_plugins_c)
+  from nginx_full import Nginx
+  Nginx().install(m_plugins,m_plugins_c)
  
   #plone_usage
-  import plone_usage
-  plone_usage.install(m_plugins,m_plugins_c)
+  from plone_usage import Plone
+  Plone().install(m_plugins,m_plugins_c)
   
   #monit_downtime
-  import monit_downtime
-  monit_downtime.install(m_plugins,m_plugins_c)
+  from monit_downtime import Monit
+  Monit().install(m_plugins,m_plugins_c)
   
   #repmgr
-  import repmgr
-  repmgr.install(m_plugins,m_plugins_c)
+  from .repmgr import Repmgr
+  Repmgr().install(m_plugins,m_plugins_c)
   
   #java
   #suspended temporally

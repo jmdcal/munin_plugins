@@ -17,16 +17,12 @@ CONFIG_FILE=join(SYS_VAR_PATH,'config','munin_plugins.conf')
 CACHE=join(SYS_VAR_PATH,'cache')
 MINUTES=5
 
-#Monit_downtime defaults overrideble from munin_plugins.conf
-MONIT_PERCENTAGE_GRAPH=True
-MONIT_FULL=False 
     
 
 TMP_CONFIG='/tmp/_%s'%NAME
 WRONG_AGENTS='%s/bad_signature'%CACHE
 CACHE_BOTS="%s/bots"%CACHE
 CACHE_APACHE_BOTS="%s/bots_apache"%CACHE
-CACHE_MONIT="%s/monit_messages"%CACHE
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
 INSTANCES_CACHE='%s/zope_instances'%CACHE
 
@@ -47,7 +43,7 @@ NGINX_USER_RE=r'\s+\-\s(.*?)'
 NGINX_DATE_RE=r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]'
 NGINX_REQUEST_RE=r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?"'
 NGINX_HTTPCODE_RE=r'\s+([0-9]{3})'
-NGINX_BYTES_RE=r'\s+([0-9]+)'
+NGINX_BYTES_RE=r'\s+([\-0-9]+)'
 NGINX_REFFER_RE=r'\s+\"(.*?)\"'
 NGINX_SIGN_RE=r'\s+\"(.*?)\"'
 NGINX_LATENCY_RE=r'\s+\[\[(.*)\]\]'
@@ -155,70 +151,11 @@ HTTP_CODES={
 }
 CACHE_HTTP_CODES="%s/httpcodes"%CACHE
 CACHE_APACHE_HTTP_CODES="%s/httpcodes_apache"%CACHE
-#monit_downtime.py
-MONIT_STATUS={
-  "monit down":'757575',
-  "running":'005000',
-  "online with all services":'006000',
-  "accessible":'007000',  
-  "monitored":'008000',
-  "initializing":'009000',
-  "action done":'00A000', 
-  "checksum succeeded":'00FF00',
-  "connection succeeded":'00FF00',
-  "content succeeded":'00FF00',
-  "data access succeeded":'00FF00',
-  "execution succeeded":'00FF00',
-  "filesystem flags succeeded":'00FF00',
-  "gid succeeded":'00FF00',
-  "icmp succeeded":'00FF00',
-  "monit instance changed not":'00FF00',
-  "type succeeded":'00FF00',
-  "exists":'FFFF00',
-  "permission succeeded":'00FF00',
-  "pid succeeded":'00FF00',
-  "ppid succeeded":'00FF00',
-  "resource limit succeeded":'00FF00',
-  "size succeeded":'00FF00',
-  "timeout recovery":'FFFF00',
-  "timestamp succeeded":'00FF00',
-  "uid succeeded":'00FF00',
-  "not monitored":'00FFFF',
-  "checksum failed":'FF0000',
-  "connection failed":'0000FF',
-  "content failed":'FF0000',
-  "data access error":'FF0000',
-  "execution failed":'FF0000',
-  "filesystem flags failed":'FF0000',
-  "gid failed":'FF0000',
-  "icmp failed":'FF00FF',
-  "monit instance changed":'FF0000',
-  "invalid type":'FF0000',
-  "does not exist":'FF0000',
-  "permission failed":'FF0000',
-  "pid failed":'FF0000',
-  "ppid failed":'FF0000',
-  "resource limit matched":'CCCC00',
-  "size failed":'FF0000',
-  "timeout":'FF0000',
-  "timestamp failed":'FF0000',
-  "uid failed":'FF0000',
-}
-MONIT_FIRSTS=[]
-MONIT_LASTESTS=["accessible","online with all services","running","monit down"]
-MONIT_RE=(
-  r'^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)'
-  r"\s('.*?')"
-  r'\s(.*)'
-)
 
 #plone_usage
 SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 PSTORAGES_FILE_RE='.*((Data\.fs)|(\.log)).*'
 JSTORAGES_FILE_RE=''
-
-#repmgr
-REPMGR_STATES=[('failed','FAILED','FF0000'),('master','master','00FF00'),('standby','standby','FFFF00')]
 
 
 #RegEx Compilation
@@ -227,6 +164,5 @@ ROW_PARSER=re.compile(NGINX_LOG2_RE)
 AROW_PARSER=re.compile(APACHE_LOG2_RE)
 EMAIL_PARSER=re.compile(EMAIL_RE)
 DOM_PARSER=re.compile(DOM_RE)
-MONIT_PARSER=re.compile(MONIT_RE)
 PSTORAGES_FILE_PARSER=re.compile(PSTORAGES_FILE_RE)
 JSTORAGES_FILE_PARSER=re.compile(JSTORAGES_FILE_RE)
