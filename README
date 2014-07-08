@@ -14,49 +14,19 @@ Install Egg
 
 As usual, egg is installable using setuptools or pip, choice what you like. 
 It is better and strongly suggested to use a virtualenv.
-
-~~~~~~~~~
-Configure
-~~~~~~~~~
-
-Once you get a virtualenv with munin_plugins installed, you can access to 
-
-<virtualenv_path>/var/munin_plugins/munin_plugins.conf 
-
-an modify the main options as nginx/munin/monit locations.
-
-To use nginx_full sensor, you need to add a new log format in Nginx as following
-
-    log_format combined2 '$remote_addr - $remote_user [$time_local]  '
-                    '"$request" $status $body_bytes_sent '
-                    '"$http_referer" "$http_user_agent" [[$request_time]]';
-
-You can get a file to add in conf.d nginx directory in 
-
-<virtualenv_path>/var/munin_plugins/config_nginx
-
-After that, you have to change nginx access_log directive from combined to combined2
-  
-access_log /some/where/<somename>.log combined2;
     
 ~~~~~~~
 Install 
 ~~~~~~~
 
-The fast way to install, is using generate.py. The help can show you the options
+The fast way to install, is using generate.py. To use, simply call generate script
+in bin directory.
 
-# generate -h 
+# <virtualenv_path>/bin/generate
 
-USAGE:
-        generate [opts]
-
-  Options:
-        -h, --help:     show this help
-        -f:             force creation of all symlinks without asking
-        -n:             force creation of new symlinks without asking
-
-If you call generate.py without arguments, you will have to answers to a question
-for every symlink. 
+It will test the environment and configure cache folders. For every sensor, it will
+ask a confirm. Every sensor creates in /etc/munin/plugin-conf.d a single configuration.
+If you want to check/change, that is the place.  
         
 Restart munin-node, munin-async (if you use that) and enjoy.
 
@@ -65,6 +35,15 @@ More details at
 http://cippino.wordpress.com/tag/munin/
 https://github.com/cippino/munin_plugins
 https://pypi.python.org/pypi/munin_plugins
+
+~~~~~~~~~
+Configure
+~~~~~~~~~
+
+Usually a manual configuration is not required, but in some case you have to modify 
+some path or else. All munin plugins ask by they self during installation what 
+they need, and they write in /etc/munin/plugin-conf.d. Keep attention if you reinstall
+using generate script because all setup will be overwriten.
 
 ~~~~~~~~~
 Changelog
@@ -97,5 +76,6 @@ Known Problems
 1 - Keep attection if you use SELinux or other kind of Security access framework,
 because you have to configure all rights correctly. Usually, my choice is to
 put down, because the call of monit get error about access denied.
+
 
 

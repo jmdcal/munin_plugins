@@ -5,13 +5,7 @@ from sys import prefix
 
 from .base_info import NAME
 
-# these are installed only if necessary 'config_apache','config_nginx'
-#EGG_CONFIG_FOLDERS=['cache','config',]
-#NGINX_CONFIG_FOLDER='config_nginx'
-#APACHE_CONFIG_FOLDER='config_apache'
 SYS_VAR_PATH=join(prefix,'var',NAME)
-
-CONFIG_FILE=join(SYS_VAR_PATH,'config','munin_plugins.conf')
 
 #Defaults values overrideble from munin_plugins.conf
 CACHE=join(SYS_VAR_PATH,'cache')
@@ -19,7 +13,6 @@ MINUTES=5
 
     
 
-TMP_CONFIG='/tmp/_%s'%NAME
 WRONG_AGENTS='%s/bad_signature'%CACHE
 CACHE_BOTS="%s/bots"%CACHE
 CACHE_APACHE_BOTS="%s/bots_apache"%CACHE
