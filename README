@@ -45,6 +45,17 @@ some path or else. All munin plugins ask by they self during installation what
 they need, and they write in /etc/munin/plugin-conf.d. Keep attention if you reinstall
 using generate script because all setup will be overwriten.
 
+For apache and nginx, you have to configure log file format using combined2:
+
+Apache: LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" [[%D]]" combined2
+
+Nginx: log_format combined2 '$remote_addr - $remote_user [$time_local]  '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent" [[$request_time]]';
+
+After combined2 definition, you have to change your virtualhost configuration using 
+this format instead of usual "combined".
+
 ~~~~~~~~~
 Changelog
 ~~~~~~~~~
