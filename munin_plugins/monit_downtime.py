@@ -77,7 +77,7 @@ class Monit(Plugin):
     to_init=['monit down',]
     status=self.getenvs('monit_state_')
     if self.getenv('full'):
-      to_init+=status.keys()
+      to_init+=[k for k,v in status]
     counts=CacheCounter(self.getenv('cache'))
     for i in to_init:
       counts[i]=0
