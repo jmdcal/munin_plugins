@@ -10,18 +10,8 @@ from .plugin import Plugin
 from .utils import CachePickle
 from .utils import CacheDict
 
-from .env import SYSTEM_DEFAULTS
 from .env import SYSTEM_VALUE_CACHE
 from .env import INSTANCES_CACHE
-from .processes_analyzers import cpu_usage_snsr
-from .processes_analyzers import memory_snsr
-from .processes_analyzers import connections_snsr
-from .processes_analyzers import swap_snsr
-from .processes_analyzers import storages_snsr
-from .processes_analyzers import io_counters_snsr
-from .processes_analyzers import io_counters_abs_snsr
-from .processes_analyzers import threads_snsr
-
 
 PROCESSES={
   'plone':True,
@@ -29,9 +19,11 @@ PROCESSES={
   'catalina':True,
   }
 
+SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
+
 class ProcessesUsage(Plugin):
   _title='Processes'
-  _group='system'
+  _group='processes'
   _defaults={'minutes':5,
              'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
             } 
@@ -61,8 +53,8 @@ class ProcessesUsage(Plugin):
     
     for name in self.getenv('enabled').split(','):
       try:
-        analyzer_classes.append(eval(name))    
-      except:
+        analyzer_classes.append(getattr(__import__("processes_analyzers",globals(),locals(),[name],-1),name))
+      except (KeyError,ImportError) as e:
         pass
     
     for cl in analyzer_classes:
@@ -133,10 +125,9 @@ class ProcessesUsage(Plugin):
   def build_sensor_name_plone(self,command):
     cfg=self.find_cfg(command)
     name=None
-    buildout=None
     if cfg is not None:
       try:
-        instance_num=re.search('parts/(.*?)/etc',cfg).group(1)
+        instance=re.search('parts/(.*?)/etc',cfg).group(1)
         buildout=re.search('/(.*?)/parts',cfg).group(1)
       except AttributeError:
         pass
@@ -145,7 +136,7 @@ class ProcessesUsage(Plugin):
         name=path[-1]
         if name=='buildout':
           name=path[-2]
-        name='%s_%s'%(name,instance_num)        
+        name='%s_%s'%(name,instance)        
     return name
 
   def build_sensor_name_jboss(self,command):
@@ -174,8 +165,6 @@ class ProcessesUsage(Plugin):
     if self.getenv('process_catalina') and name is None:
       name=self.build_sensor_name_catalina(command)
       
-    print ">>Name [%s][%s]<<"%(name,command)
-    
     if name is not None:
       name=name.replace(".","_")
     

@@ -11,16 +11,12 @@ SYS_VAR_PATH=join(prefix,'var',NAME)
 CACHE=join(SYS_VAR_PATH,'cache')
 MINUTES=5
 
-    
-
 WRONG_AGENTS='%s/bad_signature'%CACHE
 CACHE_BOTS="%s/bots"%CACHE
 CACHE_APACHE_BOTS="%s/bots_apache"%CACHE
 SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
-INSTANCES_CACHE='%s/zope_instances'%CACHE
+INSTANCES_CACHE='%s/process_instances'%CACHE
 
-
-JAVA_INSTANCES_CACHE='%s/java_instances'%CACHE
 
 #Forced Option, may be one day I move these in mmunin_plugins.conf
 
@@ -146,10 +142,7 @@ CACHE_HTTP_CODES="%s/httpcodes"%CACHE
 CACHE_APACHE_HTTP_CODES="%s/httpcodes_apache"%CACHE
 
 #plone_usage
-SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 PSTORAGES_FILE_RE='.*((Data\.fs)|(\.log)).*'
-JSTORAGES_FILE_RE=''
-
 
 #RegEx Compilation
 NGINX_PARSER=re.compile(NGINX_LOG_RE)
@@ -158,4 +151,4 @@ AROW_PARSER=re.compile(APACHE_LOG2_RE)
 EMAIL_PARSER=re.compile(EMAIL_RE)
 DOM_PARSER=re.compile(DOM_RE)
 PSTORAGES_FILE_PARSER=re.compile(PSTORAGES_FILE_RE)
-JSTORAGES_FILE_PARSER=re.compile(JSTORAGES_FILE_RE)
+

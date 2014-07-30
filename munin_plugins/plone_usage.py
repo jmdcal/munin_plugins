@@ -10,7 +10,6 @@ from .plugin import Plugin
 from .utils import CachePickle
 from .utils import CacheDict
 
-from .env import SYSTEM_DEFAULTS
 from .env import SYSTEM_VALUE_CACHE
 from .env import INSTANCES_CACHE
 from .plone_analyzers import cpu_usage_snsr
@@ -22,6 +21,8 @@ from .plone_analyzers import io_counters_snsr
 from .plone_analyzers import io_counters_abs_snsr
 from .plone_analyzers import threads_snsr
 
+
+SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 
 class Plone(Plugin):
   _title='Plone'
