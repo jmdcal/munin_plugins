@@ -60,6 +60,9 @@ this format instead of usual "combined".
 Changelog
 ~~~~~~~~~
 
+4.3
+- Merged plone_usage and java in processes_usage
+
 4.2
 - Refactor setup and sensor using classes
 
