@@ -25,9 +25,9 @@ def main(argv=None, **kw):
   from nginx_full import Nginx
   Nginx().install(m_plugins,m_plugins_c)
  
-  #plone_usage
-  from plone_usage import Plone
-  Plone().install(m_plugins,m_plugins_c)
+  #processes_usage
+  from processes_usage import ProcessesUsage
+  ProcessesUsage().install(m_plugins,m_plugins_c)
   
   #monit_downtime
   from monit_downtime import Monit
