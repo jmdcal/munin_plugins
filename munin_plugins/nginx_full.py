@@ -124,7 +124,7 @@ class Nginx(Plugin):
           fi=open(filename,'r')
           for row in fi:
             datas=NginxRowParser(row)
-            if datas.get_date()>limit:                      
+            if datas.get_date() is not None and datas.get_date()>limit:                      
               for an in an_objs:
                 an.update_with(datas)
           fi.close()

@@ -129,7 +129,7 @@ class Apache(Plugin):
           for row in fi:
           #As shown in doc, %D option is in microseconds
             datas=ApacheRowParser(row)
-            if datas.get_date()>limit:                      
+            if datas.get_date() is not None and datas.get_date()>limit:                      
               for an in an_objs:
                 an.update_with(datas)
           fi.close()
