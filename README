@@ -76,6 +76,17 @@ Every pluging you installed with "generate" script writes in /etc/munin/plugin-c
 a specific config file. You can modify every option you find. It shouldn't require
 munin-node reload.
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Bugs Report and/or Collaboration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GitHub is the current store for sources:
+
+https://github.com/cippino/munin_plugins
+
+Any idea is welcome.
+
+
 ~~~~~~~~~
 Changelog
 ~~~~~~~~~
