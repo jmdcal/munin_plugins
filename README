@@ -4,9 +4,7 @@ Requirements
 
 - Python >= 2.7
 - psutil for Python
-- Monit
 - Munin-node
-- Nginx
 
 ~~~~~~~~~~~
 Install Egg
@@ -15,9 +13,9 @@ Install Egg
 As usual, egg is installable using setuptools or pip, choice what you like. 
 It is better and strongly suggested to use a virtualenv.
     
-~~~~~~~
-Install 
-~~~~~~~
+~~~~~
+Setup
+~~~~~
 
 The fast way to install, is using generate.py. To use, simply call generate script
 in bin directory.
@@ -36,9 +34,9 @@ http://cippino.wordpress.com/tag/munin/
 https://github.com/cippino/munin_plugins
 https://pypi.python.org/pypi/munin_plugins
 
-~~~~~~~~~
-Configure
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Configure Nginx or Apache 
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Usually a manual configuration is not required, but in some case you have to modify 
 some path or else. All munin plugins ask by they self during installation what 
@@ -55,6 +53,14 @@ Nginx: log_format combined2 '$remote_addr - $remote_user [$time_local]  '
 
 After combined2 definition, you have to change your virtualhost configuration using 
 this format instead of usual "combined".
+
+~~~~~~~~~~~~~~~~~
+Personalize Setup
+~~~~~~~~~~~~~~~~~
+
+Every pluging you installed with "generate" script writes in /etc/munin/plugin-conf.d 
+a specific config file. You can modify every option you find. It shouldn't require
+munin-node reload.
 
 ~~~~~~~~~
 Changelog
