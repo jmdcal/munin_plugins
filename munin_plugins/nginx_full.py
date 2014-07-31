@@ -9,12 +9,12 @@ from os import listdir
 from os.path import isfile
 from os.path import exists
 
-from .utils import RowParser
+from .utils import NginxRowParser
 
 from .plugin import Plugin
-from .nginx_analyzers import LatencyAggregator
-from .nginx_analyzers import BotsCounter
-from .nginx_analyzers import HttpCodesCounter
+from .www_analyzers import LatencyAggregator
+from .www_analyzers import BotsCounter
+from .www_analyzers import HttpCodesCounter
        
        
 class Nginx(Plugin):
@@ -123,7 +123,7 @@ class Nginx(Plugin):
         try:
           fi=open(filename,'r')
           for row in fi:
-            datas=RowParser(row)
+            datas=NginxRowParser(row)
             if datas.get_date()>limit:                      
               for an in an_objs:
                 an.update_with(datas)

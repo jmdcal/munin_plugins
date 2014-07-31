@@ -5,18 +5,17 @@ import re
 import sys
 from collections import deque
 
-from .utils import RowParser
+from .utils import ApacheRowParser
 
 from .plugin import Plugin
-from .apache_analyzers import LatencyAggregator
-from .apache_analyzers import BotsCounter
-from .apache_analyzers import HttpCodesCounter
+from .www_analyzers import LatencyAggregator
+from .www_analyzers import BotsCounter
+from .www_analyzers import HttpCodesCounter
 
 class Apache(Plugin):
   _title='Apache'
   _group='apache'
   _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter','minutes':5} 
-  
 
   def _apache_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -44,11 +43,9 @@ class Apache(Plugin):
           aliases=row.replace('ServerAlias','').split()
           title=aliases[0]
         elif 'CustomLog' in row:
-          access_log=row.strip().split()[1]
-          
+          access_log=row.strip().split()[1]          
     return res
 
-  
   def install(self,plugins_dir,plug_config_dir):  
     ans,def_create=self.ask('apache',plugins_dir)
     if (len(ans)==0 and def_create) or \
@@ -131,7 +128,7 @@ class Apache(Plugin):
           fi=open(filename,'r')
           for row in fi:
           #As shown in doc, %D option is in microseconds
-            datas=RowParser(row)
+            datas=ApacheRowParser(row)
             if datas.get_date()>limit:                      
               for an in an_objs:
                 an.update_with(datas)

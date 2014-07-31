@@ -30,7 +30,7 @@ def getlimit(minutes=MINUTES):
   delay=timedelta(seconds=minutes*60)
   return actual_time-delay
 
-class RowParser(object):
+class NginxRowParser(object):
   def __init__(self,row):
     self.row=row
     try:
@@ -112,6 +112,14 @@ class RowParser(object):
       #no valid code is parsed
       code=0
     return (len(https)==0 or code in https)
+
+class ApacheRowParser(NginxRowParser):
+  def get_float_latency(self):
+    res=super(ApacheRowParser,self).get_float_latency()
+    if res is not None:
+      res=res/1000000
+    return res
+    
 
 def get_short_agent(agent):
   res=''
