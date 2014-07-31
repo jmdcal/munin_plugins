@@ -120,7 +120,6 @@ class ApacheRowParser(NginxRowParser):
       res=res/1000000
     return res
     
-
 def get_short_agent(agent):
   res=''
   try:

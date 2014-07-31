@@ -15,12 +15,12 @@ from .plugin import Plugin
 from .www_analyzers import LatencyAggregator
 from .www_analyzers import BotsCounter
 from .www_analyzers import HttpCodesCounter
-       
+from .www_analyzers import SizeAggregator
        
 class Nginx(Plugin):
   _title='Nginx'
   _group='nginx'
-  _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter','minutes':5} 
+  _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator','minutes':5} 
   
   def _nginx_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -69,15 +69,19 @@ class Nginx(Plugin):
        
         envvars=self._defaults.copy()
         print "Scanning Nginx for VirtualHosts.."
-        for vh in listdir(nginx_sites):
-          fpath=nginx_sites+'/'+vh
-          if isfile(fpath):
-            to_create=self._nginx_parse_title_and_customlog(fpath)
-            for title,access_log in to_create:
-              print "..found %s [%s].."%(title,access_log)
-              envvars['nginx_title_%s'%n_file_no]=title
-              envvars['nginx_access_%s'%n_file_no]=access_log
-              n_file_no+=1
+        try:
+          for vh in listdir(nginx_sites):
+            fpath=nginx_sites+'/'+vh
+            if isfile(fpath):
+              to_create=self._nginx_parse_title_and_customlog(fpath)
+              for title,access_log in to_create:
+                print "..found %s [%s].."%(title,access_log)
+                envvars['nginx_title_%s'%n_file_no]=title
+                envvars['nginx_access_%s'%n_file_no]=access_log
+                n_file_no+=1
+        except OSError:
+          pass
+        
         if n_file_no==0:
           print "No valid configuration found... try again."
         else:

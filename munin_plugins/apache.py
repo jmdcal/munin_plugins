@@ -11,11 +11,12 @@ from .plugin import Plugin
 from .www_analyzers import LatencyAggregator
 from .www_analyzers import BotsCounter
 from .www_analyzers import HttpCodesCounter
+from .www_analyzers import SizeAggregator
 
 class Apache(Plugin):
   _title='Apache'
   _group='apache'
-  _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter','minutes':5} 
+  _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator','minutes':5} 
 
   def _apache_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
