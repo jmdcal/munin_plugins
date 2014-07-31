@@ -1,9 +1,23 @@
+~~~~~
+Intro
+~~~~~
+This is a suite of sensors (plugins) for munin. You can install one or all, as 
+you wish.
+
+Sensors available for:
+- Apache
+- Nginx
+- Monit
+- Repmgr
+- Plone/Zope
+- JBoss
+
 ~~~~~~~~~~~~
 Requirements
 ~~~~~~~~~~~~
 
 - Python >= 2.7
-- psutil for Python
+- psutil for Python >= 2.0
 - Munin-node
 
 ~~~~~~~~~~~
