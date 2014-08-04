@@ -86,7 +86,13 @@ class NginxRowParser(object):
     return code
 
   def get_bytes(self):
-    return self._get_val('bytes')
+    res=None
+    if self._get_val('bytes') is not None:
+      try:
+        res=int(self._get_val('bytes'))
+      except (ValueError,TypeError):      
+        pass      
+    return res
     
   def get_reffer(self):
     return self._get_val('reffer')

@@ -16,7 +16,7 @@ class SizeAggregator(BaseCounter):
   
   def __init__(self,title,group):    
     super(SizeAggregator,self).__init__(title,group)
-    self.label="number of bytes in %s mins" %MINUTES
+    self.label="number of pages in %s mins" %MINUTES
     self.counter=Counter(dict([(str(i),0) for i in SIZE_INTERVALS]+[('others',0)]))
     
   def update_with(self,datas):
@@ -25,7 +25,7 @@ class SizeAggregator(BaseCounter):
     #aggr evaluate
     if val is not None and datas.get_bytes()>0 and datas.get_int_code() in SIZE_CODES:
       pos=0
-      while pos<len(SIZE_INTERVALS) and SIZE_INTERVALS[pos]<val:
+      while pos<len(SIZE_INTERVALS) and SIZE_INTERVALS[pos]<int(val):
         pos+=1
 
       if pos<len(SIZE_INTERVALS):
