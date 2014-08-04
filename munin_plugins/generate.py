@@ -3,10 +3,10 @@
 import subprocess
 
 import sys
+import re
 
-from os import makedirs
+from os import listdir
 from os.path import exists
-from os.path import join
 
 from .snsr_apache import Apache
 from .snsr_monit import Monit
@@ -16,11 +16,22 @@ from .snsr_repmgr import Repmgr
 
 from .env import SYS_VAR_PATH
 
+import checks
+
+
 def main(argv=None, **kw):  
-  check_python()
-  check_psutil()
-  check_cache()
-  
+
+  #We searching checkers in checks folder
+  for file in sorted(listdir(checks.__path__[0])):    
+    mtc=re.match('(.*)\.py$',file)    
+    if mtc is not None and mtc.group(1)!='__init__':
+      try:
+        checker=getattr(__import__('checks.%s'%mtc.group(1),globals(),locals(),['check'],-1),'check')
+        checker(log,err)
+      except (KeyError,ImportError) as e:        
+        pass
+
+  #Searching munin config folder    
   m_plugins,m_plugins_c=get_munin_base()
     
   Apache().install(m_plugins,m_plugins_c)
@@ -34,29 +45,7 @@ def err(msg):
 
 def log(msg):
   print msg
-  
-def check_python():  
-  vers=sys.version_info
-  if vers<(2,7):
-    err("Python version is not valid (required 2.7.x)")
-  else:
-    log("Python is ok [%s.%s.%s %s-%s]"%(vers.major,vers.minor,vers.micro,vers.releaselevel,vers.serial))
-  
-def check_psutil():
-  try: 
-    import psutil
-    log("Psutil is ok [%s.%s.%s]"%psutil.version_info)
-  except ImportError:
-    err("Unable import psutil")
-
-def check_cache():  
-  dest=join(SYS_VAR_PATH,'cache')
-  if not exists(dest):
-    makedirs(dest) 
-    print "Cache is ok (created) [%s]"%dest
-  else:
-    print "Cache is ok [%s]"%dest
-
+ 
 def get_munin_base():
   expected='/etc/munin'  
   while True:
