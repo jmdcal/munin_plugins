@@ -1,6 +1,6 @@
 from collections import deque
 
-from munin_plugins.plone_analyzers.base import sensor
+from .base import sensor
    
 class connections_snsr(sensor):
   label='connections'

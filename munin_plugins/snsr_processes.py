@@ -54,7 +54,7 @@ class Processes(Plugin):
     for name in self.getenv('enabled').split(','):
       try:
         analyzer_classes.append(getattr(__import__("processes_analyzers",globals(),locals(),[name],-1),name))
-      except (KeyError,ImportError) as e:
+      except (KeyError,ImportError) as e:        
         pass
     
     for cl in analyzer_classes:

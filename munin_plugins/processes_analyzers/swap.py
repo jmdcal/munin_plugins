@@ -1,4 +1,4 @@
-from munin_plugins.plone_analyzers.base import sensor
+from .base import sensor
 
 class swap_snsr(sensor):
   label='swap'
