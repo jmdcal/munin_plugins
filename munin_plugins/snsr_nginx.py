@@ -52,7 +52,9 @@ class Nginx(Plugin):
           aliases=row.replace('server_name','').split()
           title=aliases[0]
         elif 'access_log' in row:
-          access_log=row.strip().split()[1]
+          tmp=row.strip().split()[1]
+          if 'off' not in tmp:
+            access_log=tmp
     return res       
               
   def install(self,plugins_dir,plug_config_dir):
