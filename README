@@ -6,11 +6,10 @@ you wish.
 
 Sensors available for:
 - Apache
-- Nginx
 - Monit
+- Nginx
+- Processes (Plone, Zope, JBoss actually)
 - Repmgr
-- Plone/Zope
-- JBoss
 
 ~~~~~~~~~~~~
 Requirements
@@ -75,6 +74,14 @@ Personalize Setup
 Every pluging you installed with "generate" script writes in /etc/munin/plugin-conf.d 
 a specific config file. You can modify every option you find. It shouldn't require
 munin-node reload.
+
+~~~~~~~
+Warning
+~~~~~~~
+
+Previous version of 4.3 are not complatible with 4.3 and later release, because 
+some sensors are renamed/moved/merged, so apply an upgrade will lose all history
+informations.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Bugs Report and/or Collaboration

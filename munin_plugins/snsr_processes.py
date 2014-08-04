@@ -21,7 +21,7 @@ PROCESSES={
 
 SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
 
-class ProcessesUsage(Plugin):
+class Processes(Plugin):
   _title='Processes'
   _group='processes'
   _defaults={'minutes':5,
@@ -29,13 +29,13 @@ class ProcessesUsage(Plugin):
             } 
   
   def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask('processes_usage',plugins_dir)
+    ans,def_create=self.ask('snsr_processes',plugins_dir)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
       envvars=self._defaults.copy()
       for k,v in PROCESSES.items():
         envvars['process_%s'%k]=v      
-      self.install_plugin('processes_usage',plugins_dir,plug_config_dir,extended=dict(timeout=120),env=envvars)      
+      self.install_plugin('snsr_processes',plugins_dir,plug_config_dir,extended=dict(timeout=120),env=envvars)      
       
   def main(self,argv=None, **kw):     
     is_config=self.check_config(argv)
@@ -180,7 +180,7 @@ class ProcessesUsage(Plugin):
     return cache
 
 def main(argv=None,**kw):
-  ProcessesUsage().main()
+  Processes().main()
         
 if __name__ == '__main__':
   main()

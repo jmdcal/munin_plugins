@@ -30,7 +30,7 @@ class Repmgr(Plugin):
       print "%s.colour %s"%(id,col)
   
   def install(self,plugins_dir,plug_config_dir):    
-    ans,def_create=self.ask('repmgr',plugins_dir)
+    ans,def_create=self.ask('snsr_repmgr',plugins_dir)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):    
       conf=self._defaults.get('conf','')
@@ -40,7 +40,7 @@ class Repmgr(Plugin):
       envvars=self._defaults.copy()
       for pos,(id,lab,col) in enumerate(REPMGR_STATES):
         envvars['repmgr_state_%s'%pos]="%s,%s,%s"%(id,lab,col)
-      self.install_plugin('repmgr',plugins_dir,plug_config_dir,env=envvars)
+      self.install_plugin('snsr_repmgr',plugins_dir,plug_config_dir,env=envvars)
       
   def main(self,argv=None, **kw):     
     if self.check_config(argv):

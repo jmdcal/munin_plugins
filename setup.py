@@ -40,11 +40,11 @@ setup(name=NAME,
       entry_points={
         "console_scripts":[
           "generate = munin_plugins.generate:main",
-          "monit_downtime = munin_plugins.monit_downtime:main",
-          "nginx_full = munin_plugins.nginx_full:main",
-          "repmgr = munin_plugins.repmgr:main",
-          "apache = munin_plugins.apache:main",
-          "processes_usage = munin_plugins.processes_usage:main",
+          "snsr_apache = munin_plugins.snsr_apache:main",
+          "snsr_monit = munin_plugins.snsr_monit:main",
+          "snsr_nginx = munin_plugins.snsr_nginx:main",
+          "snsr_processes = munin_plugins.snsr_processes:main",
+          "snsr_repmgr = munin_plugins.snsr_repmgr:main",
         ]
       },
 )

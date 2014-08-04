@@ -34,9 +34,6 @@ class SizeAggregator(BaseCounter):
       else:
         self.counter['others']=1+self.counter['others']
             
-            
-  
-
   def millify(self,value):
     byteunits = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
     try:
@@ -50,7 +47,7 @@ class SizeAggregator(BaseCounter):
     for threshould in SIZE_INTERVALS:
       printer(id="numbers%s"%str(threshould).replace('.',''),
               value=self.counter[str(threshould)],
-              label=self.millify(threshould),
+              label='< %s'%self.millify(threshould),
               color=SIZE_COLORS[str(threshould).replace('.','')],
               draw="AREASTACK")
 

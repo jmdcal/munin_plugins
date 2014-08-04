@@ -8,6 +8,12 @@ from os import makedirs
 from os.path import exists
 from os.path import join
 
+from .snsr_apache import Apache
+from .snsr_monit import Monit
+from .snsr_nginx import Nginx
+from .snsr_processes import Processes
+from .snsr_repmgr import Repmgr
+
 from .env import SYS_VAR_PATH
 
 def main(argv=None, **kw):  
@@ -17,29 +23,12 @@ def main(argv=None, **kw):
   
   m_plugins,m_plugins_c=get_munin_base()
     
-  #apache
-  from apache import Apache
   Apache().install(m_plugins,m_plugins_c)
-  
-  #nginx_full
-  from nginx_full import Nginx
-  Nginx().install(m_plugins,m_plugins_c)
- 
-  #processes_usage
-  from processes_usage import ProcessesUsage
-  ProcessesUsage().install(m_plugins,m_plugins_c)
-  
-  #monit_downtime
-  from monit_downtime import Monit
   Monit().install(m_plugins,m_plugins_c)
-  
-  #repmgr
-  from .repmgr import Repmgr
+  Nginx().install(m_plugins,m_plugins_c)
+  Processes().install(m_plugins,m_plugins_c)
   Repmgr().install(m_plugins,m_plugins_c)
-  
-  #java
-  #suspended temporally
-  
+    
 def err(msg):
   print "ERROR: %s"%msg
 

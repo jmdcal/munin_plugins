@@ -35,7 +35,7 @@ class LatencyAggregator(BaseCounter):
     for threshould in NLATENCY_INTERVALS:
       printer(id="numbers%s"%str(threshould).replace('.',''),
               value=self.counter[str(threshould)],
-              label="%s sec"%threshould,
+              label="< %s sec"%threshould,
               color=NLATENCY_COLORS[str(threshould).replace('.','')],
               draw="AREASTACK")
 
