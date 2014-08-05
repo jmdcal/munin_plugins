@@ -17,13 +17,13 @@ from collections import deque
 from os.path import join
 from os.path import exists
 
-from .env import MINUTES
-from .env import ROW_PARSER
-from .env import ROW_MAPPING
-from .env import NGINX_PARSER
-from .env import EMAIL_PARSER
-from .env import DOM_PARSER
-from .env import WRONG_AGENTS
+from munin_plugins.env import MINUTES
+from munin_plugins.env import ROW_PARSER
+from munin_plugins.env import ROW_MAPPING
+from munin_plugins.env import NGINX_PARSER
+from munin_plugins.env import EMAIL_PARSER
+from munin_plugins.env import DOM_PARSER
+from munin_plugins.env import WRONG_AGENTS
 
 def getlimit(minutes=MINUTES):
   actual_time=datetime.today()

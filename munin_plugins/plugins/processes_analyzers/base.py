@@ -1,5 +1,5 @@
-from ..utils import CachePickle
-from ..utils import namedtuple2dict
+from munin_plugins.utils import CachePickle
+from munin_plugins.utils import namedtuple2dict
 
 #Base class: used to inherit
 class sensor(object):

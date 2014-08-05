@@ -7,7 +7,7 @@ from collections import Counter
 
 from os.path import exists
 
-from .plugin import Plugin
+from munin_plugins.plugins.plugin import Plugin
 
 REPMGR_STATES=[('failed','FAILED','FF0000'),('master','master','00FF00'),('standby','standby','FFFF00')]
 

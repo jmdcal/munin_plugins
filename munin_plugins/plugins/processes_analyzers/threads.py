@@ -1,5 +1,5 @@
-from .base import sensor
-from ..env import CACHE
+from munin_plugins.plugins.processes_analyzers.base import sensor
+from munin_plugins.env import CACHE
   
 class threads_snsr(sensor):
   label='threads #'

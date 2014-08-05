@@ -9,13 +9,13 @@ from os import listdir
 from os.path import isfile
 from os.path import exists
 
-from .utils import NginxRowParser
+from munin_plugins.utils import NginxRowParser
 
-from .plugin import Plugin
-from .www_analyzers import LatencyAggregator
-from .www_analyzers import BotsCounter
-from .www_analyzers import HttpCodesCounter
-from .www_analyzers import SizeAggregator
+from munin_plugins.plugins.plugin import Plugin
+from munin_plugins.plugins.www_analyzers import LatencyAggregator
+from munin_plugins.plugins.www_analyzers import BotsCounter
+from munin_plugins.plugins.www_analyzers import HttpCodesCounter
+from munin_plugins.plugins.www_analyzers import SizeAggregator
        
 class Nginx(Plugin):
   _title='Nginx'

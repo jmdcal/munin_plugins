@@ -1,11 +1,11 @@
 from collections import Counter
-from ..utils import ft
-from ..env import NLATENCY_INTERVALS
-from ..env import MINUTES
-from ..env import NLATENCY_COLORS
-from ..env import NLATENCY_CODES
+from munin_plugins.utils import ft
+from munin_plugins.env import NLATENCY_INTERVALS
+from munin_plugins.env import MINUTES
+from munin_plugins.env import NLATENCY_COLORS
+from munin_plugins.env import NLATENCY_CODES
 
-from .base import BaseCounter
+from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
 class LatencyAggregator(BaseCounter):
   id='latencyaggregator'

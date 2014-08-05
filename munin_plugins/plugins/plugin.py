@@ -9,7 +9,7 @@ from os import symlink
 from datetime import datetime
 from datetime import timedelta
 
-from .env import MINUTES
+from munin_plugins.env import MINUTES
 
 class Plugin(object):  
   _title='Undefined'

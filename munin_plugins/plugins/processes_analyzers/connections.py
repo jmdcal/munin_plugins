@@ -1,6 +1,6 @@
 from collections import deque
 
-from .base import sensor
+from munin_plugins.plugins.processes_analyzers.base import sensor
    
 class connections_snsr(sensor):
   label='connections'

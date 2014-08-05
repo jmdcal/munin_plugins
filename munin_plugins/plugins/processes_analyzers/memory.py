@@ -1,4 +1,4 @@
-from .base import sensor
+from munin_plugins.plugins.processes_analyzers.base import sensor
   
 class memory_snsr(sensor):
   label='memory (%)'

@@ -1,9 +1,9 @@
-from ..utils import *
+from munin_plugins.utils import *
 
-from ..env import CACHE_BOTS
-from ..env import MINUTES
+from munin_plugins.env import CACHE_BOTS
+from munin_plugins.env import MINUTES
 
-from .base import BaseCounter
+from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
 class BotsCounter(BaseCounter):
   id='botscounter'

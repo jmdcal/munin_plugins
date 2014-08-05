@@ -10,7 +10,7 @@ from os.path import abspath
 
 from munin_plugins.base_info import NAME
 
-version = '4.3'
+version = '4.4'
 
 current=abspath(dirname(__file__))
 
@@ -40,11 +40,11 @@ setup(name=NAME,
       entry_points={
         "console_scripts":[
           "generate = munin_plugins.generate:main",
-          "snsr_apache = munin_plugins.snsr_apache:main",
-          "snsr_monit = munin_plugins.snsr_monit:main",
-          "snsr_nginx = munin_plugins.snsr_nginx:main",
-          "snsr_processes = munin_plugins.snsr_processes:main",
-          "snsr_repmgr = munin_plugins.snsr_repmgr:main",
+          "snsr_apache = munin_plugins.plugins.snsr_apache:main",
+          "snsr_monit = munin_plugins.plugins.snsr_monit:main",
+          "snsr_nginx = munin_plugins.plugins.snsr_nginx:main",
+          "snsr_processes = munin_plugins.plugins.snsr_processes:main",
+          "snsr_repmgr = munin_plugins.plugins.snsr_repmgr:main",
         ]
       },
 )

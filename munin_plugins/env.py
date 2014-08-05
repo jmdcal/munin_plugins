@@ -3,7 +3,7 @@ import ConfigParser
 from os.path import join
 from sys import prefix
 
-from .base_info import NAME
+from munin_plugins.base_info import NAME
 
 SYS_VAR_PATH=join(prefix,'var',NAME)
 

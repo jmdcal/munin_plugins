@@ -8,15 +8,15 @@ import re
 from os import listdir
 from os.path import exists
 
-from .snsr_apache import Apache
-from .snsr_monit import Monit
-from .snsr_nginx import Nginx
-from .snsr_processes import Processes
-from .snsr_repmgr import Repmgr
+from munin_plugins.plugins.snsr_apache import Apache
+from munin_plugins.plugins.snsr_monit import Monit
+from munin_plugins.plugins.snsr_nginx import Nginx
+from munin_plugins.plugins.snsr_processes import Processes
+from munin_plugins.plugins.snsr_repmgr import Repmgr
 
-from .env import SYS_VAR_PATH
+from munin_plugins.env import SYS_VAR_PATH
 
-import checks
+from munin_plugins import checks
 
 
 def main(argv=None, **kw):  
@@ -26,7 +26,7 @@ def main(argv=None, **kw):
     mtc=re.match('(.*)\.py$',file)    
     if mtc is not None and mtc.group(1)!='__init__':
       try:
-        checker=getattr(__import__('checks.%s'%mtc.group(1),globals(),locals(),['check'],-1),'check')
+        checker=getattr(__import__('munin_plugins.checks.%s'%mtc.group(1),globals(),locals(),['check'],-1),'check')
         checker(log,err)
       except (KeyError,ImportError) as e:        
         pass

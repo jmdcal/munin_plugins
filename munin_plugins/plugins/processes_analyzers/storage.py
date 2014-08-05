@@ -1,8 +1,8 @@
 import os
 
-from .base import sensor
-from ..env import CACHE
-from ..env import PSTORAGES_FILE_PARSER
+from munin_plugins.plugins.processes_analyzers.base import sensor
+from munin_plugins.env import CACHE
+from munin_plugins.env import PSTORAGES_FILE_PARSER
 
 class storages_snsr(sensor):
   label='file'

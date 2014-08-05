@@ -1,8 +1,8 @@
-from ..utils import CacheCounter
-from ..env import HTTP_CODES
-from ..env import CACHE_HTTP_CODES
-from ..env import MINUTES
-from .base import BaseCounter
+from munin_plugins.utils import CacheCounter
+from munin_plugins.env import HTTP_CODES
+from munin_plugins.env import CACHE_HTTP_CODES
+from munin_plugins.env import MINUTES
+from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
 class HttpCodesCounter(BaseCounter):
   id='httpcodescounter'

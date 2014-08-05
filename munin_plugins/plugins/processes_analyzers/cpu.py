@@ -1,6 +1,6 @@
-from .base import sensor
-from ..env import CACHE
-from ..utils import get_percent_of
+from munin_plugins.plugins.processes_analyzers.base import sensor
+from munin_plugins.env import CACHE
+from munin_plugins.utils import get_percent_of
 
 class cpu_usage_snsr(sensor):
   label='cpu usage (%)'

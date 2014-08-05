@@ -4,11 +4,9 @@ import re
 
 import subprocess
 
-from .plugin import Plugin
-
-from .utils import CacheCounter
-
-from .env import CACHE
+from munin_plugins.plugins.plugin import Plugin
+from munin_plugins.utils import CacheCounter
+from munin_plugins.env import CACHE
 
 MONIT_STATUS={
   "monit down":'757575',

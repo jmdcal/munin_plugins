@@ -5,13 +5,13 @@ import psutil
 import re
 from collections import deque
 
-from .plugin import Plugin
+from munin_plugins.plugins.plugin import Plugin
 
-from .utils import CachePickle
-from .utils import CacheDict
+from munin_plugins.utils import CachePickle
+from munin_plugins.utils import CacheDict
 
-from .env import SYSTEM_VALUE_CACHE
-from .env import INSTANCES_CACHE
+from munin_plugins.env import SYSTEM_VALUE_CACHE
+from munin_plugins.env import INSTANCES_CACHE
 
 PROCESSES={
   'plone':True,

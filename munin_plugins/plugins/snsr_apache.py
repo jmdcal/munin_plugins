@@ -5,13 +5,13 @@ import re
 import sys
 from collections import deque
 
-from .utils import ApacheRowParser
+from munin_plugins.utils import ApacheRowParser
 
-from .plugin import Plugin
-from .www_analyzers import LatencyAggregator
-from .www_analyzers import BotsCounter
-from .www_analyzers import HttpCodesCounter
-from .www_analyzers import SizeAggregator
+from munin_plugins.plugins.plugin import Plugin
+from munin_plugins.plugins.www_analyzers import LatencyAggregator
+from munin_plugins.plugins.www_analyzers import BotsCounter
+from munin_plugins.plugins.www_analyzers import HttpCodesCounter
+from munin_plugins.plugins.www_analyzers import SizeAggregator
 
 class Apache(Plugin):
   _title='Apache'
