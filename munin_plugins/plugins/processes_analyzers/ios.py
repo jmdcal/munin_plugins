@@ -7,6 +7,7 @@ class io_counters_snsr(sensor):
   cache='%s/processesiosbytes'%CACHE
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
+  _properties={}
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,{}) 
@@ -20,9 +21,10 @@ class io_counters_snsr(sensor):
 
 class io_counters_abs_snsr(sensor):
   label='I/O usage (# of operations)'
-  cache='%s/zopeiosabs'%CACHE
+  cache='%s/processesiosabs'%CACHE
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
+  _properties={}
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,{}) 
