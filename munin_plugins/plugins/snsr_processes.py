@@ -12,22 +12,17 @@ from munin_plugins.utils import CacheDict
 
 from munin_plugins.env import CACHE
 
-SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
-INSTANCES_CACHE='%s/process_instances'%CACHE
-
-PROCESSES={
-  'plone':True,
-  'jboss':True,
-  'catalina':True,
-  }
-
-SYSTEM_DEFAULTS=['cpu_times','virtual_memory','swap_memory','net_io_counters']
-
 class Processes(Plugin):
   _title='Processes'
   _group='processes'
   _defaults={'minutes':5,
              'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
+             'system_defaults':'cpu_times,virtual_memory,swap_memory,net_io_counters',
+             'show_jboss':True,
+             'show_catalina':True,
+             'show_plone':True,
+             'system_cache':'%s/system_state'%CACHE,
+             'instance_cache':'%s/process_instances'%CACHE,
             } 
   _prefix_env='process'
   _prefix_name='snsr_processes'
@@ -37,9 +32,6 @@ class Processes(Plugin):
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
       envvars=self._defaults.copy()
-      for k,v in PROCESSES.items():
-        envvars['%s_%s'%(self._prefix_env,k)]=v      
-        
       for plg in self._defaults['enabled'].split(','):
         try:
           plg_obj=self._get_sub_plugin("processes_analyzers",plg)
@@ -62,7 +54,7 @@ class Processes(Plugin):
     if is_config:
       printer=self.print_config
 
-    sys_prev,sys_curr=self.load_sys(SYSTEM_DEFAULTS)  
+    sys_prev,sys_curr=self.load_sys(self.getenv('system_defaults').split(','))  
     ps_cache=self.load_process()
     
     analyzer_classes=[]
@@ -113,12 +105,11 @@ class Processes(Plugin):
       ps_cache.store_in_cache();
 
   def load_sys(self,defaults):
-    cpath,ctype=SYSTEM_VALUE_CACHE
-
+    cpath=self.getenv('system_cache')
+   
     #Fetch from cache
     try:
-      cclass=eval(ctype)
-      system_cache=cclass(cpath)
+      system_cache=CachePickle(cpath)
     except NameError:
       system_cache=None
     sys_curr={}
@@ -172,13 +163,13 @@ class Processes(Plugin):
   def build_sensor_name(self,command):
     name=None
     
-    if self.getenv('process_plone'):
+    if self.getenv('show_plone'):
       name=self.build_sensor_name_plone(command)
       
-    if self.getenv('process_jboss') and name is None:
+    if self.getenv('show_jboss') and name is None:
       name=self.build_sensor_name_jboss(command)
       
-    if self.getenv('process_catalina') and name is None:
+    if self.getenv('show_catalina') and name is None:
       name=self.build_sensor_name_catalina(command)
       
     if name is not None:
@@ -187,7 +178,7 @@ class Processes(Plugin):
     return name
 
   def load_process(self):
-    cache=CacheDict(INSTANCES_CACHE,def_value=None)
+    cache=CacheDict(self.getenv('instance_cache'),def_value=None)
     for pd in psutil.process_iter(): 
       name=self.build_sensor_name(pd.cmdline())
       #ppid>1 means that is a child: this check is useful for zeo process 
