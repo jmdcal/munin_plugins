@@ -113,7 +113,11 @@ class sensor(object):
     return percent
 
   def getenv(self,id,null=None):
-    val=environ.get(id,self._defaults.get(id,null))
+    try:
+      real_id='%s_%s'%(self.__class__.__name__,id)
+    except AttributeError:
+      real_id=id      
+    val=environ.get(real_id,self._defaults.get(id,null))
     try:
       #trying to parse int, boolean
       val=eval(val.capitalize())
