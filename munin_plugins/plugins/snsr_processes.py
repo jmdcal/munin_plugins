@@ -15,15 +15,15 @@ from munin_plugins.env import CACHE
 class Processes(Plugin):
   _title='Processes'
   _group='processes'
-  _defaults={'minutes':5,
-             'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
-             'system_defaults':'cpu_times,virtual_memory,swap_memory,net_io_counters',
-             'show_jboss':True,
-             'show_catalina':True,
-             'show_plone':True,
-             'system_cache':'%s/system_state'%CACHE,
-             'instance_cache':'%s/process_instances'%CACHE,
-            } 
+  _defaults={
+    'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
+    'system_defaults':'cpu_times,virtual_memory,swap_memory,net_io_counters',
+    'show_jboss':True,
+    'show_catalina':True,
+    'show_plone':True,
+    'system_cache':'%s/system_state'%CACHE,
+    'instance_cache':'%s/process_instances'%CACHE,
+  } 
   _prefix_env='process'
   _prefix_name='snsr_processes'
   
