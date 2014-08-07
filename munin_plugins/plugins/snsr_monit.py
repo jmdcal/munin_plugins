@@ -64,7 +64,6 @@ class Monit(Plugin):
     'monit_state_44':"timestamp failed,FF0000",
     'monit_state_45':"uid failed,FF0000",
   }
-  _prefix_env='monit_state'
   _prefix_name='snsr_monit'
 
   def populate_vals(self):
@@ -102,13 +101,6 @@ class Monit(Plugin):
     post=self.getenv('lastest').split(',')    
     middle=[i for i in alls if i not in post]  
     return [i.strip().replace(' ','_') for i in  middle+post]
-
-    
-  def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):          
-      envvars=self._defaults.copy()                   
-      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
   
   def parse_monit_row(self,matcher,row):
     status=None

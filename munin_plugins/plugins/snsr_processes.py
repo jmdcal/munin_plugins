@@ -24,27 +24,10 @@ class Processes(Plugin):
     'system_cache':'%s/system_state'%CACHE,
     'instance_cache':'%s/process_instances'%CACHE,
   } 
-  _prefix_env='process'
+  _extended={'timeout':120}
   _prefix_name='snsr_processes'
-  
-  def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or \
-      (len(ans)>0 and ans.lower()=='y'):
-      envvars=self._defaults.copy()
-      for plg in self._defaults['enabled'].split(','):
-        try:
-          plg_obj=self._get_sub_plugin("processes_analyzers",plg)
-          for k,v in plg_obj._defaults.items():
-            envvars['%s_%s_%s'%(self._prefix_env,plg,k)]=v                
-        except (KeyError,ImportError) as e:        
-          pass
-        
-      self.install_plugin(plugins_dir,plug_config_dir,extended=dict(timeout=120),env=envvars)      
-      
-  def _get_sub_plugin(self,lib,name):    
-    return getattr(__import__(lib,globals(),locals(),[name],-1),name)
-  
+  _sub_plugins='processes_analyzers'
+    
   def main(self,argv=None, **kw):     
     is_config=self.check_config(argv)
     title=self._title
@@ -61,7 +44,7 @@ class Processes(Plugin):
     
     for name in self.getenv('enabled').split(','):
       try:
-        analyzer_classes.append(self._get_sub_plugin("processes_analyzers",name))
+        analyzer_classes.append(self.get_sub_plugin("processes_analyzers",name))
       except (KeyError,ImportError) as e:        
         pass
     

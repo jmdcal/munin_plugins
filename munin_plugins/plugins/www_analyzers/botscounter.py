@@ -9,6 +9,7 @@ CACHE_BOTS="%s/bots"%CACHE
 class BotsCounter(BaseCounter):
   id='botscounter'
   base_title="Bots"
+  _defaults={}
   
   def __init__(self,title,group):
     super(BotsCounter,self).__init__(title,group)

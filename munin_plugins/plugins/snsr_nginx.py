@@ -20,9 +20,12 @@ from munin_plugins.plugins.www_analyzers import SizeAggregator
 class Nginx(Plugin):
   _title='Nginx'
   _group='nginx'
-  _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator','minutes':5} 
-  _prefix_env='nginx'
+  _defaults={
+    'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
+    'minutes':5
+  } 
   _prefix_name='snsr_nginx'
+  _sub_plugins='www_analyzers'
   
   def _nginx_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -59,42 +62,41 @@ class Nginx(Plugin):
             access_log=tmp
     return res       
               
-  def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or \
-      (len(ans)>0 and ans.lower()=='y'):
-      nginx_sites='/etc/nginx/sites-enabled'
-      n_file_no=0
+
+  def envvars(self):
+    envvars=super(Nginx,self).envvars()
+    nginx_sites='/etc/nginx/sites-enabled'
+    n_file_no=0
       
-      while n_file_no==0:
-        np=raw_input('Insert a valid path for nginx virtualhosts config files [%s]'%nginx_sites)
-        if np is not None and len(np)>0:
-          nginx_sites=np
-       
-        envvars=self._defaults.copy()
-        print "Scanning Nginx for VirtualHosts.."
-        try:
-          for vh in listdir(nginx_sites):
-            fpath=nginx_sites+'/'+vh
-            if isfile(fpath):
-              to_create=self._nginx_parse_title_and_customlog(fpath)
-              for title,access_log in to_create:
-                print "..found %s [%s].."%(title,access_log)
-                envvars['%s_title_%s'%(self._prefix_env,n_file_no)]=title
-                envvars['%s_access_%s'%(self._prefix_env,n_file_no)]=access_log
-                n_file_no+=1
-        except OSError:
-          pass
-        
-        if n_file_no==0:
-          print "No valid configuration found... try again."
-        else:
-          print "..done."
-      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)              
+    while n_file_no==0:
+      np=raw_input('Insert a valid path for nginx virtualhosts config files [%s]'%nginx_sites)
+      if np is not None and len(np)>0:
+        nginx_sites=np
+      
+      print "Scanning Nginx for VirtualHosts.."
+      try:
+        for vh in listdir(nginx_sites):
+          fpath=nginx_sites+'/'+vh
+          if isfile(fpath):
+            to_create=self._nginx_parse_title_and_customlog(fpath)
+            for title,access_log in to_create:
+              print "..found %s [%s].."%(title,access_log)
+              envvars['title_%s'%n_file_no]=title
+              envvars['access_%s'%n_file_no]=access_log
+              n_file_no+=1
+      except OSError:
+        pass
+      
+      if n_file_no==0:
+        print "No valid configuration found... try again."
+      else:
+        print "..done."
+    
+    return envvars
        
   def get_files(self):
-    logs=self.getenvs_with_id('nginx_access_')
-    titles=dict(self.getenvs_with_id('nginx_title_'))
+    logs=self.getenvs_with_id('access_')
+    titles=dict(self.getenvs_with_id('title_'))
     return [(titles.get(id,'undef'),ff) for id,ff in logs]            
        
   def main(self,argv=None, **kw):    

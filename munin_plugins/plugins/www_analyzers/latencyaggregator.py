@@ -14,6 +14,7 @@ CODES = [200,]
 class LatencyAggregator(BaseCounter):
   id='latencyaggregator'
   base_title="Pages by latency"
+  _defaults={}
   
   def __init__(self,title,group):    
     super(LatencyAggregator,self).__init__(title,group)

@@ -5,19 +5,22 @@ from munin_plugins.utils import CachePickle
 #Base class: used to inherit
 class sensor(object):
   label='generic_sensor'
-  cache=None
   sys_mtd='generic_sensor'
   proc_mtd='generic_sensor'
   graph=None
   id_column='id'
   _defaults={}
-  _properties={}
   
   def __init__(self,sys_prev,sys_curr):
     self.sys_prev=sys_prev
     self.sys_curr=sys_curr
-    self._pcache=CachePickle(self.cache)
-
+    cache_file=self.getenv('cache')
+    if cache_file is not None:
+      self._pcache=CachePickle(cache_file)
+    else:
+      self._pcache=None
+      
+      
   def namedtuple2dict(self,nt,conv=lambda x: x):
     return dict(self.namedtuple2list(nt,conv))
   
@@ -31,7 +34,7 @@ class sensor(object):
   def calculate(self,cache_id,curr):
     res=self._evaluate(cache_id,curr)
     
-    if self.cache is not None and curr is not None:
+    if self._pcache is not None and curr is not None:
       if isinstance(curr,list):
         val=self._merge([self.namedtuple2dict(cv) for cv in curr],self._pcache.get(cache_id),self.id_column)
       else:
@@ -44,13 +47,18 @@ class sensor(object):
     return self.graph   
   
   def store_in_cache(self):
-     self._pcache.store_in_cache()
+    if self._pcache is not None:
+      self._pcache.store_in_cache()
   
   def getValue(self,key, df=None):
-    return self._pcache.get(key,df)
+    res=None
+    if self._pcache is not None:
+      res=self._pcache.get(key,df)    
+    return res
   
   def setValue(self,key,val):
-    self._pcache[key]=val
+    if self._pcache is not None:
+      self._pcache[key]=val
   
   #To implement in derived classes
   def _evaluate(self,cache_id,curr):    
@@ -103,11 +111,18 @@ class sensor(object):
       # interval was too low
       percent = 0.0
     return percent
-   
-  
-  def get_properties(self):
-    return self._properties
-  
-  def get_property(self,label):
-    return self._properties.get(label,None)
-  
+
+  def getenv(self,id,null=None):
+    val=environ.get(id,self._defaults.get(id,null))
+    try:
+      #trying to parse int, boolean
+      val=eval(val.capitalize())
+    except NameError: #means no object found
+      pass
+    except SyntaxError: #means parser get a syntax error      
+      pass
+    except AttributeError: #means capitalize is not valid
+      pass
+    
+    return val
+

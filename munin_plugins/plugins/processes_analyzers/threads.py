@@ -3,12 +3,13 @@ from munin_plugins.env import CACHE
   
 class threads_snsr(sensor):
   label='threads #'
-  cache='%s/processesthreads'%CACHE
   sys_mtd='cpu_times'
   proc_mtd='get_threads'
-  graph="AREASTACK"
   id_column="id"
-  _properties={}
+  _defaults={
+    'cache':'%s/processesthreads'%CACHE,
+    'graph':'AREASTACK',
+  }
 
   def _evaluate(self,cache_id,curr):              
     res=0

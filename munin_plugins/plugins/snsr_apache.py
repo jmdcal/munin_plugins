@@ -16,9 +16,12 @@ from munin_plugins.plugins.www_analyzers import SizeAggregator
 class Apache(Plugin):
   _title='Apache'
   _group='apache'
-  _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator','minutes':5} 
-  _prefix_env='apache'
+  _defaults={
+    'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
+    'minutes':5,    
+  } 
   _prefix_name='snsr_apache'
+  _sub_plugins='www_analyzers'
 
   def _apache_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -48,50 +51,50 @@ class Apache(Plugin):
         elif 'CustomLog' in row:
           access_log=row.strip().split()[1]          
     return res
-
-  def install(self,plugins_dir,plug_config_dir):  
-    ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):    
-      print "Scanning Apache for VirtualHosts.."    
-      out=''
+  
+  def envvars(self):
+    envvars=super(Apache,self).envvars()
+    
+    print "Scanning Apache for VirtualHosts.."    
+    out=''
+    try:
+      #debian and derivated
+      out=subprocess.check_output(['apachectl','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
+    except OSError:
+      pass
+    
+    if len(out)<1:
       try:
-        #debian and derivated
-        out=subprocess.check_output(['apachectl','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
+        #RH and derivated
+        out=subprocess.check_output(['httpd','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
       except OSError:
         pass
-      
-      if len(out)<1:
-        try:
-          #RH and derivated
-          out=subprocess.check_output(['httpd','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
-        except OSError:
-          pass
+        
+    ptn='\((.*):(.*)\)'
+
+    a_file_no=0
+    
+    parsed=[]
+
+    for row in out.split('\n'):
+      fnds=re.search(ptn,row)
+      if fnds is not None:
+        vh=re.search(ptn,row).group(1)
+        if vh not in parsed:
+          to_create=self._apache_parse_title_and_customlog(vh)
+          for title,access_log in to_create:
+            print "..found %s [%s].."%(title,access_log)
+            envvars['title_%s'%a_file_no]=title
+            envvars['access_%s'%a_file_no]=access_log
+            a_file_no+=1
+          parsed.append(vh)
+    print "..done."
+    
+    return envvars
           
-      ptn='\((.*):(.*)\)'
-
-      a_file_no=0
-      envvars=self._defaults.copy()
-      parsed=[]
-
-      for row in out.split('\n'):
-        fnds=re.search(ptn,row)
-        if fnds is not None:
-          vh=re.search(ptn,row).group(1)
-          if vh not in parsed:
-            to_create=self._apache_parse_title_and_customlog(vh)
-            for title,access_log in to_create:
-              print "..found %s [%s].."%(title,access_log)
-              envvars['%s_title_%s'%(self._prefix_env,a_file_no)]=title
-              envvars['%s_access_%s'%(self._prefix_env,a_file_no)]=access_log
-              a_file_no+=1
-            parsed.append(vh)
-      print "..done."
-      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
-    
-    
   def get_files(self):
-    logs=self.getenvs_with_id('apache_access_')
-    titles=dict(self.getenvs_with_id('apache_title_'))
+    logs=self.getenvs_with_id('access_')
+    titles=dict(self.getenvs_with_id('title_'))
     return [(titles.get(id,'undef'),ff) for id,ff in logs]
     
   def main(self,argv=None, **kw):    

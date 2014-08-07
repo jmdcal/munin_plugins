@@ -18,7 +18,6 @@ class Repmgr(Plugin):
     'repmgr_state_1': 'master,master,00FF00',
     'repmgr_state_2': 'standby,standby,FFFF00',
   }
-  _prefix_env='repmgr_state'
   _prefix_name='snsr_repmgr'
      
   def populate_vals(self):
@@ -34,16 +33,15 @@ class Repmgr(Plugin):
       print "%s.draw AREASTACK"%id
       print "%s.colour %s"%(id,col)
   
-  def install(self,plugins_dir,plug_config_dir):    
-    ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):    
-      conf=self._defaults.get('conf','')
-      while not exists(conf):
-        conf=raw_input('Insert a valid path for repmgr config files [%s]'%conf)
+  def envvars(self):
+    envvars=super(Repmgr,self).envvars()
+    conf=self._defaults.get('conf','')
+    while not exists(conf):
+      conf=raw_input('Insert a valid path for repmgr config files [%s]'%conf)
     
-      envvars=self._defaults.copy()
-      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
-      
+    envvars['conf']=conf
+    return envvars
+        
   def main(self,argv=None, **kw):     
     if self.check_config(argv):
       self.print_config()

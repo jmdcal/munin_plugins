@@ -3,10 +3,8 @@ from munin_plugins.env import CACHE
 
 class cpu_usage_snsr(sensor):
   label='cpu usage (%)'
-  cache='%s/processesprocess'%CACHE
   sys_mtd='cpu_times'
   proc_mtd='get_cpu_times'
-  graph="AREASTACK"
   _defaults={
     'cache':'%s/processesprocess'%CACHE,
     'graph':"AREASTACK",

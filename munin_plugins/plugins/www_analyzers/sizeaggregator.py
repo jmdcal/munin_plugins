@@ -17,6 +17,7 @@ CODES = [200,]
 class SizeAggregator(BaseCounter):
   id='sizeaggregator'
   base_title="Pages by size"
+  _defaults={}
   
   def __init__(self,title,group):    
     super(SizeAggregator,self).__init__(title,group)

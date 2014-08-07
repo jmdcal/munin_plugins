@@ -54,6 +54,7 @@ CACHE_CODES="%s/httpcodes"%CACHE
 class HttpCodesCounter(BaseCounter):
   id='httpcodescounter'
   base_title="Http codes"
+  _defaults={}
   
   def __init__(self,title,group):
     super(HttpCodesCounter,self).__init__(title,group)

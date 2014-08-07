@@ -3,10 +3,11 @@ from munin_plugins.env import CACHE
   
 class io_counters_snsr(sensor):
   label='I/O usage (byte of operations)'
-  cache='%s/processesiosbytes'%CACHE
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
-  _properties={}
+  _defaults={
+    'cache':'%s/processesiosbytes'%CACHE
+  }
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,{}) 
@@ -23,7 +24,9 @@ class io_counters_abs_snsr(sensor):
   cache='%s/processesiosabs'%CACHE
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
-  _properties={}
+  _defaults={
+    'cache':'%s/processesiosbytes'%CACHE
+  }
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,{}) 

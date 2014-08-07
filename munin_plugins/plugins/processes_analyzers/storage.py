@@ -6,19 +6,19 @@ from munin_plugins.env import CACHE
 
 class storages_snsr(sensor):
   label='file'
-  cache='%s/processesstorages'%CACHE
   sys_mtd='storages'
   proc_mtd='get_open_files'
-  graph="AREASTACK"
   id_column='path'
-  _properties={
-    'files_regex':'.*((Data\.fs)|(\.log)).*'
+  _defaults={
+    'cache':'%s/processesstorages'%CACHE,
+    'files_regex':'.*((Data\.fs)|(\.log)).*',
+    'graph':'AREASTACK',
   }
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,curr)
     res=[]
-    parser=re.compile(self.get_property('files_regex'))
+    parser=re.compile(self.getenv('files_regex'))
     if curr is not None and len(curr)>0:      
       res=set([(self._cut(i.path),os.path.getsize(i.path)) for i in curr if parser.match(i.path)])
     elif prev is not None:

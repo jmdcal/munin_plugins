@@ -15,8 +15,9 @@ class Plugin(object):
   _title='Undefined'
   _group='Undefined'
   _defaults={}  
-  _prefix_env='undefined'
+  _extended={}
   _prefix_name='undefined'
+  _sub_plugins=None
     
   def check_config(self,argv):
     argv=self.fixargs(argv)
@@ -41,7 +42,6 @@ class Plugin(object):
 
   def getenvs_with_id(self,pref):
     return [[i.replace(pref,'')]+e.split(',') for i,e in environ.items() if re.match('^%s'%pref,i)]  
-
   
   def paths(self,plugins_dir):
     return (join(sys.prefix,'bin',self._prefix_name),join(plugins_dir,self._prefix_name))
@@ -56,8 +56,7 @@ class Plugin(object):
       def_label='y/N'
     
     return (raw_input("Link %s -> %s [%s]?"%(orig,link,def_label)),def_create)
-  
-  
+   
   def install_plugin(self,plugins_dir,plug_config_dir,extended={},env={}):
     orig,link=self.paths(plugins_dir)
     try:        
@@ -86,19 +85,30 @@ class Plugin(object):
     pass
 
   def install(self,plugins_dir,plug_config_dir):
-    pass
+    ans,def_create=self.ask(plugins_dir)
+    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):        
+      self.install_plugin(plugins_dir,plug_config_dir,extended=self._extended,env=self.envvars())      
+
+  def envvars(self):
+    envvars=self._defaults.copy()
+    if self._sub_plugins is not None:
+      for plugin_name in self._defaults['enabled'].split(','):
+        try:
+          plugin_class=self.get_sub_plugin(self._sub_plugins,plugin_name)
+          for k,v in plugin_class._defaults.items():
+            envvars['%s_%s'%(plugin_name,k)]=v                
+        except (KeyError,ImportError) as e:        
+          pass        
+    return envvars
+
 
   def main(self,argv=None, **kw):
     pass
-  
-  
- 
+   
   def fixargs(self,argv):
     if argv is None:
       argv = sys.argv[1:]
     return argv
-
-
 
   def print_data(self,**args):
     id=args.get('id',None)
@@ -148,3 +158,5 @@ class Plugin(object):
       res=[]
     return res
   
+  def get_sub_plugin(self,lib,name):    
+    return getattr(__import__(lib,globals(),locals(),[name],-1),name)
