@@ -2,28 +2,20 @@
 from datetime import datetime,timedelta
 import re
 import time
-import os
 import fcntl
 import pickle
-import sys
-from base64 import b16encode
-from base64 import b16decode
 from base64 import b64encode
 from base64 import b64decode
 
 from collections import Counter
 from collections import deque
 
-from os.path import join
-from os.path import exists
+from os.path import isfile
 
 from munin_plugins.env import MINUTES
 
-EMAIL_RE="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
-EMAIL_PARSER=re.compile(EMAIL_RE)
-
-DOM_RE='http://(.*?)(/|\))'
-DOM_PARSER=re.compile(DOM_RE)
+EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
+DOM_PARSER=re.compile('http://(.*?)(/|\))')
 
 #Forced Option, may be one day I move these in mmunin_plugins.conf
 
@@ -44,8 +36,6 @@ NGINX_REFFER_RE=r'\s+\"(.*?)\"'
 NGINX_SIGN_RE=r'\s+\"(.*?)\"'
 NGINX_LATENCY_RE=r'\s+\[\[(.*)\]\]'
 
-
-
 NGINX_LOG_RE= \
   NGING_IP_RE + \
   NGINX_USER_RE + \
@@ -56,16 +46,11 @@ NGINX_LOG_RE= \
   NGINX_REFFER_RE + \
   NGINX_SIGN_RE
 
-NGINX_LOG2_RE=NGINX_LOG_RE+NGINX_LATENCY_RE #latency
 NGINX_PARSER=re.compile(NGINX_LOG_RE)
-ROW_PARSER=re.compile(NGINX_LOG2_RE)
+ROW_PARSER=re.compile(NGINX_LOG_RE+NGINX_LATENCY_RE)
 
-
-
-APACHE_LOG_RE=NGINX_LOG_RE
-APACHE_LOG2_RE=NGINX_LOG_RE+NGINX_LATENCY_RE #latency
-APACHE_PARSER=re.compile(APACHE_LOG_RE)
-AROW_PARSER=re.compile(APACHE_LOG2_RE)
+APACHE_PARSER=re.compile(NGINX_LOG_RE)
+AROW_PARSER=re.compile(NGINX_LOG_RE+NGINX_LATENCY_RE)
 
 ROW_MAPPING={
   'ip':0,
@@ -80,7 +65,6 @@ ROW_MAPPING={
   'agent':9,
   'latency':10,
 }
-
 
 def getlimit(minutes=MINUTES):
   actual_time=datetime.today()
@@ -194,55 +178,6 @@ class ApacheRowParser(NginxRowParser):
       res=res/1000000
     return res
     
-def get_short_agent(agent):
-  res=''
-  try:
-    dom=DOM_PARSER.search(agent).group(0)
-  except AttributeError:
-    dom=''
-    
-  if len(dom)>0:
-    res=dom.replace('http:','').replace('/','')
-  else:
-    eml=EMAIL_PARSER.findall(agent)
-    if len(eml)>0:
-      res=eml[0]  
-  try:
-    res=res.split(' ')[0]
-  except:
-    pass
-  # fix for Googlebot-Image/1.0 and others with no useful agent signature
-  if len(res)==0:
-    res=agent.lower().replace('/','_')    
-    
-
-  return res.replace('.','_').replace('@','_at_').replace('(',' ').replace(')',' ')
-       
-def ft(time_ft):
-  # this function is needed in apache because latency is not in seconds
-  # return time in seconds.millisec
-  return float(time_ft)
-
-def change_format(dt):
-  day,month,dd,tm,year=dt.split(' ')
-  date=time.strptime('%s/%s/%s'%(dd,month,year),'%d/%b/%Y')
-  return "%s %s.000000"%(time.strftime('%Y-%m-%d',date),tm)
-
-def getparams_from_config():
-  files=deque()
-  end=False
-  file_no=0
-  filename=''
-  while filename is not None:
-    title=os.environ.get('GRAPH_TITLE_%s'%file_no,'Untitled')
-    group=os.environ.get('GRAPH_GROUP_%s'%file_no,'Undefined')
-    filename=os.environ.get('GRAPH_ACCESS_%s'%file_no,None)  
-    if filename is not None:
-      files.append((title,group,filename))
-      file_no+=1
-        
-  return files
-
 def mkoutput(**argv):
   id=argv.get('id',None)
   if id is not None:
@@ -273,40 +208,13 @@ def print_config(**args):
              critical=args.get('critical',None),
              colour=args.get('color',None),
              line=args.get('line',None),)
-    
-def concat(tp):
-  return '%s::%s'%tp
-
-def namedtuple2list(nt,conv=lambda x: x):
-  try:
-    res=[conv((i,getattr(nt,i))) for i in nt._fields]
-  except AttributeError:
-    res=[]
-  return res
-
-def namedtuple2dict(nt,conv=lambda x: x):
-  return dict(namedtuple2list(nt,conv))
-
-def get_percent_of(val,full):
-  try:
-    percent = (val / full) * 100
-  except ZeroDivisionError:
-    # interval was too low
-    percent = 0.0
-  return percent
-    
-
-
-def check_install(argv):
-  argv=fixargs(argv)
-  return (len(argv)>0 and argv[0]=='install')
-    
+        
 #Mixin Cache Class
-class Cache(object): 
+class _Cache(object): 
   default=None
   
   def __init__(self,fn,def_value=None,*args,**kargs):
-    super(Cache,self).__init__(*args,**kargs)
+    super(_Cache,self).__init__(*args,**kargs)
     self.fn=fn       
     if def_value is not None:
       self.default=def_value
@@ -326,7 +234,7 @@ class Cache(object):
     fcntl.lockf(fd, fcntl.LOCK_UN)
 
   def load_from_cache(self):
-    if self.fn is not None and os.path.isfile(self.fn):
+    if self.fn is not None and isfile(self.fn):
       fd=open(self.fn,'r')
       for i in fd:
         i=i.strip()
@@ -346,17 +254,15 @@ class Cache(object):
       self._unlock(fd)
       fd.close()
 
-
   #Methods to define in class
   def load_value(self,val):
     pass
 
   def get_values(self):
     return []
-  
 
 #Simple cache based on a list of values
-class CacheDict(Cache,dict):  
+class CacheDict(_Cache,dict):  
   def load_value(self,val):
     self[val]=self.default
 
@@ -364,7 +270,7 @@ class CacheDict(Cache,dict):
     return self.keys()
 
 #Simple cache based on a Counter, a dictionary val: qty
-class CacheCounter(Cache,Counter):    
+class CacheCounter(_Cache,Counter):    
   default=0
   
   def load_value(self,val):
@@ -373,7 +279,7 @@ class CacheCounter(Cache,Counter):
   def get_values(self):
     return self.keys()
 
-class CachePickle(Cache,dict):
+class CachePickle(_Cache,dict):
   default=()
   
   def load_value(self,val):

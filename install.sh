@@ -1,9 +1,9 @@
 #!/bin/bash
 
-rm -fr /opt/munin/
+#rm -fr /opt/munin/
 rm -fr build dist
 
-virtualenv /opt/munin
+#virtualenv /opt/munin
 
 /opt/munin/bin/python setup.py bdist_egg
 

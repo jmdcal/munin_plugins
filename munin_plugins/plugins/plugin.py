@@ -16,7 +16,6 @@ class Plugin(object):
   _group='Undefined'
   _defaults={}  
     
-
   def check_config(self,argv):
     argv=self.fixargs(argv)
     return (len(argv)>0 and argv[0]=='config')
@@ -139,7 +138,6 @@ class Plugin(object):
 
   def namedtuple2dict(self,nt,conv=lambda x: x):
     return dict(self.namedtuple2list(nt,conv))
-  
   
   def namedtuple2list(self,nt,conv=lambda x: x):
     try:

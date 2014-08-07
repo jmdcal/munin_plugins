@@ -1,5 +1,4 @@
 from collections import Counter
-from munin_plugins.utils import ft
 
 from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
