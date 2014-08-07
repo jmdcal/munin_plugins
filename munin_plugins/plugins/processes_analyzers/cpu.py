@@ -8,6 +8,7 @@ class cpu_usage_snsr(sensor):
   sys_mtd='cpu_times'
   proc_mtd='get_cpu_times'
   graph="AREASTACK"
+  _properties={}
   
   def _evaluate(self,cache_id,curr):    
     prev=self.getValue(cache_id,curr)    

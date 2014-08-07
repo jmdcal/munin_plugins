@@ -1,9 +1,10 @@
 from munin_plugins.utils import *
 
-from munin_plugins.env import CACHE_BOTS
-from munin_plugins.env import MINUTES
+from munin_plugins.env import CACHE
 
 from munin_plugins.plugins.www_analyzers.base import BaseCounter
+
+CACHE_BOTS="%s/bots"%CACHE
 
 class BotsCounter(BaseCounter):
   id='botscounter'
@@ -11,7 +12,7 @@ class BotsCounter(BaseCounter):
   
   def __init__(self,title,group):
     super(BotsCounter,self).__init__(title,group)
-    self.label="number of call in %s mins"%MINUTES
+    self.label="number of calls"
     self.counter=CacheCounter(CACHE_BOTS)
     
   def update_with(self,datas):    

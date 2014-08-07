@@ -2,7 +2,7 @@ from os import makedirs
 from os.path import exists
 from os.path import join
 
-from ..env import SYS_VAR_PATH
+from munin_plugins.env import SYS_VAR_PATH
 
 def check(log,err):  
   dest=join(SYS_VAR_PATH,'cache')

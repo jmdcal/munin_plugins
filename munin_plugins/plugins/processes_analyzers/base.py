@@ -9,6 +9,7 @@ class sensor(object):
   proc_mtd='generic_sensor'
   graph=None
   id_column='id'
+  _properties={}
   
   def __init__(self,sys_prev,sys_curr):
     self.sys_prev=sys_prev
@@ -83,4 +84,5 @@ class sensor(object):
       res=parts[-1].replace('.','_')
     return res
 
-  
+  def get_properties(self):
+    return self._properties

@@ -3,33 +3,38 @@ from collections import Counter
 from math import log
 
 from munin_plugins.utils import ft
-from munin_plugins.env import SIZE_INTERVALS
-from munin_plugins.env import MINUTES
-from munin_plugins.env import SIZE_COLORS
-from munin_plugins.env import SIZE_CODES
 
 from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
+INTERVALS=(1024, 10240, 102400,1048576,)
+COLORS={
+  '1024':'00FF00',
+  '10240':'88FF00', 
+  '102400':'FFFF00',
+  '1048576':'FF8800',
+}
+CODES = [200,]
+
 class SizeAggregator(BaseCounter):
   id='sizeaggregator'
-  base_title="Bytes downloaded"
+  base_title="Pages by size"
   
   def __init__(self,title,group):    
     super(SizeAggregator,self).__init__(title,group)
-    self.label="number of pages in %s mins" %MINUTES
-    self.counter=Counter(dict([(str(i),0) for i in SIZE_INTERVALS]+[('others',0)]))
+    self.label="number of pages"
+    self.counter=Counter(dict([(str(i),0) for i in INTERVALS]+[('others',0)]))
     
   def update_with(self,datas):
     val=datas.get_bytes()
      
     #aggr evaluate
-    if val is not None and datas.get_bytes()>0 and datas.get_int_code() in SIZE_CODES:
+    if val is not None and datas.get_bytes()>0 and datas.get_int_code() in CODES:
       pos=0
-      while pos<len(SIZE_INTERVALS) and SIZE_INTERVALS[pos]<int(val):
+      while pos<len(INTERVALS) and INTERVALS[pos]<int(val):
         pos+=1
 
-      if pos<len(SIZE_INTERVALS):
-        idx=str(SIZE_INTERVALS[pos])
+      if pos<len(INTERVALS):
+        idx=str(INTERVALS[pos])
         self.counter[idx]=1+self.counter[idx]
       else:
         self.counter['others']=1+self.counter['others']
@@ -44,11 +49,11 @@ class SizeAggregator(BaseCounter):
     return res
             
   def print_data(self, printer, w=None,c=None):
-    for threshould in SIZE_INTERVALS:
+    for threshould in INTERVALS:
       printer(id="numbers%s"%str(threshould).replace('.',''),
               value=self.counter[str(threshould)],
               label='< %s'%self.millify(threshould),
-              color=SIZE_COLORS[str(threshould).replace('.','')],
+              color=COLORS[str(threshould).replace('.','')],
               draw="AREASTACK")
 
     printer(id="numbersother",

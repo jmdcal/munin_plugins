@@ -1,8 +1,11 @@
 import os
+import re
 
 from munin_plugins.plugins.processes_analyzers.base import sensor
 from munin_plugins.env import CACHE
-from munin_plugins.env import PSTORAGES_FILE_PARSER
+
+PSTORAGES_FILE_RE='.*((Data\.fs)|(\.log)).*'
+PSTORAGES_FILE_PARSER=re.compile(PSTORAGES_FILE_RE)
 
 class storages_snsr(sensor):
   label='file'
@@ -11,6 +14,7 @@ class storages_snsr(sensor):
   proc_mtd='get_open_files'
   graph="AREASTACK"
   id_column='path'
+  _properties={}
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,curr)

@@ -8,6 +8,7 @@ class threads_snsr(sensor):
   proc_mtd='get_threads'
   graph="AREASTACK"
   id_column="id"
+  _properties={}
 
   def _evaluate(self,cache_id,curr):              
     res=0

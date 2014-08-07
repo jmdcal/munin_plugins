@@ -6,6 +6,7 @@ class swap_snsr(sensor):
   sys_mtd='swap'
   proc_mtd='get_memory_maps'
   graph="AREASTACK"
+  _properties={}
   
   def _evaluate(self,ache_id,curr):
     res=0

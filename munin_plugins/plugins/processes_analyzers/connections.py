@@ -7,6 +7,7 @@ class connections_snsr(sensor):
   cache=None
   sys_mtd='connections'
   proc_mtd='get_connections'
+  _properties={}
   
   def _evaluate(self,cache_id,curr):
     res=0

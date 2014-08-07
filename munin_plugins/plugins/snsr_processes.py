@@ -10,8 +10,10 @@ from munin_plugins.plugins.plugin import Plugin
 from munin_plugins.utils import CachePickle
 from munin_plugins.utils import CacheDict
 
-from munin_plugins.env import SYSTEM_VALUE_CACHE
-from munin_plugins.env import INSTANCES_CACHE
+from munin_plugins.env import CACHE
+
+SYSTEM_VALUE_CACHE=('%s/system_state'%CACHE,'CachePickle')
+INSTANCES_CACHE='%s/process_instances'%CACHE
 
 PROCESSES={
   'plone':True,

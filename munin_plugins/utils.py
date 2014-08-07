@@ -18,12 +18,69 @@ from os.path import join
 from os.path import exists
 
 from munin_plugins.env import MINUTES
-from munin_plugins.env import ROW_PARSER
-from munin_plugins.env import ROW_MAPPING
-from munin_plugins.env import NGINX_PARSER
-from munin_plugins.env import EMAIL_PARSER
-from munin_plugins.env import DOM_PARSER
-from munin_plugins.env import WRONG_AGENTS
+
+EMAIL_RE="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
+EMAIL_PARSER=re.compile(EMAIL_RE)
+
+DOM_RE='http://(.*?)(/|\))'
+DOM_PARSER=re.compile(DOM_RE)
+
+#Forced Option, may be one day I move these in mmunin_plugins.conf
+
+#Nginx log Format
+#    log_format combined2 '$remote_addr - $remote_user [$time_local]  '
+#                    '"$request" $status $body_bytes_sent '
+#                    '"$http_referer" "$http_user_agent" [[$request_time]]';
+#
+# This is an example about the nginx log row
+# 192.107.92.74 - - [25/Jun/2013:03:51:59 +0200]  "GET /++theme++enea-skinaccessibile/static/theme/styles/polaroid-multi.png HTTP/1.1" 499 0 "-" "Serf/1.1.0 mod_pagespeed/1.5.27.3-3005" [[2.554]]
+NGING_IP_RE=r'^([0-9]+(?:\.[0-9]+){3})'
+NGINX_USER_RE=r'\s+\-\s(.*?)'
+NGINX_DATE_RE=r'\s+\[([0-9]{2}\/[a-zA-Z]{3}\/[0-9\:]{13})\s\+[0-9]{4}\]'
+NGINX_REQUEST_RE=r'\s+\"([A-Z]*?)\s(.*?)(\sHTTP.*)?"'
+NGINX_HTTPCODE_RE=r'\s+([0-9]{3})'
+NGINX_BYTES_RE=r'\s+([\-0-9]+)'
+NGINX_REFFER_RE=r'\s+\"(.*?)\"'
+NGINX_SIGN_RE=r'\s+\"(.*?)\"'
+NGINX_LATENCY_RE=r'\s+\[\[(.*)\]\]'
+
+
+
+NGINX_LOG_RE= \
+  NGING_IP_RE + \
+  NGINX_USER_RE + \
+  NGINX_DATE_RE + \
+  NGINX_REQUEST_RE + \
+  NGINX_HTTPCODE_RE + \
+  NGINX_BYTES_RE + \
+  NGINX_REFFER_RE + \
+  NGINX_SIGN_RE
+
+NGINX_LOG2_RE=NGINX_LOG_RE+NGINX_LATENCY_RE #latency
+NGINX_PARSER=re.compile(NGINX_LOG_RE)
+ROW_PARSER=re.compile(NGINX_LOG2_RE)
+
+
+
+APACHE_LOG_RE=NGINX_LOG_RE
+APACHE_LOG2_RE=NGINX_LOG_RE+NGINX_LATENCY_RE #latency
+APACHE_PARSER=re.compile(APACHE_LOG_RE)
+AROW_PARSER=re.compile(APACHE_LOG2_RE)
+
+ROW_MAPPING={
+  'ip':0,
+  'user':1,
+  'date':2,
+  'method':3,
+  'url':4,
+  'protocol':5,
+  'code':6,
+  'bytes':7,
+  'reffer':8,
+  'agent':9,
+  'latency':10,
+}
+
 
 def getlimit(minutes=MINUTES):
   actual_time=datetime.today()
@@ -120,6 +177,17 @@ class NginxRowParser(object):
     return (len(https)==0 or code in https)
 
 class ApacheRowParser(NginxRowParser):
+  def __init__(self,row):
+    self.row=row
+    try:
+      self.parsed=AROW_PARSER.search(row).groups()
+    except AttributeError:
+      #Fall back to combine nginx log
+      try:
+        self.parsed=APACHE_PARSER.search(row).groups()
+      except AttributeError:        
+        self.parsed=[]
+  
   def get_float_latency(self):
     res=super(ApacheRowParser,self).get_float_latency()
     if res is not None:
@@ -138,12 +206,7 @@ def get_short_agent(agent):
   else:
     eml=EMAIL_PARSER.findall(agent)
     if len(eml)>0:
-      res=eml[0]
-    else:
-      fd=open(WRONG_AGENTS,'a')
-      fd.write('%s\n'%agent)
-      fd.close()
-  
+      res=eml[0]  
   try:
     res=res.split(' ')[0]
   except:
