@@ -18,4 +18,3 @@ class threads_snsr(sensor):
     return res
 
   
-  

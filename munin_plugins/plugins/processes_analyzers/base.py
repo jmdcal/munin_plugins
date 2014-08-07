@@ -1,5 +1,6 @@
+from os import environ
+
 from munin_plugins.utils import CachePickle
-from munin_plugins.utils import namedtuple2dict
 
 #Base class: used to inherit
 class sensor(object):
@@ -16,14 +17,24 @@ class sensor(object):
     self.sys_curr=sys_curr
     self._pcache=CachePickle(self.cache)
 
+  def namedtuple2dict(self,nt,conv=lambda x: x):
+    return dict(self.namedtuple2list(nt,conv))
+  
+  def namedtuple2list(self,nt,conv=lambda x: x):
+    try:
+      res=[conv((i,getattr(nt,i))) for i in nt._fields]
+    except AttributeError:
+      res=[]
+    return res
+
   def calculate(self,cache_id,curr):
     res=self._evaluate(cache_id,curr)
     
     if self.cache is not None and curr is not None:
       if isinstance(curr,list):
-        val=self._merge([namedtuple2dict(cv) for cv in curr],self._pcache.get(cache_id),self.id_column)
+        val=self._merge([self.namedtuple2dict(cv) for cv in curr],self._pcache.get(cache_id),self.id_column)
       else:
-        val=namedtuple2dict(curr)  
+        val=self.namedtuple2dict(curr)  
         
       self.setValue(cache_id,val)
     return res
@@ -86,3 +97,6 @@ class sensor(object):
 
   def get_properties(self):
     return self._properties
+  
+  def get_property(self,label):
+    return self._properties.get(label,None)

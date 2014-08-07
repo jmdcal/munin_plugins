@@ -66,11 +66,6 @@ ROW_MAPPING={
   'latency':10,
 }
 
-def getlimit(minutes=MINUTES):
-  actual_time=datetime.today()
-  delay=timedelta(seconds=minutes*60)
-  return actual_time-delay
-
 class NginxRowParser(object):
   def __init__(self,row):
     self.row=row
