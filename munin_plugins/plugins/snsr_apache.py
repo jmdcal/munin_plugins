@@ -17,6 +17,8 @@ class Apache(Plugin):
   _title='Apache'
   _group='apache'
   _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator','minutes':5} 
+  _prefix_env='apache'
+  _prefix_name='snsr_apache'
 
   def _apache_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -48,7 +50,7 @@ class Apache(Plugin):
     return res
 
   def install(self,plugins_dir,plug_config_dir):  
-    ans,def_create=self.ask('snsr_apache',plugins_dir)
+    ans,def_create=self.ask(plugins_dir)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):    
 
@@ -81,12 +83,12 @@ class Apache(Plugin):
             to_create=self._apache_parse_title_and_customlog(vh)
             for title,access_log in to_create:
               print "..found %s [%s].."%(title,access_log)
-              envvars['apache_title_%s'%a_file_no]=title
-              envvars['apache_access_%s'%a_file_no]=access_log
+              envvars['%s_title_%s'%(self._prefix_env,a_file_no)]=title
+              envvars['%s_access_%s'%(self._prefix_env,a_file_no)]=access_log
               a_file_no+=1
             parsed.append(vh)
       print "..done."
-      self.install_plugin('snsr_apache',plugins_dir,plug_config_dir,env=envvars)
+      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
     
     
   def get_files(self):

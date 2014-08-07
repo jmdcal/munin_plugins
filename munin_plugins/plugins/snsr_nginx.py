@@ -21,6 +21,8 @@ class Nginx(Plugin):
   _title='Nginx'
   _group='nginx'
   _defaults={'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator','minutes':5} 
+  _prefix_env='nginx'
+  _prefix_name='snsr_nginx'
   
   def _nginx_parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -58,10 +60,10 @@ class Nginx(Plugin):
     return res       
               
   def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask('snsr_nginx',plugins_dir)
+    ans,def_create=self.ask(plugins_dir)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
-      nginx_sites='/etc/nginx'
+      nginx_sites='/etc/nginx/sites-enabled'
       n_file_no=0
       
       while n_file_no==0:
@@ -78,8 +80,8 @@ class Nginx(Plugin):
               to_create=self._nginx_parse_title_and_customlog(fpath)
               for title,access_log in to_create:
                 print "..found %s [%s].."%(title,access_log)
-                envvars['nginx_title_%s'%n_file_no]=title
-                envvars['nginx_access_%s'%n_file_no]=access_log
+                envvars['%s_title_%s'%(self._prefix_env,n_file_no)]=title
+                envvars['%s_access_%s'%(self._prefix_env,n_file_no)]=access_log
                 n_file_no+=1
         except OSError:
           pass
@@ -88,7 +90,7 @@ class Nginx(Plugin):
           print "No valid configuration found... try again."
         else:
           print "..done."
-      self.install_plugin('snsr_nginx',plugins_dir,plug_config_dir,env=envvars)              
+      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)              
        
   def get_files(self):
     logs=self.getenvs_with_id('nginx_access_')

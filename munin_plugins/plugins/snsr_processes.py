@@ -29,16 +29,30 @@ class Processes(Plugin):
   _defaults={'minutes':5,
              'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
             } 
+  _prefix_env='process'
+  _prefix_name='snsr_processes'
   
   def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask('snsr_processes',plugins_dir)
+    ans,def_create=self.ask(plugins_dir)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):
       envvars=self._defaults.copy()
       for k,v in PROCESSES.items():
-        envvars['process_%s'%k]=v      
-      self.install_plugin('snsr_processes',plugins_dir,plug_config_dir,extended=dict(timeout=120),env=envvars)      
+        envvars['%s_%s'%(self._prefix_env,k)]=v      
+        
+      for plg in self._defaults['enabled'].split(','):
+        try:
+          plg_obj=self._get_sub_plugin("processes_analyzers",plg)
+          for k,v in plg_obj._defaults.items():
+            envvars['%s_%s_%s'%(self._prefix_env,plg,k)]=v                
+        except (KeyError,ImportError) as e:        
+          pass
+        
+      self.install_plugin(plugins_dir,plug_config_dir,extended=dict(timeout=120),env=envvars)      
       
+  def _get_sub_plugin(self,lib,name):    
+    return getattr(__import__(lib,globals(),locals(),[name],-1),name)
+  
   def main(self,argv=None, **kw):     
     is_config=self.check_config(argv)
     title=self._title
@@ -55,7 +69,7 @@ class Processes(Plugin):
     
     for name in self.getenv('enabled').split(','):
       try:
-        analyzer_classes.append(getattr(__import__("processes_analyzers",globals(),locals(),[name],-1),name))
+        analyzer_classes.append(self._get_sub_plugin("processes_analyzers",name))
       except (KeyError,ImportError) as e:        
         pass
     

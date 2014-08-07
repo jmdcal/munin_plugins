@@ -10,6 +10,7 @@ class sensor(object):
   proc_mtd='generic_sensor'
   graph=None
   id_column='id'
+  _defaults={}
   _properties={}
   
   def __init__(self,sys_prev,sys_curr):
@@ -94,9 +95,19 @@ class sensor(object):
     if len(parts)>0:
       res=parts[-1].replace('.','_')
     return res
-
+  
+  def get_percent_of(self,val,full):
+    try:
+      percent = (val / full) * 100
+    except ZeroDivisionError:
+      # interval was too low
+      percent = 0.0
+    return percent
+   
+  
   def get_properties(self):
     return self._properties
   
   def get_property(self,label):
     return self._properties.get(label,None)
+  

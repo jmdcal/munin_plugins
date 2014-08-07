@@ -15,6 +15,8 @@ class Plugin(object):
   _title='Undefined'
   _group='Undefined'
   _defaults={}  
+  _prefix_env='undefined'
+  _prefix_name='undefined'
     
   def check_config(self,argv):
     argv=self.fixargs(argv)
@@ -41,11 +43,11 @@ class Plugin(object):
     return [[i.replace(pref,'')]+e.split(',') for i,e in environ.items() if re.match('^%s'%pref,i)]  
 
   
-  def paths(self,id,plugins_dir):
-    return (join(sys.prefix,'bin',id),join(plugins_dir,id))
+  def paths(self,plugins_dir):
+    return (join(sys.prefix,'bin',self._prefix_name),join(plugins_dir,self._prefix_name))
   
-  def ask(self,id,plugins_dir,):
-    orig,link=self.paths(id,plugins_dir)
+  def ask(self,plugins_dir):
+    orig,link=self.paths(plugins_dir)
     def_create=not exists(link)
     
     if def_create:
@@ -56,18 +58,18 @@ class Plugin(object):
     return (raw_input("Link %s -> %s [%s]?"%(orig,link,def_label)),def_create)
   
   
-  def install_plugin(self,id,plugins_dir,plug_config_dir,extended={},env={}):
-    orig,link=self.paths(id,plugins_dir)
+  def install_plugin(self,plugins_dir,plug_config_dir,extended={},env={}):
+    orig,link=self.paths(plugins_dir)
     try:        
       symlink(orig,link)
-      print "%s installed [%s,%s]\n"%(id.capitalize(),orig,link)
+      print "%s installed [%s,%s]\n"%(self._prefix_name.capitalize(),orig,link)
     except OSError:
-      print "%s NOT updated [%s,%s]\n"%(id.capitalize(),orig,link)
+      print "%s NOT updated [%s,%s]\n"%(self._prefix_name.capitalize(),orig,link)
 
-    config_file=join(plug_config_dir,id)
+    config_file=join(plug_config_dir,self._prefix_name)
       
     with open(config_file,'w') as fd:
-      fd.write('[%s]\n'%id)
+      fd.write('[%s]\n'%self._prefix_name)
       fd.write('user root\n')
       fd.write('group root\n')
       if extended is not None:
@@ -77,7 +79,7 @@ class Plugin(object):
         for k,v in env.items():
            fd.write('env.%s %s\n'%(k,v))
           
-    print "%s configured [%s]"%(id.capitalize(),config_file)
+    print "%s configured [%s]"%(self._prefix_name.capitalize(),config_file)
 
   
   def print_config(self,title,group,vals):

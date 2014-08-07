@@ -70,6 +70,8 @@ class Monit(Plugin):
              'percentage':'True',
              'full':'False',
              'lastest':"accessible,online with all services,running,monit down",}
+  _prefix_env='monit_state'
+  _prefix_name='snsr_monit'
 
   def populate_vals(self):
     to_init=['monit down',]
@@ -109,15 +111,15 @@ class Monit(Plugin):
 
     
   def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask('snsr_monit',plugins_dir)
+    ans,def_create=self.ask(plugins_dir)
     if (len(ans)==0 and def_create) or \
       (len(ans)>0 and ans.lower()=='y'):    
       
       envvars=self._defaults.copy()               
       for pos,(lab,col) in enumerate(MONIT_STATUS.items()):
-        envvars['monit_state_%s'%pos]="%s,%s"%(lab,col)
+        envvars['%s_%s'%(self._prefix_env,pos)]="%s,%s"%(lab,col)
     
-      self.install_plugin('snsr_monit',plugins_dir,plug_config_dir,env=envvars)
+      self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
   
   def parse_monit_row(self,row):
     status=None
