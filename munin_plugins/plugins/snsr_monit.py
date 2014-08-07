@@ -8,68 +8,62 @@ from munin_plugins.plugins.plugin import Plugin
 from munin_plugins.utils import CacheCounter
 from munin_plugins.env import CACHE
 
-MONIT_STATUS={
-  "monit down":'757575',
-  "running":'005000',
-  "online with all services":'006000',
-  "accessible":'007000',  
-  "monitored":'008000',
-  "initializing":'009000',
-  "action done":'00A000', 
-  "checksum succeeded":'00FF00',
-  "connection succeeded":'00FF00',
-  "content succeeded":'00FF00',
-  "data access succeeded":'00FF00',
-  "execution succeeded":'00FF00',
-  "filesystem flags succeeded":'00FF00',
-  "gid succeeded":'00FF00',
-  "icmp succeeded":'00FF00',
-  "monit instance changed not":'00FF00',
-  "type succeeded":'00FF00',
-  "exists":'FFFF00',
-  "permission succeeded":'00FF00',
-  "pid succeeded":'00FF00',
-  "ppid succeeded":'00FF00',
-  "resource limit succeeded":'00FF00',
-  "size succeeded":'00FF00',
-  "timeout recovery":'FFFF00',
-  "timestamp succeeded":'00FF00',
-  "uid succeeded":'00FF00',
-  "not monitored":'00FFFF',
-  "checksum failed":'FF0000',
-  "connection failed":'0000FF',
-  "content failed":'FF0000',
-  "data access error":'FF0000',
-  "execution failed":'FF0000',
-  "filesystem flags failed":'FF0000',
-  "gid failed":'FF0000',
-  "icmp failed":'FF00FF',
-  "monit instance changed":'FF0000',
-  "invalid type":'FF0000',
-  "does not exist":'FF0000',
-  "permission failed":'FF0000',
-  "pid failed":'FF0000',
-  "ppid failed":'FF0000',
-  "resource limit matched":'CCCC00',
-  "size failed":'FF0000',
-  "timeout":'FF0000',
-  "timestamp failed":'FF0000',
-  "uid failed":'FF0000',
-}
-
-MONIT_PARSER=re.compile((
-  r'^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)'
-  r"\s('.*?')"
-  r'\s(.*)'
-))
-
 class Monit(Plugin):
   _title='Monit status'
   _group='monit'
-  _defaults={'cache':"%s/monit_messages"%CACHE,
-             'percentage':'True',
-             'full':'False',
-             'lastest':"accessible,online with all services,running,monit down",}
+  _defaults={
+    'cache':"%s/monit_messages"%CACHE,
+    'percentage':'True',
+    'full':'False',
+    'lastest':"accessible,online with all services,running,monit down",
+    'line_regex':"^(Filesystem|Directory|File|Process|Remote Host|System|Fifo)\s('.*?')\s(.*)",    
+    'monit_state_0':"monit down,757575",
+    'monit_state_1':"running,005000",
+    'monit_state_2':"online with all services,006000",
+    'monit_state_3':"accessible,007000",  
+    'monit_state_4':"monitored,008000",
+    'monit_state_5':"initializing,009000",
+    'monit_state_6':"action done,00A000", 
+    'monit_state_7':"checksum succeeded,00FF00",
+    'monit_state_8':"connection succeeded,00FF00",
+    'monit_state_9':"content succeeded,00FF00",
+    'monit_state_10':"data access succeeded,00FF00",
+    'monit_state_11':"execution succeeded,00FF00",
+    'monit_state_12':"filesystem flags succeeded,00FF00",
+    'monit_state_13':"gid succeeded,00FF00",
+    'monit_state_14':"icmp succeeded,00FF00",
+    'monit_state_15':"monit instance changed not,00FF00",
+    'monit_state_16':"type succeeded,00FF00",
+    'monit_state_17':"exists,FFFF00",
+    'monit_state_18':"permission succeeded,00FF00",
+    'monit_state_19':"pid succeeded,00FF00",
+    'monit_state_20':"ppid succeeded,00FF00",
+    'monit_state_21':"resource limit succeeded,00FF00",
+    'monit_state_22':"size succeeded,00FF00",
+    'monit_state_23':"timeout recovery,FFFF00",
+    'monit_state_24':"timestamp succeeded,00FF00",
+    'monit_state_25':"uid succeeded,00FF00",
+    'monit_state_26':"not monitored,00FFFF",
+    'monit_state_27':"checksum failed,FF0000",
+    'monit_state_28':"connection failed,0000FF",
+    'monit_state_29':"content failed,FF0000",
+    'monit_state_30':"data access error,FF0000",
+    'monit_state_31':"execution failed,FF0000",
+    'monit_state_32':"filesystem flags failed,FF0000",
+    'monit_state_33':"gid failed,FF0000",
+    'monit_state_34':"icmp failed,FF00FF",
+    'monit_state_35':"monit instance changed,FF0000",
+    'monit_state_36':"invalid type,FF0000",
+    'monit_state_37':"does not exist,FF0000",
+    'monit_state_38':"permission failed,FF0000",
+    'monit_state_39':"pid failed,FF0000",
+    'monit_state_40':"ppid failed,FF0000",
+    'monit_state_41':"resource limit matched,CCCC00",
+    'monit_state_42':"size failed,FF0000",
+    'monit_state_43':"timeout,FF0000",
+    'monit_state_44':"timestamp failed,FF0000",
+    'monit_state_45':"uid failed,FF0000",
+  }
   _prefix_env='monit_state'
   _prefix_name='snsr_monit'
 
@@ -112,19 +106,14 @@ class Monit(Plugin):
     
   def install(self,plugins_dir,plug_config_dir):
     ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or \
-      (len(ans)>0 and ans.lower()=='y'):    
-      
-      envvars=self._defaults.copy()               
-      for pos,(lab,col) in enumerate(MONIT_STATUS.items()):
-        envvars['%s_%s'%(self._prefix_env,pos)]="%s,%s"%(lab,col)
-    
+    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):          
+      envvars=self._defaults.copy()                   
       self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
   
-  def parse_monit_row(self,row):
+  def parse_monit_row(self,matcher,row):
     status=None
     try:
-      groups=MONIT_PARSER.match(row).groups()
+      groups=matcher.match(row).groups()
     except AttributeError:
       pass
     else:
@@ -135,6 +124,7 @@ class Monit(Plugin):
     if self.check_config(argv):
       self.print_config()
     else:  
+      matcher=re.compile(self.getenv('line_regex'))
       counts=self.populate_vals()
       if len(counts)==0:
         sys.stderr.write('Not configured: see documentation\n')
@@ -149,7 +139,7 @@ class Monit(Plugin):
           csensors=0
           sensors=subprocess.check_output(['monit','summary'],stderr=subprocess.STDOUT)
           for row in sensors.split('\n'):
-            status=self.parse_monit_row(row)
+            status=self.parse_monit_row(matcher,row)
             if status is not None:
               counts[status]=counts[status]+1
               csensors+=1

@@ -51,9 +51,7 @@ class Apache(Plugin):
 
   def install(self,plugins_dir,plug_config_dir):  
     ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or \
-      (len(ans)>0 and ans.lower()=='y'):    
-
+    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):    
       print "Scanning Apache for VirtualHosts.."    
       out=''
       try:

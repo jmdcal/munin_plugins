@@ -9,12 +9,15 @@ from os.path import exists
 
 from munin_plugins.plugins.plugin import Plugin
 
-REPMGR_STATES=[('failed','FAILED','FF0000'),('master','master','00FF00'),('standby','standby','FFFF00')]
-
 class Repmgr(Plugin):
   _title='Repmgr status'
   _group='repmgr'
-  _defaults={'conf':'/etc/repmgr.conf',}
+  _defaults={
+    'conf':'/etc/repmgr.conf',
+    'repmgr_state_0': 'failed,FAILED,FF0000',
+    'repmgr_state_1': 'master,master,00FF00',
+    'repmgr_state_2': 'standby,standby,FFFF00',
+  }
   _prefix_env='repmgr_state'
   _prefix_name='snsr_repmgr'
      
@@ -33,15 +36,12 @@ class Repmgr(Plugin):
   
   def install(self,plugins_dir,plug_config_dir):    
     ans,def_create=self.ask(plugins_dir)
-    if (len(ans)==0 and def_create) or \
-      (len(ans)>0 and ans.lower()=='y'):    
+    if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):    
       conf=self._defaults.get('conf','')
       while not exists(conf):
         conf=raw_input('Insert a valid path for repmgr config files [%s]'%conf)
     
       envvars=self._defaults.copy()
-      for pos,(id,lab,col) in enumerate(REPMGR_STATES):
-        envvars['%s_%s'%(self._prefix_env,pos)]="%s,%s,%s"%(id,lab,col)
       self.install_plugin(plugins_dir,plug_config_dir,env=envvars)
       
   def main(self,argv=None, **kw):     
