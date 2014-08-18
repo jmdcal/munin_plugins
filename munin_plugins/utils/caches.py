@@ -9,7 +9,7 @@ from collections import deque
 
 from os.path import isfile
 
-#Mixin Cache Class
+#Base Cache Class
 class _Cache(object): 
   default=None
   
