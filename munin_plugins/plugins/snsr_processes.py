@@ -12,9 +12,9 @@ from munin_plugins.utils import CacheDict
 from munin_plugins.env import CACHE
 
 class Processes(Plugin):
-  _title='Processes'
-  _group='processes'
   _defaults={
+    'title':'Processes',
+    'group':'processes',
     'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
     'system_defaults':'cpu_times,virtual_memory,swap_memory,net_io_counters',
     'show_jboss':True,
@@ -23,14 +23,13 @@ class Processes(Plugin):
     'system_cache':'%s/system_state'%CACHE,
     'instance_cache':'%s/process_instances'%CACHE,
   } 
-  _extended={'timeout':120}
   _prefix_name='snsr_processes'
   _sub_plugins='processes_analyzers'
     
   def main(self,argv=None, **kw):     
     is_config=self.check_config(argv)
-    title=self._title
-    group=self._group
+    title=self.getenv('title')
+    group=self.getenv('group')
 
     printer=self.print_data
     if is_config:

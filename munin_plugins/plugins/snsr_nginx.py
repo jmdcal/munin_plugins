@@ -18,9 +18,9 @@ from munin_plugins.plugins.www_analyzers import HttpCodesCounter
 from munin_plugins.plugins.www_analyzers import SizeAggregator
        
 class Nginx(Plugin):
-  _title='Nginx'
-  _group='nginx'
   _defaults={
+    'title':'Nginx',
+    'group':'nginx',
     'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
     'minutes':5
   } 
@@ -127,7 +127,7 @@ class Nginx(Plugin):
     else:     
       for title,filename in files:
         #creates a list of analyzers
-        an_objs=[cl(title,self._group) for cl in analyzer_classes]
+        an_objs=[cl(title,self.getenv('group')) for cl in analyzer_classes]
                                 
         #read from files valid rows
         try:
@@ -149,7 +149,7 @@ class Nginx(Plugin):
       for cl,item in results.items():    
         print "multigraph nginx_%s"%(cl.id)
         sitem=sorted(item)
-        full=cl('all',self._group)
+        full=cl('all',self.getenv('group'))
         for title,filename,an in sitem:   
           full=full+an
           

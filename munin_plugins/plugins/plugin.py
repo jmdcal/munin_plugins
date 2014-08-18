@@ -11,20 +11,16 @@ from datetime import timedelta
 
 from munin_plugins.env import MINUTES
 
-class Plugin(object):  
-  _title='Undefined'
-  _group='Undefined'
-  _defaults={}  
-  _extended={}
-  _prefix_name='undefined'
-  _sub_plugins=None
-    
-  def check_config(self,argv):
-    argv=self.fixargs(argv)
-    return (len(argv)>0 and argv[0]=='config')
+#Base class for configurable plugins and subplugin 
+class _ConfigurablePlugin(object):
+  #these are enviroment variables 
+  _defaults={}
   
-  def getenv(self,id,null=None):
-    val=environ.get(id,self._defaults.get(id,null))
+  #these are options for munin (ex user, group)
+  _extended={} 
+      
+  def getenv(self,id,alt=None):
+    val=environ.get(id,self._defaults.get(id,alt))
     try:
       #trying to parse int, boolean
       val=eval(val.capitalize())
@@ -33,15 +29,62 @@ class Plugin(object):
     except SyntaxError: #means parser get a syntax error      
       pass
     except AttributeError: #means capitalize is not valid
-      pass
-    
+      pass    
     return val
-  
-  def getenvs(self,pref):
-    return [e.split(',') for i,e in environ.items() if re.match('^%s'%pref,i)]  
 
+  def getenvs(self,pref):
+    return [v.split(',') for k,v in environ.items() if re.match('^%s'%pref,k)]  
+  
   def getenvs_with_id(self,pref):
-    return [[i.replace(pref,'')]+e.split(',') for i,e in environ.items() if re.match('^%s'%pref,i)]  
+    return [[k.replace(pref,'')]+v.split(',') for k,v in environ.items() if re.match('^%s'%pref,k)]  
+
+  def getdefaults(self):
+    return self._defaults.copy()
+
+  def getextended(self):
+    return self._extended.copy()
+
+  def setenv(self,k,v):
+    self._defaults[k]=v
+    
+  def setextended(self,k,v):
+    self._extended[k]=v    
+
+  def write_munin_config(self,fd,custom_ext=None,custom_env=None):
+    if isinstance(custom_ext,dict):
+      for k,v in custom_ext.items():
+        self._extended[k]=v
+    
+    if isinstance(custom_env,dict):
+      for k,v in custom_env.items():
+        self._defaults[k]=v
+    
+    if isinstance(fd,file):      
+      if isinstance(self._extended,dict):
+        for k,v in self._extended.items():
+           fd.write('%s %s\n'%(k,v))
+      if isinstance(self._defaults,dict):
+        for k,v in self._defaults.items():
+           fd.write('env.%s %s\n'%(k,v))
+
+
+class Plugin(_ConfigurablePlugin):  
+  _prefix_name='undefined'
+  _sub_plugins=None
+    
+  _defaults={
+    'title':'Undefined Title',
+    'group':'ungrouped',    
+  }
+  
+  _extended={
+    'user':'root',
+    'group':'root'
+  } 
+        
+  def check_config(self,argv):
+    argv=self.fixargs(argv)
+    return (len(argv)>0 and argv[0]=='config')
   
   def paths(self,plugins_dir):
     return (join(sys.prefix,'bin',self._prefix_name),join(plugins_dir,self._prefix_name))
@@ -69,20 +112,9 @@ class Plugin(object):
       
     with open(config_file,'w') as fd:
       fd.write('[%s]\n'%self._prefix_name)
-      fd.write('user root\n')
-      fd.write('group root\n')
-      if extended is not None:
-        for k,v in extended.items():
-           fd.write('%s %s\n'%(k,v))
-      if env is not None:
-        for k,v in env.items():
-           fd.write('env.%s %s\n'%(k,v))
+      self.write_munin_config(fd,custom_ext=extended,custom_env=env)
           
     print "%s configured [%s]"%(self._prefix_name.capitalize(),config_file)
-
-  
-  def print_config(self,title,group,vals):
-    pass
 
   def install(self,plugins_dir,plug_config_dir):
     ans,def_create=self.ask(plugins_dir)
@@ -100,7 +132,6 @@ class Plugin(object):
         except (KeyError,ImportError) as e:        
           pass        
     return envvars
-
 
   def main(self,argv=None, **kw):
     pass
@@ -159,26 +190,15 @@ class Plugin(object):
     return getattr(__import__(lib,globals(),locals(),[name],-1),name)
 
 
-class SubPlugin(object):
-  _defaults={}
+class SubPlugin(_ConfigurablePlugin):
   
-  def getenv(self,id,null=None):
+  def getenv(self,id,alt=None):
     try:
       real_id='%s_%s'%(self.__class__.__name__,id)
     except AttributeError:
       real_id=id      
-    val=environ.get(real_id,self._defaults.get(id,null))
-    try:
-      #trying to parse int, boolean
-      val=eval(val.capitalize())
-    except NameError: #means no object found
-      pass
-    except SyntaxError: #means parser get a syntax error      
-      pass
-    except AttributeError: #means capitalize is not valid
-      pass
-    
-    return val
+      
+    return super(SubPlugin,self).getenv(real_id,alt)
 
   
   #Utils

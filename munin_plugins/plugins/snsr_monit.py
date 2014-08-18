@@ -9,9 +9,9 @@ from munin_plugins.utils import CacheCounter
 from munin_plugins.env import CACHE
 
 class Monit(Plugin):
-  _title='Monit status'
-  _group='monit'
   _defaults={
+    'title':'Monit status',
+    'group':'monit',
     'cache':"%s/monit_messages"%CACHE,
     'percentage':'True',
     'full':'False',
@@ -78,10 +78,10 @@ class Monit(Plugin):
   
   def print_config(self):
     vals=self.populate_vals()
-    print "graph_title %s"%self._title
+    print "graph_title %s"%self.getenv('title')
     print "graph_args --base 1000"
     print "graph_vlabel status"
-    print "graph_category %s"%self._group
+    print "graph_category %s"%self.getenv('group')
     print "graph_order %s" % " ".join(self.graph_order(vals))
     status={}
     try:

@@ -14,9 +14,9 @@ from munin_plugins.plugins.www_analyzers import HttpCodesCounter
 from munin_plugins.plugins.www_analyzers import SizeAggregator
 
 class Apache(Plugin):
-  _title='Apache'
-  _group='apache'
   _defaults={
+    'title':'Apache',
+    'group':'apache',
     'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
     'minutes':5,    
   } 
@@ -125,7 +125,7 @@ class Apache(Plugin):
     else:     
       for title,filename in files:
         #creates a list of analyzers
-        an_objs=[cl(title,self._group) for cl in analyzer_classes]
+        an_objs=[cl(title,self.getenv('group')) for cl in analyzer_classes]
                   
         #read from files valid rows
         try:
@@ -148,7 +148,7 @@ class Apache(Plugin):
       for cl,item in results.items():    
         print "multigraph apache_%s"%(cl.id)
         sitem=sorted(item)
-        full=cl('all',self._group)
+        full=cl('all',self.getenv('group'))
         for title,filename,an in sitem:   
           full=full+an
           

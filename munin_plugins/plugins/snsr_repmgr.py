@@ -10,9 +10,9 @@ from os.path import exists
 from munin_plugins.plugins.plugin import Plugin
 
 class Repmgr(Plugin):
-  _title='Repmgr status'
-  _group='repmgr'
   _defaults={
+    'title':'Repmgr status',
+    'group':'repmgr',
     'conf':'/etc/repmgr.conf',
     'repmgr_state_0': 'failed,FAILED,FF0000',
     'repmgr_state_1': 'master,master,00FF00',
@@ -24,10 +24,10 @@ class Repmgr(Plugin):
     return self.getenvs('repmgr_state_')
   
   def print_config(self):
-    print 'graph_title %s' % self._title
+    print 'graph_title %s' % self.getenv('title')
     print 'graph_args --base 1000'
     print 'graph_vlabel status'
-    print "graph_category %s"%self._group    
+    print "graph_category %s"%self.getenv('group')
     for id,lab,col in self.populate_vals():
       print "%s.label %s" %(id,lab)
       print "%s.draw AREASTACK"%id
