@@ -4,7 +4,6 @@ from math import log
 
 from collections import Counter
 
-from munin_plugins.plugins.plugin import SubPlugin
 
 #This class is a base for the others, do not use directly but make a subclass
 class BaseCounter(object):
