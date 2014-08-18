@@ -2,14 +2,15 @@ from os import environ
 
 from munin_plugins.utils import CachePickle
 
+from munin_plugins.plugins.plugin import SubPlugin
+
 #Base class: used to inherit
-class sensor(object):
+class sensor(SubPlugin):
   label='generic_sensor'
   sys_mtd='generic_sensor'
   proc_mtd='generic_sensor'
   graph=None
   id_column='id'
-  _defaults={}
   
   def __init__(self,sys_prev,sys_curr):
     self.sys_prev=sys_prev
@@ -18,19 +19,8 @@ class sensor(object):
     if cache_file is not None:
       self._pcache=CachePickle(cache_file)
     else:
-      self._pcache=None
+      self._pcache=None      
       
-      
-  def namedtuple2dict(self,nt,conv=lambda x: x):
-    return dict(self.namedtuple2list(nt,conv))
-  
-  def namedtuple2list(self,nt,conv=lambda x: x):
-    try:
-      res=[conv((i,getattr(nt,i))) for i in nt._fields]
-    except AttributeError:
-      res=[]
-    return res
-
   def calculate(self,cache_id,curr):
     res=self._evaluate(cache_id,curr)
     
@@ -104,29 +94,5 @@ class sensor(object):
       res=parts[-1].replace('.','_')
     return res
   
-  def get_percent_of(self,val,full):
-    try:
-      percent = (val / full) * 100
-    except ZeroDivisionError:
-      # interval was too low
-      percent = 0.0
-    return percent
 
-  def getenv(self,id,null=None):
-    try:
-      real_id='%s_%s'%(self.__class__.__name__,id)
-    except AttributeError:
-      real_id=id      
-    val=environ.get(real_id,self._defaults.get(id,null))
-    try:
-      #trying to parse int, boolean
-      val=eval(val.capitalize())
-    except NameError: #means no object found
-      pass
-    except SyntaxError: #means parser get a syntax error      
-      pass
-    except AttributeError: #means capitalize is not valid
-      pass
-    
-    return val
 

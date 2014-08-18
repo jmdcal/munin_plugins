@@ -13,6 +13,7 @@ class SizeAggregator(BaseCounter):
     'color_10240':'88FF00', 
     'color_102400':'FFFF00',
     'color_1048576':'FF8800',    
+    'color_others':'FF0000',
   }
   
   def __init__(self,title,group):    
@@ -48,5 +49,5 @@ class SizeAggregator(BaseCounter):
     printer(id="numbersother",
             value=self.counter['others'],
             label="others",
-            color='FF0000',
+            color=self.getenv('color_others'),
             draw=self.getenv('graph'))

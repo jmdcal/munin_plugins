@@ -4,12 +4,12 @@ from math import log
 
 from collections import Counter
 
+from munin_plugins.plugins.plugin import SubPlugin
 
 #This class is a base for the others, do not use directly but make a subclass
-class BaseCounter(object):
+class BaseCounter(SubPlugin):
   id='basecounter'
   base_title="Base class"
-  _defaults={}
   
   def __init__(self,title,group):
     self.title=title
@@ -57,12 +57,4 @@ class BaseCounter(object):
   def update_cache(self):
     pass
 
-  def millify(self,value):
-    byteunits = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
-    try:
-        exponent = int(log(value, 1024))
-        res="%.1f %s" % (float(value) / pow(1024, exponent), byteunits[exponent])
-    except:
-        res="0B"
-    return res
 

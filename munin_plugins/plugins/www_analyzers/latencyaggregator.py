@@ -8,11 +8,12 @@ class LatencyAggregator(BaseCounter):
   _defaults={
     'graph':'AREASTACK',
     'codes':'200',
-    'intervals':'0.5, 1, 2,5',
+    'intervals':'0.5, 1, 2, 5',
     'color_05':'00FF00',
     'color_1':'88FF00', 
     'color_2':'FFFF00',
-    'color_5':'FF8800',    
+    'color_5':'FF8800', 
+    'color_others':'FF0000',
   }
   
   def __init__(self,title,group):    
@@ -47,5 +48,5 @@ class LatencyAggregator(BaseCounter):
     printer(id="numbersother",
             value=self.counter['others'],
             label="others",
-            color='FF0000',
+            color=self.getenv('color_others'),
             draw=self.getenv('graph'))

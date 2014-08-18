@@ -3,63 +3,60 @@ from munin_plugins.utils import CacheCounter
 from munin_plugins.env import CACHE
 from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
-CODES={
-  100:"Continue",
-  101:"Switching Protocols",
-  200:"OK",
-  201:"Created",
-  202:"Accepted",
-  203:"Non-Authoritative Information",
-  204:"No Content",
-  205:"Reset Content",
-  206:"Partial Content",
-  300:"Multiple Choices",
-  301:"Moved Permanently",
-  302:"Found",
-  303:"See Other",
-  304:"Not Modified",
-  305:"Use Proxy",
-  306:"(Unused)",
-  307:"Temporary Redirect",
-  400:"Bad Request",
-  401:"Unauthorized",
-  402:"Payment Required",
-  403:"Forbidden",
-  404:"Not Found",
-  405:"Method Not Allowed",
-  406:"Not Acceptable",
-  407:"Proxy Authentication Required",
-  408:"Request Timeout",
-  409:"Conflict",
-  410:"Gone",
-  411:"Length Required",
-  412:"Precondition Failed",
-  413:"Request Entity Too Large",
-  414:"Request-URI Too Long",
-  415:"Unsupported Media Type",
-  416:"Requested Range Not Satisfiable",
-  417:"Expectation Failed",
-  444:"No Response for malware",
-  499:"Client closed the connection",
-  500:"Internal Server Error",
-  501:"Not Implemented",
-  502:"Bad Gateway",
-  503:"Service Unavailable",
-  504:"Gateway Timeout",
-  505:"HTTP Version Not Supported",
-}
-
-CACHE_CODES="%s/httpcodes"%CACHE
-
 class HttpCodesCounter(BaseCounter):
   id='httpcodescounter'
   base_title="Http codes"
-  _defaults={}
+  _defaults={
+    'cache':"%s/httpcodes"%CACHE,
+    'title_100':"Continue",
+    'title_101':"Switching Protocols",
+    'title_200':"OK",
+    'title_201':"Created",
+    'title_202':"Accepted",
+    'title_203':"Non-Authoritative Information",
+    'title_204':"No Content",
+    'title_205':"Reset Content",
+    'title_206':"Partial Content",
+    'title_300':"Multiple Choices",
+    'title_301':"Moved Permanently",
+    'title_302':"Found",
+    'title_303':"See Other",
+    'title_304':"Not Modified",
+    'title_305':"Use Proxy",
+    'title_306':"(Unused)",
+    'title_307':"Temporary Redirect",
+    'title_400':"Bad Request",
+    'title_401':"Unauthorized",
+    'title_402':"Payment Required",
+    'title_403':"Forbidden",
+    'title_404':"Not Found",
+    'title_405':"Method Not Allowed",
+    'title_406':"Not Acceptable",
+    'title_407':"Proxy Authentication Required",
+    'title_408':"Request Timeout",
+    'title_409':"Conflict",
+    'title_410':"Gone",
+    'title_411':"Length Required",
+    'title_412':"Precondition Failed",
+    'title_413':"Request Entity Too Large",
+    'title_414':"Request-URI Too Long",
+    'title_415':"Unsupported Media Type",
+    'title_416':"Requested Range Not Satisfiable",
+    'title_417':"Expectation Failed",
+    'title_444':"No Response for malware",
+    'title_499':"Client closed the connection",
+    'title_500':"Internal Server Error",
+    'title_501':"Not Implemented",
+    'title_502':"Bad Gateway",
+    'title_503':"Service Unavailable",
+    'title_504':"Gateway Timeout",
+    'title_505':"HTTP Version Not Supported",
+  }
   
   def __init__(self,title,group):
     super(HttpCodesCounter,self).__init__(title,group)
-    self.label="q.ty "
-    self.counter=CacheCounter(CACHE_CODES)
+    self.label="q.ty"
+    self.counter=CacheCounter(self.getenv('cache'))
     
   def update_with(self,datas):
     code=datas.get_code()
@@ -69,13 +66,13 @@ class HttpCodesCounter(BaseCounter):
     if len(self.counter.items())>0:
       for k,v in self.counter.items():
         printer(id="code%s"%k,
-                value=v,
-                label="[%s] %s "%(k,CODES.get(int(k),'undefined')),)
+          value=v,
+          label="[%s] %s"%(k,self.getenv('title_%s'%k)))
     else:    
       printer(id='none',
               value=0,
               label='[] no request',
-              )
+      )
   
   def update_cache(self):
     self.counter.store_in_cache()

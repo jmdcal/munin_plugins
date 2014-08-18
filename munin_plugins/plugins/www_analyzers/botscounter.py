@@ -4,17 +4,17 @@ from munin_plugins.env import CACHE
 
 from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
-CACHE_BOTS="%s/bots"%CACHE
-
 class BotsCounter(BaseCounter):
   id='botscounter'
   base_title="Bots"
-  _defaults={}
+  _defaults={
+    'cache':"%s/bots"%CACHE
+  }
   
   def __init__(self,title,group):
     super(BotsCounter,self).__init__(title,group)
     self.label="number of calls"
-    self.counter=CacheCounter(CACHE_BOTS)
+    self.counter=CacheCounter(self.getenv('cache'))
     
   def update_with(self,datas):    
     if datas.get_int_code() in [200,]:

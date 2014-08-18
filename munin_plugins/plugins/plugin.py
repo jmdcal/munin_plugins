@@ -149,14 +149,62 @@ class Plugin(object):
     return actual_time-delay
 
   def namedtuple2dict(self,nt,conv=lambda x: x):
-    return dict(self.namedtuple2list(nt,conv))
-  
-  def namedtuple2list(self,nt,conv=lambda x: x):
     try:
       res=[conv((i,getattr(nt,i))) for i in nt._fields]
     except AttributeError:
       res=[]
-    return res
+    return dict(res)
   
   def get_sub_plugin(self,lib,name):    
     return getattr(__import__(lib,globals(),locals(),[name],-1),name)
+
+
+class SubPlugin(object):
+  _defaults={}
+  
+  def getenv(self,id,null=None):
+    try:
+      real_id='%s_%s'%(self.__class__.__name__,id)
+    except AttributeError:
+      real_id=id      
+    val=environ.get(real_id,self._defaults.get(id,null))
+    try:
+      #trying to parse int, boolean
+      val=eval(val.capitalize())
+    except NameError: #means no object found
+      pass
+    except SyntaxError: #means parser get a syntax error      
+      pass
+    except AttributeError: #means capitalize is not valid
+      pass
+    
+    return val
+
+  
+  #Utils
+  
+  #converts 1024 in 1KiB
+  def millify(self,value):
+    byteunits = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
+    try:
+      exponent = int(log(value, 1024))
+      res="%.1f %s" % (float(value) / pow(1024, exponent), byteunits[exponent])
+    except:
+      res="0B"
+    return res
+
+  #converts a named tuple in dictionary (an inmmutable object to mutable object)
+  def namedtuple2dict(self,nt,conv=lambda x: x):
+    try:
+      res=[conv((i,getattr(nt,i))) for i in nt._fields]
+    except AttributeError:
+      res=[]
+    return dict(res)
+  
+  def get_percent_of(self,val,full):
+    try:
+      percent = (val / full) * 100
+    except ZeroDivisionError:
+      # interval was too low
+      percent = 0.0
+    return percent
