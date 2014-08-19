@@ -10,18 +10,23 @@ from os.path import exists
 from munin_plugins.plugins.plugin import Plugin
 
 class Repmgr(Plugin):
-  _defaults={
-    'title':'Repmgr status',
-    'group':'repmgr',
-    'conf':'/etc/repmgr.conf',
-    'repmgr_state_0': 'failed,FAILED,FF0000',
-    'repmgr_state_1': 'master,master,00FF00',
-    'repmgr_state_2': 'standby,standby,FFFF00',
-  }
   _prefix_name='snsr_repmgr'
-     
+  
+  @property
+  def _env(self):
+    inherit_env=super(Repmgr,self)._env
+    inherit_env.update({
+      'title':'Repmgr status',
+      'group':'repmgr',
+      'conf':'/etc/repmgr.conf',
+      'repmgr_state_0': 'failed,FAILED,FF0000',
+      'repmgr_state_1': 'master,master,00FF00',
+      'repmgr_state_2': 'standby,standby,FFFF00',
+    })
+    return inherit_env
+       
   def populate_vals(self):
-    return self.getenvs('repmgr_state_')
+    return self.getenv_prefix('repmgr_state_')
   
   def print_config(self):
     print 'graph_title %s' % self.getenv('title')
@@ -32,16 +37,7 @@ class Repmgr(Plugin):
       print "%s.label %s" %(id,lab)
       print "%s.draw AREASTACK"%id
       print "%s.colour %s"%(id,col)
-  
-  def envvars(self):
-    envvars=super(Repmgr,self).envvars()
-    conf=self._defaults.get('conf','')
-    while not exists(conf):
-      conf=raw_input('Insert a valid path for repmgr config files [%s]'%conf)
-    
-    envvars['conf']=conf
-    return envvars
-        
+          
   def main(self,argv=None, **kw):     
     if self.check_config(argv):
       self.print_config()
