@@ -16,28 +16,28 @@ from munin_plugins.utils.config import MuninSubConfiguration
 
 class Plugin(MuninConfiguration):  
   _prefix_name='undefined'
-  _sub_plugins=None
   
   #Override of MuninConfiguration properties
   @property
   def _common(self):
     return {
       'user':'root',
-      'group':'root',
-      
+      'group':'root',      
     }
   
   @property
   def _env(self):
-    # Optional entries:
+    # Optional common entries:
     # 'cache':None, #cache file - option
     # 'enabled':None, #string composed by subplugins, see snsr_processes as example
+    # 'sub_plugins_folder':None #folder of subplugins
     return {
       'title':'Undefined Title',#base title of plugin
-      'group':'ungrouped', #munin group of plugin
-      'sub_plugins_folder':None,
+      'group':'ungrouped', #munin group of plugin      
     }
 
+  # Base plugin interface
+  # Method to install/configure plugin in munin-node folder
   def install(self,plugins_dir,plug_config_dir):
     orig=join(sys.prefix,'bin',self._prefix_name)
     link=join(plugins_dir,self._prefix_name)
@@ -76,13 +76,15 @@ class Plugin(MuninConfiguration):
             
       print "%s configured [%s]\n"%(self._prefix_name.capitalize(),config_file)
     
+  # Method to run sensor, it should check if is config or not
+  def main(self,argv=None, **kw):
+    pass
+    
+  # Util methods
   def check_config(self,argv):
     argv=self.fixargs(argv)
     return (len(argv)>0 and argv[0]=='config')
-    
-  def main(self,argv=None, **kw):
-    pass
-   
+       
   def fixargs(self,argv):
     if argv is None:
       argv = sys.argv[1:]
