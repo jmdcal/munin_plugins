@@ -12,20 +12,33 @@ from munin_plugins.utils import CacheDict
 from munin_plugins.env import CACHE
 
 class Processes(Plugin):
-  _defaults={
-    'title':'Processes',
-    'group':'processes',
-    'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
-    'system_defaults':'cpu_times,virtual_memory,swap_memory,net_io_counters',
-    'show_jboss':True,
-    'show_catalina':True,
-    'show_plone':True,
-    'system_cache':'%s/system_state'%CACHE,
-    'instance_cache':'%s/process_instances'%CACHE,
-  } 
   _prefix_name='snsr_processes'
-  _sub_plugins='processes_analyzers'
+  
+  @property
+  def _env(self):
+    inherit_env=super(Processes,self)._env
+    inherit_env.update({
+      'title':'Processes',
+      'group':'processes',
+      'enabled':'cpu_usage_snsr,memory_snsr,connections_snsr,swap_snsr,storages_snsr,io_counters_snsr,io_counters_abs_snsr,threads_snsr',
+      'system_defaults':'cpu_times,virtual_memory,swap_memory,net_io_counters',
+      'show_jboss':True,
+      'show_catalina':True,
+      'show_plone':True,
+      'system_cache':'%s/system_state'%CACHE,
+      'instance_cache':'%s/process_instances'%CACHE,
+      'sub_plugins_folder':'processes_analyzers',
+    })
+    return inherit_env
     
+  @property
+  def _common(self):
+    inherit_common=super(Processes,self)._common
+    inherit_common.update({
+      'timeout':120,
+    })
+    return inherit_common
+          
   def main(self,argv=None, **kw):     
     is_config=self.check_config(argv)
     title=self.getenv('title')
@@ -39,10 +52,9 @@ class Processes(Plugin):
     ps_cache=self.load_process()
     
     analyzer_classes=[]
-    
     for name in self.getenv('enabled').split(','):
       try:
-        analyzer_classes.append(self.get_sub_plugin("processes_analyzers",name))
+        analyzer_classes.append(self.get_sub_plugin(self.getenv('sub_plugins_folder'),name))
       except (KeyError,ImportError) as e:        
         pass
     
