@@ -6,20 +6,19 @@ from munin_plugins.plugins.plugin import SubPlugin
 
 #Base class: used to inherit
 class sensor(SubPlugin):
-  label='generic_sensor'
   sys_mtd='generic_sensor'
   proc_mtd='generic_sensor'
-  graph=None
   id_column='id'
   
-  def __init__(self,sys_prev,sys_curr):
-    self.sys_prev=sys_prev
-    self.sys_curr=sys_curr
-    cache_file=self.getenv('cache')
-    if cache_file is not None:
-      self._pcache=CachePickle(cache_file)
-    else:
-      self._pcache=None      
+  def __init__(self,sys_prev=None,sys_curr=None):
+    if sys_prev is not None and sys_curr is not None:
+      self.sys_prev=sys_prev
+      self.sys_curr=sys_curr
+      cache_file=self.getenv('cache')
+      if cache_file is not None:
+        self._pcache=CachePickle(cache_file)
+      else:
+        self._pcache=None      
       
   def calculate(self,cache_id,curr):
     res=self._evaluate(cache_id,curr)
@@ -34,7 +33,7 @@ class sensor(SubPlugin):
     return res
   
   def graphType(self):
-    return self.graph   
+    return self.getenv('graph')   
   
   def store_in_cache(self):
     if self._pcache is not None:
@@ -94,5 +93,7 @@ class sensor(SubPlugin):
       res=parts[-1].replace('.','_')
     return res
   
-
+  @property
+  def label(self):
+    return self.getenv('label')
 
