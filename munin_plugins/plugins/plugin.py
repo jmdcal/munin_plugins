@@ -11,128 +11,75 @@ from datetime import timedelta
 
 from munin_plugins.env import MINUTES
 
-#Base class for configurable plugins and subplugin 
-class _ConfigurablePlugin(object):
-  #these are enviroment variables 
-  _defaults={}
-  
-  #these are options for munin (ex user, group)
-  _extended={} 
-      
-  def getenv(self,id,alt=None):
-    val=environ.get(id,self._defaults.get(id,alt))
-    try:
-      #trying to parse int, boolean
-      val=eval(val.capitalize())
-    except NameError: #means no object found
-      pass
-    except SyntaxError: #means parser get a syntax error      
-      pass
-    except AttributeError: #means capitalize is not valid
-      pass    
-    return val
+from munin_plugins.utils.config import MuninConfiguration
+from munin_plugins.utils.config import MuninSubConfiguration
 
-  def getenvs(self,pref):
-    return [v.split(',') for k,v in environ.items() if re.match('^%s'%pref,k)]  
-  
-  def getenvs_with_id(self,pref):
-    return [[k.replace(pref,'')]+v.split(',') for k,v in environ.items() if re.match('^%s'%pref,k)]  
-
-  def getdefaults(self):
-    return self._defaults.copy()
-
-  def getextended(self):
-    return self._extended.copy()
-
-  def setenv(self,k,v):
-    self._defaults[k]=v
-    
-  def setextended(self,k,v):
-    self._extended[k]=v    
-
-  def write_munin_config(self,fd,custom_ext=None,custom_env=None):
-    if isinstance(custom_ext,dict):
-      for k,v in custom_ext.items():
-        self._extended[k]=v
-    
-    if isinstance(custom_env,dict):
-      for k,v in custom_env.items():
-        self._defaults[k]=v
-    
-    if isinstance(fd,file):      
-      if isinstance(self._extended,dict):
-        for k,v in self._extended.items():
-           fd.write('%s %s\n'%(k,v))
-      if isinstance(self._defaults,dict):
-        for k,v in self._defaults.items():
-           fd.write('env.%s %s\n'%(k,v))
-
-
-class Plugin(_ConfigurablePlugin):  
+class Plugin(MuninConfiguration):  
   _prefix_name='undefined'
   _sub_plugins=None
+  
+  #Override of MuninConfiguration properties
+  @property
+  def _common(self):
+    return {
+      'user':'root',
+      'group':'root',
+      
+    }
+  
+  @property
+  def _env(self):
+    # Optional entries:
+    # 'cache':None, #cache file - option
+    # 'enabled':None, #string composed by subplugins, see snsr_processes as example
+    return {
+      'title':'Undefined Title',#base title of plugin
+      'group':'ungrouped', #munin group of plugin
+      'sub_plugins_folder':None,
+    }
+
+  def install(self,plugins_dir,plug_config_dir):
+    orig=join(sys.prefix,'bin',self._prefix_name)
+    link=join(plugins_dir,self._prefix_name)
     
-  _defaults={
-    'title':'Undefined Title',
-    'group':'ungrouped',    
-  }
-  
-  _extended={
-    'user':'root',
-    'group':'root'
-  } 
-        
-  def check_config(self,argv):
-    argv=self.fixargs(argv)
-    return (len(argv)>0 and argv[0]=='config')
-  
-  def paths(self,plugins_dir):
-    return (join(sys.prefix,'bin',self._prefix_name),join(plugins_dir,self._prefix_name))
-  
-  def ask(self,plugins_dir):
-    orig,link=self.paths(plugins_dir)
-    def_create=not exists(link)
-    
+    def_create=not exists(link)    
     if def_create:
       def_label='Y/n'
     else:
       def_label='y/N'
     
-    return (raw_input("Link %s -> %s [%s]?"%(orig,link,def_label)),def_create)
-   
-  def install_plugin(self,plugins_dir,plug_config_dir,extended={},env={}):
-    orig,link=self.paths(plugins_dir)
-    try:        
-      symlink(orig,link)
-      print "%s installed [%s,%s]\n"%(self._prefix_name.capitalize(),orig,link)
-    except OSError:
-      print "%s NOT updated [%s,%s]\n"%(self._prefix_name.capitalize(),orig,link)
-
-    config_file=join(plug_config_dir,self._prefix_name)
-      
-    with open(config_file,'w') as fd:
-      fd.write('[%s]\n'%self._prefix_name)
-      self.write_munin_config(fd,custom_ext=extended,custom_env=env)
-          
-    print "%s configured [%s]"%(self._prefix_name.capitalize(),config_file)
-
-  def install(self,plugins_dir,plug_config_dir):
-    ans,def_create=self.ask(plugins_dir)
+    ans=raw_input("Install %s -> %s [%s]?"%(orig,link,def_label))    
     if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):        
-      self.install_plugin(plugins_dir,plug_config_dir,extended=self._extended,env=self.envvars())      
+      try:        
+        symlink(orig,link)
+        print "%s installed [%s,%s]"%(self._prefix_name.capitalize(),orig,link)
+      except OSError:
+        print "%s link NOT updated [%s,%s]"%(self._prefix_name.capitalize(),orig,link)
 
-  def envvars(self):
-    envvars=self._defaults.copy()
-    if self._sub_plugins is not None:
-      for plugin_name in self._defaults['enabled'].split(','):
-        try:
-          plugin_class=self.get_sub_plugin(self._sub_plugins,plugin_name)
-          for k,v in plugin_class._defaults.items():
-            envvars['%s_%s'%(plugin_name,k)]=v                
-        except (KeyError,ImportError) as e:        
-          pass        
-    return envvars
+      config_file=join(plug_config_dir,self._prefix_name)
 
+      #Storing main plugin config
+      self.store(self._prefix_name,config_file)
+      
+      #Trying to store sub-plugins config
+      try:          
+        for name in self.getenv('enabled').split(','):
+          try:
+            sub=self.get_sub_plugin(self.getenv('sub_plugins_folder'),name)
+          except (KeyError,ImportError,TypeError) as e:        
+            pass
+          else:
+            sub().store(self._prefix_name,config_file)
+      except AttributeError:
+        #enabled is not set, means no subplugins  
+        pass
+            
+      print "%s configured [%s]\n"%(self._prefix_name.capitalize(),config_file)
+    
+  def check_config(self,argv):
+    argv=self.fixargs(argv)
+    return (len(argv)>0 and argv[0]=='config')
+    
   def main(self,argv=None, **kw):
     pass
    
@@ -190,16 +137,7 @@ class Plugin(_ConfigurablePlugin):
     return getattr(__import__(lib,globals(),locals(),[name],-1),name)
 
 
-class SubPlugin(_ConfigurablePlugin):
-  
-  def getenv(self,id,alt=None):
-    try:
-      real_id='%s_%s'%(self.__class__.__name__,id)
-    except AttributeError:
-      real_id=id      
-      
-    return super(SubPlugin,self).getenv(real_id,alt)
-
+class SubPlugin(MuninSubConfiguration):  
   
   #Utils
   
