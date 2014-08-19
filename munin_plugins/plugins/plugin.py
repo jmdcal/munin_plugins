@@ -140,7 +140,16 @@ class Plugin(MuninConfiguration):
 
 
 class SubPlugin(MuninSubConfiguration):  
-  
+  @property
+  def _env(self):
+    # Optional common entries:
+    # 'graph':'AREASTACK', #kind of subplugin
+    # 'cache':None, #cache file
+    return {
+      'subtitle':'Undefined sub-Title',
+      'label':'Undefined Label', 
+    }
+
   #Utils
   
   #converts 1024 in 1KiB
