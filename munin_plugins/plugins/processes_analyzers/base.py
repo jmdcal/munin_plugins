@@ -92,8 +92,4 @@ class sensor(SubPlugin):
     if len(parts)>0:
       res=parts[-1].replace('.','_')
     return res
-  
-  @property
-  def label(self):
-    return self.getenv('label')
 

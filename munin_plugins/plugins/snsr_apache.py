@@ -98,7 +98,6 @@ class Apache(Plugin):
     
     is_config=self.check_config(argv)
     title=self.getenv('title')
-    group=self.getenv('group')
     limit=self.getlimit(self.getenv('minutes'))
     
     printer=self.print_data
@@ -110,7 +109,7 @@ class Apache(Plugin):
     for name in self.getenv('enabled').split(','):
       try:
         cl=eval(name)
-        analyzer_classes.append(cl)
+        analyzer_classes.append(cl())
         results[cl]=deque()
       except:
         pass    
@@ -121,8 +120,6 @@ class Apache(Plugin):
       sys.stderr.write('Not configured: see documentation\n')
     else:     
       for label,filename in files:
-        #creates a list of analyzers
-        an_objs=[cl() for cl in analyzer_classes]
                   
         #read from files valid rows
         try:
@@ -131,12 +128,12 @@ class Apache(Plugin):
           #As shown in doc, %D option is in microseconds
             datas=ApacheRowParser(row)
             if datas.get_date() is not None and datas.get_date()>limit:                      
-              for an in an_objs:
+              for an in analyzer_classes:
                 an.update_with(datas)
           fi.close()
         
           #store 
-          for an in an_objs:
+          for an in analyzer_classes:
             results[an.__class__].append((title,filename,an))
         except IOError:
           sys.stderr.write('NotExists: file %s not exists!\n'%filename)
@@ -150,14 +147,14 @@ class Apache(Plugin):
           full=full+an
           
         if is_config:
-          full.print_config_header()
+          full.print_config_header(title)
           
         full.print_data(printer,300,1000)
         
         for title,filename,an in sitem:   
           print "multigraph apache_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_').replace('-',''))
           if is_config:
-            an.print_config_header()    
+            an.print_config_header(title)    
           an.print_data(printer,10,30)
           an.update_cache()
 

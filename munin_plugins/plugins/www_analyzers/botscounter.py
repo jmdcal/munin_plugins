@@ -11,7 +11,8 @@ class BotsCounter(BaseCounter):
   def _env(self):
     inherit_env=super(BotsCounter,self)._env
     inherit_env.update({
-      'label':"number of calls",
+      'subtitle':'Bots Requests',
+      'label':"number",
       'cache':"%s/bots"%CACHE,
       'codes':'200',      
     })

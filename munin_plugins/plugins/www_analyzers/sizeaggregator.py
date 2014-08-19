@@ -9,6 +9,7 @@ class SizeAggregator(BaseCounter):
   def _env(self):
     inherit_env=super(SizeAggregator,self)._env
     inherit_env.update({
+      'subtitle':'Requests by size',
       'label':"number of pages",
       'graph':'AREASTACK',
       'codes':'200',
@@ -39,10 +40,9 @@ class SizeAggregator(BaseCounter):
         idx=str(intervals[pos])
         self.counter[idx]=1+self.counter[idx]
       else:
-        self.counter['others']=1+self.counter['others']
+        self.counter['others']=1+self.counter['others']    
             
-            
-  def print_data(self, printer, w=None,c=None):
+  def print_data(self, printer, w=None,c=None):    
     for threshould in self.getenv('intervals'):
       printer(id="numbers%s"%str(threshould).replace('.',''),
               value=self.counter[str(threshould)],

@@ -9,7 +9,8 @@ class LatencyAggregator(BaseCounter):
   def _env(self):
     inherit_env=super(LatencyAggregator,self)._env
     inherit_env.update({
-      'label':'pages by latency',
+      'subtitle':'Requests by latency',
+      'label':'number',
       'graph':'AREASTACK',
       'codes':'200',
       'intervals':'0.5, 1, 2, 5',

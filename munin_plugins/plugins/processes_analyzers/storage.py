@@ -5,16 +5,22 @@ from munin_plugins.plugins.processes_analyzers.base import sensor
 from munin_plugins.env import CACHE
 
 class storages_snsr(sensor):
-  label='file'
   sys_mtd='storages'
   proc_mtd='get_open_files'
   id_column='path'
-  _defaults={
-    'cache':'%s/processesstorages'%CACHE,
-    'files_regex':'.*((Data\.fs)|(\.log)).*',
-    'graph':'AREASTACK',
-  }
   
+  @property
+  def _env(self):
+    inherit_env=super(storages_snsr,self)._env
+    inherit_env.update({
+      'subtitle':'Disk Usage',
+      'label':'bytes',      
+      'cache':'%s/processesstorages'%CACHE,
+      'files_regex':'.*((Data\.fs)|(\.log)).*',
+      'graph':'AREASTACK',
+    })
+    return inherit_env
+    
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,curr)
     res=[]

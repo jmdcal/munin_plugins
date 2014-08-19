@@ -84,7 +84,7 @@ class Monit(Plugin):
     vals=self.populate_vals()
     print "graph_title %s"%self.getenv('title')
     print "graph_args --base 1000"
-    print "graph_vlabel status"
+    print "graph_vlabel number"
     print "graph_category %s"%self.getenv('group')
     print "graph_order %s" % " ".join(self.graph_order(vals))
     status={}

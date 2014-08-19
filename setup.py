@@ -10,7 +10,7 @@ from os.path import abspath
 
 from munin_plugins.base_info import NAME
 
-version = '4.4'
+version = '5.0'
 
 current=abspath(dirname(__file__))
 

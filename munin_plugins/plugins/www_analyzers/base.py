@@ -11,7 +11,6 @@ class BaseCounter(SubPlugin):
   id='basecounter'
   
   def __init__(self):
-    self.title='TOFIX'
     self.counter=Counter()
 
   def __add__(self,other):
@@ -42,8 +41,8 @@ class BaseCounter(SubPlugin):
   def update_with(self,datas):
     pass
   
-  def print_config_header(self):
-    print "graph_title FIXME"
+  def print_config_header(self,main_title):
+    print "graph_title %s %s" % (main_title,self.getenv('subtitle'))
     print "graph_args --base 1000"
     print "graph_vlabel %s"%self.getenv('label')
     print "graph_category %s"%self.getenv('group')

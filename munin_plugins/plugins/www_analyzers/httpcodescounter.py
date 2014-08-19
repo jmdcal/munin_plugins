@@ -10,7 +10,8 @@ class HttpCodesCounter(BaseCounter):
   def _env(self):
     inherit_env=super(HttpCodesCounter,self)._env
     inherit_env.update({
-      'label':"q.ty",
+      'subtitle':'Response Codes',
+      'label':"number",
       'cache':"%s/httpcodes"%CACHE,
       'title_100':"Continue",
       'title_101':"Switching Protocols",

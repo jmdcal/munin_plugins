@@ -9,6 +9,8 @@ from os import symlink
 from datetime import datetime
 from datetime import timedelta
 
+from math import log
+
 from munin_plugins.env import MINUTES
 
 from munin_plugins.utils.config import MuninConfiguration

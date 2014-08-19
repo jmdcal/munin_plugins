@@ -1,13 +1,19 @@
 from munin_plugins.plugins.processes_analyzers.base import sensor
 from munin_plugins.env import CACHE
   
-class io_counters_snsr(sensor):
-  label='I/O usage (byte of operations)'
+class io_counters_snsr(sensor):  
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
-  _defaults={
-    'cache':'%s/processesiosbytes'%CACHE
-  }
+  
+  @property
+  def _env(self):
+    inherit_env=super(io_counters_snsr,self)._env
+    inherit_env.update({
+      'subtitle':'I/O bytes',
+      'label':'bytes',
+      'cache':'%s/processesiosbytes'%CACHE,      
+    })
+    return inherit_env
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,{}) 
@@ -20,13 +26,18 @@ class io_counters_snsr(sensor):
     return res
 
 class io_counters_abs_snsr(sensor):
-  label='I/O usage (# of operations)'
-  cache='%s/processesiosabs'%CACHE
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
-  _defaults={
-    'cache':'%s/processesiosbytes'%CACHE
-  }
+  
+  @property
+  def _env(self):
+    inherit_env=super(io_counters_abs_snsr,self)._env
+    inherit_env.update({
+      'subtitle':'I/O request',
+      'label':'number',      
+      'cache':'%s/processesiosbytes'%CACHE
+    })
+    return inherit_env
   
   def _evaluate(self,cache_id,curr):
     prev=self.getValue(cache_id,{}) 
