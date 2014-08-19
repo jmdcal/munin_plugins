@@ -8,6 +8,7 @@ from collections import deque
 from os import listdir
 from os.path import isfile
 from os.path import exists
+from os.path import join
 
 from munin_plugins.utils import NginxRowParser
 
@@ -18,16 +19,38 @@ from munin_plugins.plugins.www_analyzers import HttpCodesCounter
 from munin_plugins.plugins.www_analyzers import SizeAggregator
        
 class Nginx(Plugin):
-  _defaults={
-    'title':'Nginx',
-    'group':'nginx',
-    'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
-    'minutes':5
-  } 
   _prefix_name='snsr_nginx'
-  _sub_plugins='www_analyzers'
   
-  def _nginx_parse_title_and_customlog(self,file_path):
+  @property
+  def _env(self):
+    inherit_env=super(Nginx,self)._env
+    inherit_env.update({
+      'title':'Nginx',
+      'group':'nginx',
+      'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
+      'minutes':5,
+      'sub_plugins_folder':'www_analyzers',
+    })
+
+    n_file_no=0
+    parsed=[]      
+    vh_base='/etc/nginx/sites-enabled'
+    try:
+      for vh in listdir(vh_base):
+        fpath=join(vh_base,vh)
+        if isfile(fpath) and vh not in parsed:
+          to_create=self._parse_title_and_customlog(fpath)
+          for title,access_log in to_create:
+            inherit_env['title_%s'%n_file_no]=title
+            inherit_env['access_%s'%n_file_no]=access_log
+            n_file_no+=1
+          parsed.append(vh)
+    except OSError:
+      pass
+      
+    return inherit_env
+    
+  def _parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
     in_server=False
     res=[]
@@ -61,49 +84,18 @@ class Nginx(Plugin):
           if 'off' not in tmp:
             access_log=tmp
     return res       
-              
-
-  def envvars(self):
-    envvars=super(Nginx,self).envvars()
-    nginx_sites='/etc/nginx/sites-enabled'
-    n_file_no=0
-      
-    while n_file_no==0:
-      np=raw_input('Insert a valid path for nginx virtualhosts config files [%s]'%nginx_sites)
-      if np is not None and len(np)>0:
-        nginx_sites=np
-      
-      print "Scanning Nginx for VirtualHosts.."
-      try:
-        for vh in listdir(nginx_sites):
-          fpath=nginx_sites+'/'+vh
-          if isfile(fpath):
-            to_create=self._nginx_parse_title_and_customlog(fpath)
-            for title,access_log in to_create:
-              print "..found %s [%s].."%(title,access_log)
-              envvars['title_%s'%n_file_no]=title
-              envvars['access_%s'%n_file_no]=access_log
-              n_file_no+=1
-      except OSError:
-        pass
-      
-      if n_file_no==0:
-        print "No valid configuration found... try again."
-      else:
-        print "..done."
-    
-    return envvars
        
   def get_files(self):
-    logs=self.getenvs_with_id('access_')
-    titles=dict(self.getenvs_with_id('title_'))
+    logs=self.getenv_prefix_with_id('access_')
+    titles=dict(self.getenv_prefix_with_id('title_'))
     return [(titles.get(id,'undef'),ff) for id,ff in logs]            
        
   def main(self,argv=None, **kw):    
     files=self.get_files()
     
     is_config=self.check_config(argv)
-    
+    title=self.getenv('title')
+    group=self.getenv('group')    
     limit=self.getlimit(self.getenv('minutes'))
     
     printer=self.print_data
@@ -125,10 +117,10 @@ class Nginx(Plugin):
     if len(files)<1:
       sys.stderr.write('Not configured: see documentation\n')
     else:     
-      for title,filename in files:
+      for label,filename in files:
         #creates a list of analyzers
-        an_objs=[cl(title,self.getenv('group')) for cl in analyzer_classes]
-                                
+        an_objs=[cl() for cl in analyzer_classes]          
+        
         #read from files valid rows
         try:
           fi=open(filename,'r')
@@ -149,7 +141,7 @@ class Nginx(Plugin):
       for cl,item in results.items():    
         print "multigraph nginx_%s"%(cl.id)
         sitem=sorted(item)
-        full=cl('all',self.getenv('group'))
+        full=cl()
         for title,filename,an in sitem:   
           full=full+an
           
