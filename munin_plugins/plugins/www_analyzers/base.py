@@ -9,18 +9,15 @@ from munin_plugins.plugins.plugin import SubPlugin
 #This class is a base for the others, do not use directly but make a subclass
 class BaseCounter(SubPlugin):
   id='basecounter'
-  base_title="Base class"
   
-  def __init__(self,title,group):
-    self.title=title
-    self.group=group
-    self.label="Base class"
+  def __init__(self):
+    self.title='TOFIX'
     self.counter=Counter()
 
   def __add__(self,other):
     new=None
     if self.__class__==other.__class__:
-      new=self.__class__(self.title,self.group)     
+      new=self.__class__()     
       for k,v in self.counter.items():
         new.counter[k]=v
       for k,v in other.counter.items():
@@ -32,7 +29,7 @@ class BaseCounter(SubPlugin):
   def __radd__(self,other):
     new=None
     if self.__class__==other.__class__:
-      new=self.__class__(self.title,self.group)
+      new=self.__class__()
       for k,v in self.counter.items():
         new.counter[k]=v
       for k,v in other.counter.items():
@@ -46,10 +43,10 @@ class BaseCounter(SubPlugin):
     pass
   
   def print_config_header(self):
-    print "graph_title %s: %s"%(self.base_title,self.title)
+    print "graph_title FIXME"
     print "graph_args --base 1000"
-    print "graph_vlabel %s"%self.label
-    print "graph_category %s"%self.group
+    print "graph_vlabel %s"%self.getenv('label')
+    print "graph_category %s"%self.getenv('group')
   
   def print_data(self, printer, w=None,c=None):
     pass

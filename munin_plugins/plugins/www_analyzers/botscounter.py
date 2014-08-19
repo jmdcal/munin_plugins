@@ -6,18 +6,24 @@ from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
 class BotsCounter(BaseCounter):
   id='botscounter'
-  base_title="Bots"
-  _defaults={
-    'cache':"%s/bots"%CACHE
-  }
   
-  def __init__(self,title,group):
-    super(BotsCounter,self).__init__(title,group)
-    self.label="number of calls"
+  @property
+  def _env(self):
+    inherit_env=super(BotsCounter,self)._env
+    inherit_env.update({
+      'label':"number of calls",
+      'cache':"%s/bots"%CACHE,
+      'codes':'200',      
+    })
+    return inherit_env
+    
+  def __init__(self):
+    super(BotsCounter,self).__init__()
     self.counter=CacheCounter(self.getenv('cache'))
     
   def update_with(self,datas):    
-    if datas.get_int_code() in [200,]:
+    codes=str(self.getenv('codes')).split(',')
+    if str(datas.get_int_code()) in codes:
       agent=datas.get_agent()
       if 'bot' in agent:
         agent=get_short_agent(agent)

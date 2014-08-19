@@ -4,21 +4,25 @@ from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
 class LatencyAggregator(BaseCounter):
   id='latencyaggregator'
-  base_title="Pages by latency"
-  _defaults={
-    'graph':'AREASTACK',
-    'codes':'200',
-    'intervals':'0.5, 1, 2, 5',
-    'color_05':'00FF00',
-    'color_1':'88FF00', 
-    'color_2':'FFFF00',
-    'color_5':'FF8800', 
-    'color_others':'FF0000',
-  }
   
-  def __init__(self,title,group):    
-    super(LatencyAggregator,self).__init__(title,group)
-    self.label="number of pages"
+  @property
+  def _env(self):
+    inherit_env=super(LatencyAggregator,self)._env
+    inherit_env.update({
+      'label':'pages by latency',
+      'graph':'AREASTACK',
+      'codes':'200',
+      'intervals':'0.5, 1, 2, 5',
+      'color_05':'00FF00',
+      'color_1':'88FF00', 
+      'color_2':'FFFF00',
+      'color_5':'FF8800', 
+      'color_others':'FF0000',
+    })
+    return inherit_env
+    
+  def __init__(self):    
+    super(LatencyAggregator,self).__init__()
     self.counter=Counter(dict([(str(i),0) for i in self.getenv('intervals')]+[('others',0)]))
     
   def update_with(self,datas):
@@ -26,7 +30,7 @@ class LatencyAggregator(BaseCounter):
     intervals=self.getenv('intervals')
     codes=str(self.getenv('codes')).split(',')
     #aggr evaluate
-    if lat is not None and datas.get_bytes()>0 and datas.get_int_code() in codes:
+    if lat is not None and datas.get_bytes()>0 and str(datas.get_int_code()) in codes:
       pos=0
       while pos<len(intervals) and intervals[pos]<lat:
         pos+=1

@@ -14,16 +14,52 @@ from munin_plugins.plugins.www_analyzers import HttpCodesCounter
 from munin_plugins.plugins.www_analyzers import SizeAggregator
 
 class Apache(Plugin):
-  _defaults={
-    'title':'Apache',
-    'group':'apache',
-    'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
-    'minutes':5,    
-  } 
   _prefix_name='snsr_apache'
-  _sub_plugins='www_analyzers'
+  
+  @property
+  def _env(self):
+    inherit_env=super(Apache,self)._env
+    inherit_env.update({
+      'title':'Apache',
+      'group':'apache',
+      'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
+      'minutes':5,    
+      'sub_plugins_folder':'www_analyzers',
+    })
 
-  def _apache_parse_title_and_customlog(self,file_path):
+    out=''
+    try:
+      #debian and derivated
+      out=subprocess.check_output(['apachectl','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
+    except OSError:
+      pass
+    
+    if len(out)<1:
+      try:
+        #RH and derivated
+        out=subprocess.check_output(['httpd','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
+      except OSError:
+        pass
+        
+    ptn='\((.*):(.*)\)'
+    
+    a_file_no=0    
+    parsed=[]
+    for row in out.split('\n'):
+      fnds=re.search(ptn,row)
+      if fnds is not None:
+        vh=re.search(ptn,row).group(1)
+        if vh not in parsed:
+          to_create=self._parse_title_and_customlog(vh)
+          for title,access_log in to_create:
+            inherit_env['title_%s'%a_file_no]=title
+            inherit_env['access_%s'%a_file_no]=access_log
+            a_file_no+=1
+          parsed.append(vh)    
+          
+    return inherit_env
+  
+  def _parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
     in_virtualhost=False
     res=[]
@@ -51,57 +87,18 @@ class Apache(Plugin):
         elif 'CustomLog' in row:
           access_log=row.strip().split()[1]          
     return res
-  
-  def envvars(self):
-    envvars=super(Apache,self).envvars()
-    
-    print "Scanning Apache for VirtualHosts.."    
-    out=''
-    try:
-      #debian and derivated
-      out=subprocess.check_output(['apachectl','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
-    except OSError:
-      pass
-    
-    if len(out)<1:
-      try:
-        #RH and derivated
-        out=subprocess.check_output(['httpd','-t','-D','DUMP_VHOSTS'],stderr=subprocess.STDOUT)
-      except OSError:
-        pass
-        
-    ptn='\((.*):(.*)\)'
-
-    a_file_no=0
-    
-    parsed=[]
-
-    for row in out.split('\n'):
-      fnds=re.search(ptn,row)
-      if fnds is not None:
-        vh=re.search(ptn,row).group(1)
-        if vh not in parsed:
-          to_create=self._apache_parse_title_and_customlog(vh)
-          for title,access_log in to_create:
-            print "..found %s [%s].."%(title,access_log)
-            envvars['title_%s'%a_file_no]=title
-            envvars['access_%s'%a_file_no]=access_log
-            a_file_no+=1
-          parsed.append(vh)
-    print "..done."
-    
-    return envvars
-          
+            
   def get_files(self):
-    logs=self.getenvs_with_id('access_')
-    titles=dict(self.getenvs_with_id('title_'))
+    logs=self.getenv_prefix_with_id('access_')
+    titles=dict(self.getenv_prefix_with_id('title_'))
     return [(titles.get(id,'undef'),ff) for id,ff in logs]
     
   def main(self,argv=None, **kw):    
     files=self.get_files()
     
     is_config=self.check_config(argv)
-
+    title=self.getenv('title')
+    group=self.getenv('group')
     limit=self.getlimit(self.getenv('minutes'))
     
     printer=self.print_data
@@ -123,9 +120,9 @@ class Apache(Plugin):
     if len(files)<1:
       sys.stderr.write('Not configured: see documentation\n')
     else:     
-      for title,filename in files:
+      for label,filename in files:
         #creates a list of analyzers
-        an_objs=[cl(title,self.getenv('group')) for cl in analyzer_classes]
+        an_objs=[cl() for cl in analyzer_classes]
                   
         #read from files valid rows
         try:
@@ -148,7 +145,7 @@ class Apache(Plugin):
       for cl,item in results.items():    
         print "multigraph apache_%s"%(cl.id)
         sitem=sorted(item)
-        full=cl('all',self.getenv('group'))
+        full=cl()
         for title,filename,an in sitem:   
           full=full+an
           
