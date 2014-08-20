@@ -72,7 +72,7 @@ class Plugin(MuninConfiguration,_PluginUtils):
 
   # Base plugin interface
   # Method to install/configure plugin in munin-node folder
-  def install(self,plugins_dir,plug_config_dir):
+  def install(self,plugins_dir,plug_config_dir,log,err):
     orig=join(sys.prefix,'bin',self._prefix_name)
     link=join(plugins_dir,self._prefix_name)
     
@@ -86,9 +86,9 @@ class Plugin(MuninConfiguration,_PluginUtils):
     if (len(ans)==0 and def_create) or (len(ans)>0 and ans.lower()=='y'):        
       try:        
         symlink(orig,link)
-        print "%s installed [%s,%s]"%(self._prefix_name.capitalize(),orig,link)
+        log("%s installed [%s,%s]"%(self._prefix_name.capitalize(),orig,link))
       except OSError:
-        print "%s link NOT updated [%s,%s]"%(self._prefix_name.capitalize(),orig,link)
+        log("%s link NOT updated [%s,%s]"%(self._prefix_name.capitalize(),orig,link))
 
       config_file=join(plug_config_dir,self._prefix_name)
 
@@ -108,7 +108,7 @@ class Plugin(MuninConfiguration,_PluginUtils):
         #enabled is not set, means no subplugins  
         pass
             
-      print "%s configured [%s]\n"%(self._prefix_name.capitalize(),config_file)
+      log("%s configured [%s]\n"%(self._prefix_name.capitalize(),config_file))
     
   # Method to run sensor, it should check if is config or not
   def main(self,argv=None, **kw):
