@@ -1,7 +1,6 @@
 import re
 
 from os import environ
-from os.path import exists
 
 class MuninConfiguration(object):
   #Common options 

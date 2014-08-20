@@ -1,7 +1,3 @@
-from os import environ
-
-from math import log
-
 from collections import Counter
 
 from munin_plugins.plugins.plugin import SubPlugin

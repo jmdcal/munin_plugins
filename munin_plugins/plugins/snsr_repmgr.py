@@ -1,11 +1,9 @@
 #!/usr/bin/python2.7
 
-import os
 import sys
 import subprocess
-from collections import Counter
 
-from os.path import exists
+from collections import Counter
 
 from munin_plugins.plugins.plugin import Plugin
 

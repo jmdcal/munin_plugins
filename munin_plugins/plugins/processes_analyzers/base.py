@@ -1,5 +1,3 @@
-from os import environ
-
 from munin_plugins.utils import CachePickle
 
 from munin_plugins.plugins.plugin import SubPlugin

@@ -1,9 +1,7 @@
 import sys
-import re
 
 from os.path import join
 from os.path import exists
-from os import environ
 from os import symlink
 
 from datetime import datetime

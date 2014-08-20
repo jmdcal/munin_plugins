@@ -1,6 +1,6 @@
 import re
 
-from munin_plugins.utils import *
+from munin_plugins.utils import CacheCounter
 
 from munin_plugins.env import CACHE
 
