@@ -147,13 +147,13 @@ class Nginx(Plugin):
           
         if is_config:
           full.print_config_header(title)
-        full.print_data(printer,self.getenv('aggregate_warning'),self.get('aggregate_critical'))
+        full.print_data(printer,self.getenv('aggregate_warning'),self.getenv('aggregate_critical'))
         
         for vhname,filename,an in sitem:   
           print "multigraph nginx_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_').replace('-',''))
           if is_config:
             an.print_config_header(vhname)    
-          an.print_data(printer,self.getenv('sub_plugin_warning'),self.get('sub_plugin_critical'))
+          an.print_data(printer,self.getenv('sub_plugin_warning'),self.getnv('sub_plugin_critical'))
           an.update_cache()
 
 def main(argv=None,**kw):
