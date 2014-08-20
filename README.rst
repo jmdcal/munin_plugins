@@ -26,18 +26,18 @@ Install
 =======
 
 Install Egg
-===========
+-----------
 
 As usual, egg is installable using setuptools or pip, choice what you like. 
 It is better and strongly suggested to use a virtualenv.
     
-Setup
-=====
+Setup plugins
+-------------
 
 The fast way to install, is using generate.py. To use, simply call generate script
 in bin directory.
 
-  # <virtualenv_path>/bin/generate
+  $ <virtualenv_path>/bin/generate
   
 
 It will test the environment and configure cache folders. For every sensor, it will
@@ -53,7 +53,7 @@ https://github.com/cippino/munin_plugins
 https://pypi.python.org/pypi/munin_plugins
 
 Configure Nginx or Apache 
-=========================
+-------------------------
 
 Usually a manual configuration is not required, but in some case you have to modify 
 some path or else. All munin plugins ask by they self during installation what 
@@ -62,17 +62,19 @@ using generate script because all setup will be overwriten.
 
 For apache and nginx, you have to configure log file format using combined2:
 
-Apache: LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" [[%D]]" combined2
+::
 
-Nginx: log_format combined2 '$remote_addr - $remote_user [$time_local]  '
-                    '"$request" $status $body_bytes_sent '
-                    '"$http_referer" "$http_user_agent" [[$request_time]]';
+    Apache: LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" [[%D]]" combined2
+
+::
+
+    Nginx: log_format combined2 '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" [[$request_time]]';
 
 After combined2 definition, you have to change your virtualhost configuration using 
 this format instead of usual "combined".
 
-Personalize Setup
-=================
+Customize Setup
+---------------
 
 Every pluging you installed with "generate" script writes in /etc/munin/plugin-conf.d 
 a specific config file. You can modify every option you find. It shouldn't require
