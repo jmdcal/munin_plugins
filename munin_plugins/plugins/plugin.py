@@ -148,7 +148,7 @@ class Plugin(MuninConfiguration,_PluginUtils):
     if id is not None:
       del argv['id']
       for k,v in argv.items():
-        if v is not None:          
+        if v is not None:
           row="%s.%s %s"
           if isinstance(v,float):              
             row="%s.%s %.3f"
