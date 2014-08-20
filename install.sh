@@ -10,3 +10,7 @@ virtualenv /opt/munin
 /opt/munin/bin/easy_install dist/munin_plugins-5.0-py2.7.egg
 
 /opt/munin/bin/generate
+
+
+./test_bot_call.sh
+./test.sh
