@@ -37,8 +37,6 @@ Setup
 The fast way to install, is using generate.py. To use, simply call generate script
 in bin directory.
 
-.. code-block:: sh
-
   # <virtualenv_path>/bin/generate
   
 
