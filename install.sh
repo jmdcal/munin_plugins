@@ -14,3 +14,4 @@ virtualenv /opt/munin
 
 ./test_bot_call.sh
 ./test.sh
+/etc/init.d/munin-node restart

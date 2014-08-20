@@ -118,7 +118,6 @@ class Plugin(MuninConfiguration,_PluginUtils):
       argv = sys.argv[1:]
     return (len(argv)>0 and argv[0]=='config')
        
-
   def print_data(self,**args):
     id=args.get('id',None)
     v=args.get('value',None)

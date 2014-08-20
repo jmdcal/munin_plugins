@@ -8,10 +8,6 @@ from collections import deque
 from munin_plugins.utils import ApacheRowParser
 
 from munin_plugins.plugins.plugin import Plugin
-from munin_plugins.plugins.www_analyzers import LatencyAggregator
-from munin_plugins.plugins.www_analyzers import BotsCounter
-from munin_plugins.plugins.www_analyzers import HttpCodesCounter
-from munin_plugins.plugins.www_analyzers import SizeAggregator
 
 class Apache(Plugin):
   _prefix_name='snsr_apache'
@@ -115,7 +111,7 @@ class Apache(Plugin):
       results={}
       for name in self.getenv('enabled').split(','):
         try:
-          results[eval(name)]=deque()
+          results[self.get_sub_plugin(self.getenv('sub_plugins_folder'),name)]=deque()
         except:
           pass    
             
