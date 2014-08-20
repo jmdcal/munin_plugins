@@ -7,19 +7,19 @@ you wish.
 
 Sensors available for:
 
-- Apache
-- Monit
-- Nginx
-- Processes (Plone, Zope, JBoss actually)
-- Repmgr
+* Apache
+* Monit
+* Nginx
+* Processes (Plone, Zope, JBoss actually)
+* Repmgr
 
 ============
 Requirements
 ============
 
-- Python >= 2.7
-- psutil for Python >= 2.0
-- Munin-node
+* Python >= 2.7
+* psutil for Python >= 2.0
+* Munin-node
 
 =======
 Install
