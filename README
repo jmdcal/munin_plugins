@@ -100,7 +100,6 @@ Changelog
 
 5.0
 - Refactor to move all configurations in /etc/munin/plugin-conf.d files
-- New sensors for apache and nginx
 
 4.3
 - Merged plone_usage and java in processes_usage
