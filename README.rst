@@ -37,7 +37,9 @@ Setup plugins
 The fast way to install, is using generate.py. To use, simply call generate script
 in bin directory.
 
-  $ <virtualenv_path>/bin/generate
+:: 
+
+    $ <virtualenv_path>/bin/generate
   
 
 It will test the environment and configure cache folders. For every sensor, it will
