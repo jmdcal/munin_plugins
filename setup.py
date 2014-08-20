@@ -17,7 +17,7 @@ current=abspath(dirname(__file__))
 setup(name=NAME,
       version=version,
       description="Sensors for munin",
-      long_description=open(join(current,'README')).read(),
+      long_description=open(join(current,'README.rst')).read(),
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: System Administrators',
