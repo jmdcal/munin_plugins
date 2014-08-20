@@ -16,7 +16,39 @@ from munin_plugins.env import MINUTES
 from munin_plugins.utils.config import MuninConfiguration
 from munin_plugins.utils.config import MuninSubConfiguration
 
-class Plugin(MuninConfiguration):  
+class _PluginUtils(object):
+  #converts a named tuple in dictionary (an inmmutable object to mutable object)
+  def namedtuple2dict(self,nt,conv=lambda x: x):
+    try:
+      res=[conv((i,getattr(nt,i))) for i in nt._fields]
+    except AttributeError:
+      res=[]
+    return dict(res)
+
+  #converts 1024 in 1KiB
+  def millify(self,value):
+    byteunits = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
+    try:
+      exponent = int(log(value, 1024))
+      res="%.1f %s" % (float(value) / pow(1024, exponent), byteunits[exponent])
+    except:
+      res="0B"
+    return res
+
+  #convert a value in %
+  def get_percent_of(self,val,full):
+    try:
+      percent = (val / full) * 100
+    except ZeroDivisionError:
+      # interval was too low
+      percent = 0.0
+    return percent
+
+  #returns now - minutes
+  def getlimit(self,minutes=MINUTES):
+    return datetime.today()-timedelta(seconds=minutes*60)
+
+class Plugin(MuninConfiguration,_PluginUtils):  
   _prefix_name='undefined'
   
   #Override of MuninConfiguration properties
@@ -84,13 +116,10 @@ class Plugin(MuninConfiguration):
     
   # Util methods
   def check_config(self,argv):
-    argv=self.fixargs(argv)
-    return (len(argv)>0 and argv[0]=='config')
-       
-  def fixargs(self,argv):
     if argv is None:
       argv = sys.argv[1:]
-    return argv
+    return (len(argv)>0 and argv[0]=='config')
+       
 
   def print_data(self,**args):
     id=args.get('id',None)
@@ -119,29 +148,21 @@ class Plugin(MuninConfiguration):
     if id is not None:
       del argv['id']
       for k,v in argv.items():
-        if v is not None:
-          try:
-            print "%s.%s %.3f"%(id,k,v)
+        if v is not None:          
+          row="%s.%s %s"
+          if isinstance(v,float):              
+            row="%s.%s %.3f"
+          try:            
+            print row%(id,k,v)
           except TypeError:
             print "%s.%s %s"%(id,k,v)
 
-  def getlimit(self,minutes=MINUTES):
-    actual_time=datetime.today()
-    delay=timedelta(seconds=minutes*60)
-    return actual_time-delay
 
-  def namedtuple2dict(self,nt,conv=lambda x: x):
-    try:
-      res=[conv((i,getattr(nt,i))) for i in nt._fields]
-    except AttributeError:
-      res=[]
-    return dict(res)
-  
+  #dynamic import of obj <name> from <lib>
   def get_sub_plugin(self,lib,name):    
     return getattr(__import__(lib,globals(),locals(),[name],-1),name)
-
-
-class SubPlugin(MuninSubConfiguration):  
+  
+class SubPlugin(MuninSubConfiguration,_PluginUtils):  
   @property
   def _env(self):
     # Optional common entries:
@@ -152,30 +173,5 @@ class SubPlugin(MuninSubConfiguration):
       'label':'Undefined Label', 
     }
 
-  #Utils
-  
-  #converts 1024 in 1KiB
-  def millify(self,value):
-    byteunits = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
-    try:
-      exponent = int(log(value, 1024))
-      res="%.1f %s" % (float(value) / pow(1024, exponent), byteunits[exponent])
-    except:
-      res="0B"
-    return res
 
-  #converts a named tuple in dictionary (an inmmutable object to mutable object)
-  def namedtuple2dict(self,nt,conv=lambda x: x):
-    try:
-      res=[conv((i,getattr(nt,i))) for i in nt._fields]
-    except AttributeError:
-      res=[]
-    return dict(res)
   
-  def get_percent_of(self,val,full):
-    try:
-      percent = (val / full) * 100
-    except ZeroDivisionError:
-      # interval was too low
-      percent = 0.0
-    return percent

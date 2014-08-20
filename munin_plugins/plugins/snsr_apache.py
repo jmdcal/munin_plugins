@@ -26,7 +26,6 @@ class Apache(Plugin):
       'minutes':5,    
       'sub_plugins_folder':'www_analyzers',
     })
-
     out=''
     try:
       #debian and derivated
@@ -58,6 +57,14 @@ class Apache(Plugin):
           parsed.append(vh)    
           
     return inherit_env
+
+  @property
+  def _common(self):
+    inherit_common=super(Processes,self)._common
+    inherit_common.update({
+      'timeout':120,
+    })
+    return inherit_common
   
   def _parse_title_and_customlog(self,file_path):
     fd=open(file_path,'r')
@@ -103,38 +110,34 @@ class Apache(Plugin):
     printer=self.print_data
     if is_config:
       printer=self.print_config
-
-    analyzer_classes=[]
-    results={}
-    for name in self.getenv('enabled').split(','):
-      try:
-        cl=eval(name)
-        analyzer_classes.append(cl())
-        results[cl]=deque()
-      except:
-        pass    
     
-    # For each class we store a list of tuples (title,analyzer)
-    
+    # For each class we store a list of tuples (vh_title, access_file, analyzer)    
     if len(files)<1:
       sys.stderr.write('Not configured: see documentation\n')
-    else:     
-      for label,filename in files:
-                  
+    else:   
+      #loading sub plugins, a dict subp class -> (vh, access file, subp instance)
+      results={}
+      for name in self.getenv('enabled').split(','):
+        try:
+          results[eval(name)]=deque()
+        except:
+          pass    
+            
+      for vhname,filename in files: 
         #read from files valid rows
         try:
-          fi=open(filename,'r')
-          for row in fi:
-          #As shown in doc, %D option is in microseconds
-            datas=ApacheRowParser(row)
-            if datas.get_date() is not None and datas.get_date()>limit:                      
-              for an in analyzer_classes:
-                an.update_with(datas)
-          fi.close()
-        
-          #store 
-          for an in analyzer_classes:
-            results[an.__class__].append((title,filename,an))
+          with open(filename,'r') as fi:
+            currents=[cl() for cl in results]              
+            for row in fi:
+              datas=ApacheRowParser(row)
+              if datas.get_date() is not None and datas.get_date()>limit:                      
+                #updating current vh data
+                for sb in currents:
+                  sb.update_with(datas)                  
+            
+            #store current 
+            for sb in currents:
+              results[sb.__class__].append((vhname,filename,sb))            
         except IOError:
           sys.stderr.write('NotExists: file %s not exists!\n'%filename)
 
@@ -142,19 +145,20 @@ class Apache(Plugin):
       for cl,item in results.items():    
         print "multigraph apache_%s"%(cl.id)
         sitem=sorted(item)
+        
+        #calculating totals for current subplugin
         full=cl()
-        for title,filename,an in sitem:   
+        for vhname,filename,an in sitem:   
           full=full+an
           
         if is_config:
-          full.print_config_header(title)
-          
+          full.print_config_header(title)          
         full.print_data(printer,300,1000)
         
-        for title,filename,an in sitem:   
+        for vhname,filename,an in sitem:   
           print "multigraph apache_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_').replace('-',''))
           if is_config:
-            an.print_config_header(title)    
+            an.print_config_header(vhname)    
           an.print_data(printer,10,30)
           an.update_cache()
 

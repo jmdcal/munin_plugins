@@ -1,3 +1,5 @@
+import re
+
 from munin_plugins.utils import *
 
 from munin_plugins.env import CACHE
@@ -55,14 +57,14 @@ class BotsCounter(BaseCounter):
 def get_short_agent(agent):
   res=''
   try:
-    dom=DOM_PARSER.search(agent).group(0)
+    dom=re.search('http://(.*?)(/|\))',agent).group(0)
   except AttributeError:
     dom=''
     
   if len(dom)>0:
     res=dom.replace('http:','').replace('/','')
   else:
-    eml=EMAIL_PARSER.findall(agent)
+    eml=re.findall("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}",agent)
     if len(eml)>0:
       res=eml[0]  
   try:

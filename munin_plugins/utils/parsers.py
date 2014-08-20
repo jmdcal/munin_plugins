@@ -2,9 +2,6 @@
 from datetime import datetime
 import re
 
-EMAIL_PARSER=re.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
-DOM_PARSER=re.compile('http://(.*?)(/|\))')
-
 #Forced Option, may be one day I move these in mmunin_plugins.conf
 
 #Nginx log Format

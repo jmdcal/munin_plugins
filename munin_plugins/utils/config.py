@@ -38,39 +38,20 @@ class MuninConfiguration(object):
       fd.write('#End written by %s \n\n'%self.__class__.__name__)
       
   def getenv(self,k,alt=None):    
-    val=environ.get(k,self._env.get(k,alt))
+    val=environ.get(k,alt)
     try:
       #trying to parse int, boolean
       val=eval(val.capitalize())
-    except NameError: #means no object found
+    except (NameError,SyntaxError,AttributeError): #means (no object found,parser get a syntax error,capitalize is not valid)
+      #val is a simple text
       pass
-    except SyntaxError: #means parser get a syntax error      
-      pass
-    except AttributeError: #means capitalize is not valid
-      pass    
     return val
 
-  def getenv_prefix(self,pref,alt=None):
-    #getting from static class config
-    res=dict([(k,v.split(',')) for k,v in self._env.items() if re.match('^%s'%pref,k)])
+  def getenv_prefix(self,prefix):
+    return [v.split(',') for k,v in environ.items() if re.match('^%s'%prefix,k)]
     
-    #ovveride values from environ
-    for k,v in environ.items():
-      if re.match('^%s'%pref,k):
-        res[k]=v.split(',')
-    
-    return res.values()
-
-  def getenv_prefix_with_id(self,pref):
-    #getting from static class config
-    res=dict([(k,[k.replace(pref,'')]+v.split(',')) for k,v in self._env.items() if re.match('^%s'%pref,k)])
-
-    #ovveride values from environ
-    for k,v in environ.items():
-      if re.match('^%s'%pref,k):
-        res[k]=[k.replace(pref,'')]+v.split(',')
-    
-    return res.values()
+  def getenv_prefix_with_id(self,prefix):
+    return [[k.replace(prefix,'')]+v.split(',') for k,v in environ.items() if re.match('^%s'%prefix,k)]
       
 class MuninSubConfiguration(MuninConfiguration):      
   def getsubid(self,id):
@@ -81,41 +62,14 @@ class MuninSubConfiguration(MuninConfiguration):
     return sub_id
   
   def getenv(self,k,alt=None):    
-    val=environ.get(self.getsubid(k),self._env.get(k,super(MuninSubConfiguration,self).getenv(k,alt)))
-    try:
-      #trying to parse int, boolean
-      val=eval(val.capitalize())
-    except NameError: #means no object found
-      pass
-    except SyntaxError: #means parser get a syntax error      
-      pass
-    except AttributeError: #means capitalize is not valid
-      pass    
-    return val
+    mtd=super(MuninSubConfiguration,self).getenv
+    return mtd(self.getsubid(k),mtd(k,alt))
 
-  def getenv_prefix(self,prefix,alt=None):    
-    #getting from static class config
-    res=dict([(k,v.split(',')) for k,v in self._env.items() if re.match('^%s'%pref,k)])
-    
-    prefix=self.getsubid(prefix)
-    #ovveride values from environ
-    for k,v in environ.items():
-      if re.match('^%s'%pref,k):
-        res[k]=v.split(',')
-    
-    return res
+  def getenv_prefix(self,prefix,alt=None):        
+    return super(MuninSubConfiguration,self).getenv_prefix(self.getsubid(prefix),alt)
 
-  def getenv_prefix_with_id(self,pref):
-    #getting from static class config
-    res=dict([(k,[k.replace(pref,'')]+v.split(',')) for k,v in self._env.items() if re.match('^%s'%pref,k)])
-
-    prefix=self.getsubid(prefix)
-    #ovveride values from environ
-    for k,v in environ.items():
-      if re.match('^%s'%pref,k):
-        res[k]=[k.replace(pref,'')]+v.split(',')
-    
-    return res
+  def getenv_prefix_with_id(self,prefix):
+    return super(MuninSubConfiguration,self).getenv_prefix_with_id(self.getsubid(prefix),alt)
     
   def store(self,section,filename):
     with open(filename,'a') as fd:

@@ -94,53 +94,49 @@ class Nginx(Plugin):
     files=self.get_files()
     
     is_config=self.check_config(argv)
-    title=self.getenv('title')
-    group=self.getenv('group')    
+    title=self.getenv('title') 
     limit=self.getlimit(self.getenv('minutes'))
     
     printer=self.print_data
     if is_config:
       printer=self.print_config
 
-    analyzer_classes=[]
-    results={}
-    for name in self.getenv('enabled').split(','):
-      try:
-        cl=eval(name)
-        analyzer_classes.append(cl)
-        results[cl]=deque()
-      except:
-        pass
-
     # For each class we store a list of tuples (title,analyzer)
-
     if len(files)<1:
       sys.stderr.write('Not configured: see documentation\n')
-    else:     
-      for label,filename in files:
-        #creates a list of analyzers
-        an_objs=[cl() for cl in analyzer_classes]          
-        
+    else: 
+      #loading sub plugins, a dict subp class -> (vh, access file, subp instance)
+      results={}
+      for name in self.getenv('enabled').split(','):
+        try:
+          results[eval(name)]=deque()
+        except:
+          pass  
+      
+      for vhname,filename in files: 
         #read from files valid rows
         try:
-          fi=open(filename,'r')
-          for row in fi:
-            datas=NginxRowParser(row)
-            if datas.get_date() is not None and datas.get_date()>limit:                      
-              for an in an_objs:
-                an.update_with(datas)
-          fi.close()
-        
-          #store 
-          for an in an_objs:
-            results[an.__class__].append((title,filename,an))
+          with open(filename,'r') as fi:
+            currents=[cl() for cl in results]              
+            for row in fi:
+              datas=NginxRowParser(row)
+              if datas.get_date() is not None and datas.get_date()>limit:                      
+                #updating current vh data
+                for sb in currents:
+                  sb.update_with(datas)                  
+            
+            #store current 
+            for sb in currents:
+              results[sb.__class__].append((vhname,filename,sb))            
         except IOError:
-          sys.stderr.write('NotExists: file %s not exists!\n'%filename)
+          sys.stderr.write('NotExists: file %s not exists!\n'%filename)      
           
       #prints
       for cl,item in results.items():    
         print "multigraph nginx_%s"%(cl.id)
         sitem=sorted(item)
+        
+        #calculating totals for current subplugin
         full=cl()
         for title,filename,an in sitem:   
           full=full+an
