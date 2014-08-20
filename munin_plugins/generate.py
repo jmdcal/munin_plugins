@@ -1,26 +1,15 @@
 #!/usr/bin/python2.7
 
 import subprocess
-
-import sys
 import re
 
 from os import listdir
 from os.path import exists
-
-from munin_plugins.plugins.snsr_apache import Apache
-from munin_plugins.plugins.snsr_monit import Monit
-from munin_plugins.plugins.snsr_nginx import Nginx
-from munin_plugins.plugins.snsr_processes import Processes
-from munin_plugins.plugins.snsr_repmgr import Repmgr
-
-from munin_plugins.env import SYS_VAR_PATH
-
+ 
 from munin_plugins import checks
-
+from munin_plugins import plugins
 
 def main(argv=None, **kw):  
-
   #We searching checkers in checks folder
   for file in sorted(listdir(checks.__path__[0])):    
     mtc=re.match('(.*)\.py$',file)    
@@ -33,12 +22,18 @@ def main(argv=None, **kw):
 
   #Searching munin config folder    
   m_plugins,m_plugins_c=get_munin_base()
-    
-  Apache().install(m_plugins,m_plugins_c)
-  Monit().install(m_plugins,m_plugins_c)
-  Nginx().install(m_plugins,m_plugins_c)
-  Processes().install(m_plugins,m_plugins_c)
-  Repmgr().install(m_plugins,m_plugins_c)
+  
+  #We searching plugins in plugins folder
+  for file in sorted(listdir(plugins.__path__[0])):    
+    mtc=re.match('^snsr_(.*)\.py$',file)    
+    if mtc is not None:
+      try:
+        name=mtc.group(1)
+        namec=name.capitalize()
+        plugin=getattr(__import__('munin_plugins.plugins.snsr_%s'%name,globals(),locals(),[namec],-1),namec)
+        plugin().install(m_plugins,m_plugins_c,log,err)
+      except (KeyError,ImportError) as e:        
+        pass
     
 def err(msg):
   print "ERROR: %s"%msg
