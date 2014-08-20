@@ -1,39 +1,46 @@
-~~~~~
+=====
 Intro
-~~~~~
+=====
+
 This is a suite of sensors (plugins) for munin. You can install one or all, as 
 you wish.
 
 Sensors available for:
+
 - Apache
 - Monit
 - Nginx
 - Processes (Plone, Zope, JBoss actually)
 - Repmgr
 
-~~~~~~~~~~~~
+============
 Requirements
-~~~~~~~~~~~~
+============
 
 - Python >= 2.7
 - psutil for Python >= 2.0
 - Munin-node
 
-~~~~~~~~~~~
+=======
+Install
+=======
+
 Install Egg
-~~~~~~~~~~~
+===========
 
 As usual, egg is installable using setuptools or pip, choice what you like. 
 It is better and strongly suggested to use a virtualenv.
     
-~~~~~
 Setup
-~~~~~
+=====
 
 The fast way to install, is using generate.py. To use, simply call generate script
 in bin directory.
 
-# <virtualenv_path>/bin/generate
+.. code-block:: sh
+
+  # <virtualenv_path>/bin/generate
+  
 
 It will test the environment and configure cache folders. For every sensor, it will
 ask a confirm. Every sensor creates in /etc/munin/plugin-conf.d a single configuration.
@@ -47,9 +54,8 @@ http://cippino.wordpress.com/tag/munin/
 https://github.com/cippino/munin_plugins
 https://pypi.python.org/pypi/munin_plugins
 
-~~~~~~~~~~~~~~~~~~~~~~~~~
 Configure Nginx or Apache 
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 Usually a manual configuration is not required, but in some case you have to modify 
 some path or else. All munin plugins ask by they self during installation what 
@@ -67,25 +73,24 @@ Nginx: log_format combined2 '$remote_addr - $remote_user [$time_local]  '
 After combined2 definition, you have to change your virtualhost configuration using 
 this format instead of usual "combined".
 
-~~~~~~~~~~~~~~~~~
 Personalize Setup
-~~~~~~~~~~~~~~~~~
+=================
 
 Every pluging you installed with "generate" script writes in /etc/munin/plugin-conf.d 
 a specific config file. You can modify every option you find. It shouldn't require
 munin-node reload.
 
-~~~~~~~
+=======
 Warning
-~~~~~~~
+=======
 
 Previous version of 4.3 are not complatible with 4.3 and later release, because 
 some sensors are renamed/moved/merged, so apply an upgrade will lose all history
 informations.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================
 Bugs Report and/or Collaboration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================
 
 GitHub is the current store for sources:
 
@@ -94,9 +99,9 @@ https://github.com/cippino/munin_plugins
 Any idea is welcome.
 
 
-~~~~~~~~~
+=========
 Changelog
-~~~~~~~~~
+=========
 
 5.0
 - Refactor to move all configurations in /etc/munin/plugin-conf.d files
@@ -124,9 +129,9 @@ Changelog
 4.0
 - First Egg release
 
-~~~~~~~~~~~~~~
+==============
 Known Problems
-~~~~~~~~~~~~~~
+==============
 
 1 - Keep attection if you use SELinux or other kind of Security access framework,
 because you have to configure all rights correctly. Usually, my choice is to
