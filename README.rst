@@ -105,31 +105,31 @@ Any idea is welcome.
 Changelog
 =========
 
-5.0
-- Refactor to move all configurations in /etc/munin/plugin-conf.d files
+- 5.0 
+    * Refactor to move all configurations in /etc/munin/plugin-conf.d files
 
-4.3
-- Merged plone_usage and java in processes_usage
+- 4.3
+    * Merged plone_usage and java in processes_usage
 
-4.2
-- Refactor setup and sensor using classes
+- 4.2: 
+    * Refactor setup and sensor using classes
 
-4.1.3
-- Fixed VAR folder creation
+- 4.1.3
+    * Fixed VAR folder creation
 
-4.1.2
-- Fixed Egg Configure Folders
+- 4.1.2
+    * Fixed Egg Configure Folders
 
-4.1.1 
-- Fixed Documentation
+- 4.1.1
+    * Fixed Documentation
 
-4.1 
-- Refactor of env.py and configuration
-- Refactor of plone_usage from monolithic implementation to modular
-- Reduced number of Cache classes
+- 4.1 
+    * Refactor of env.py and configuration
+    * Refactor of plone_usage from monolithic implementation to modular
+    * Reduced number of Cache classes
 
-4.0
-- First Egg release
+- 4.0
+    * First Egg release
 
 ==============
 Known Problems
