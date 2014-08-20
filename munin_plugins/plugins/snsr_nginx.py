@@ -30,6 +30,10 @@ class Nginx(Plugin):
       'enabled':'LatencyAggregator,BotsCounter,HttpCodesCounter,SizeAggregator',
       'minutes':5,
       'sub_plugins_folder':'www_analyzers',
+      'sub_plugin_warning':10,
+      'sub_plugin_critical':30,
+      'aggregate_warning':300,
+      'aggregate_critical':1000,
     })
 
     n_file_no=0
@@ -143,13 +147,13 @@ class Nginx(Plugin):
           
         if is_config:
           full.print_config_header(title)
-        full.print_data(printer,300,1000)
+        full.print_data(printer,self.getenv('aggregate_warning'),self.get('aggregate_critical'))
         
         for vhname,filename,an in sitem:   
           print "multigraph nginx_%s.%s"%(cl.id,filename.replace('/','_').replace('.','_').replace('-',''))
           if is_config:
             an.print_config_header(vhname)    
-          an.print_data(printer,10,30)
+          an.print_data(printer,self.getenv('sub_plugin_warning'),self.get('sub_plugin_critical'))
           an.update_cache()
 
 def main(argv=None,**kw):

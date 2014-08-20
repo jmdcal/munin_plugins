@@ -22,7 +22,7 @@ class BotsCounter(BaseCounter):
     
   def __init__(self):
     super(BotsCounter,self).__init__()
-    self.counter=CacheCounter(self.getenv('cache'))
+    self.counter=CacheCounter(self.getenv('cache'),None)
     
   def update_with(self,datas):    
     codes=str(self.getenv('codes')).split(',')

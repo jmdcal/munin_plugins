@@ -24,7 +24,7 @@ class LatencyAggregator(BaseCounter):
     
   def __init__(self):    
     super(LatencyAggregator,self).__init__()
-    self.counter=Counter(dict([(str(i),0) for i in self.getenv('intervals')]+[('others',0)]))
+    self.counter=Counter(dict([(str(i),0) for i in self.getenv('intervals',[])]+[('others',0)]))
     
   def update_with(self,datas):
     lat=datas.get_float_latency()

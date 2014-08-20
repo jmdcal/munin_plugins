@@ -61,7 +61,7 @@ class HttpCodesCounter(BaseCounter):
   
   def __init__(self):
     super(HttpCodesCounter,self).__init__()
-    self.counter=CacheCounter(self.getenv('cache'))
+    self.counter=CacheCounter(self.getenv('cache'),None)
     
   def update_with(self,datas):
     code=datas.get_code()
