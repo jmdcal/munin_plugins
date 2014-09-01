@@ -101,11 +101,7 @@ class Monit(Plugin):
     print "graph_vlabel number"
     print "graph_category %s"%self.getenv('group')
     print "graph_order %s" % " ".join(self.graph_order(vals))
-    status={}
-    try:
-      status=dict(self.gets('monit_state_'))
-    except:
-      pass
+    status=dict(self.getenv_prefix('monit_state_'))
     for l in vals:
       #get color if available
       c=status.get(l,None)
