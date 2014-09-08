@@ -41,6 +41,7 @@ setup(name=NAME,
         "console_scripts":[
           "generate = munin_plugins.generate:main",
           "snsr_apache = munin_plugins.plugins.snsr_apache:main",
+          "snsr_errfiles = munin_plugins.plugins.snsr_errfiles:main",
           "snsr_monit = munin_plugins.plugins.snsr_monit:main",
           "snsr_nginx = munin_plugins.plugins.snsr_nginx:main",
           "snsr_processes = munin_plugins.plugins.snsr_processes:main",
