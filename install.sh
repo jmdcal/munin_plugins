@@ -12,6 +12,6 @@ virtualenv /opt/munin
 /opt/munin/bin/generate
 
 
-./test_bot_call.sh
-./test.sh
-/etc/init.d/munin-node restart
+#./test_bot_call.sh
+#./test.sh
+#/etc/init.d/munin-node restart
