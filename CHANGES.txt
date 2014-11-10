@@ -1,3 +1,4 @@
+v5.0.1 2014/11/10 -- BugFixing: color on monit sensor
 v5.0 2014/08/10 -- Refactor to move all configurations in /etc/munin/plugin-conf.d files
 v4.3 2014/08/04 -- Refactor sensors, merger plone and java sensors
 v4.2 2014/07/08 -- Changed setup procedure
