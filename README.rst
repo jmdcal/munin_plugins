@@ -104,6 +104,8 @@ Any idea is welcome.
 =========
 Changelog
 =========
+- 5.0.1
+    * Fixed colorization of monit sensor
 
 - 5.0 
     * Refactor to move all configurations in /etc/munin/plugin-conf.d files
