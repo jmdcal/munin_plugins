@@ -27,6 +27,7 @@ class HttpCodesCounter(BaseCounter):
       'subtitle':'Response Codes',
       'label':"number",
       'cache':"%s/httpcodes"%CACHE,
+      'ignore':"200,201",
       'title_100':"Continue",
       'title_101':"Switching Protocols",
       'title_200':"OK",
@@ -76,10 +77,16 @@ class HttpCodesCounter(BaseCounter):
   def __init__(self):
     super(HttpCodesCounter,self).__init__()
     self.counter=CacheCounter(self.getenv('cache'),None)
+    self.ignored=self.getenv('ignore')
     
   def update_with(self,datas):
     code=datas.get_code()
-    self.counter[code]=self.counter[code]+1
+    try:
+      icode=int(code)
+      if icode not in self.ignored:
+        self.counter[icode]=self.counter[icode]+1
+    except ValueError:        
+      self.counter[code]=self.counter[code]+1
               
   def print_data(self, printer, w=None, c=None):
     if len(self.counter.items())>0:
