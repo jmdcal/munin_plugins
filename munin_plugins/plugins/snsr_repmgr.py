@@ -31,9 +31,9 @@ class Repmgr(Plugin):
       'title':'Repmgr status',
       'group':'repmgr',
       'conf':'/etc/repmgr.conf',
-      'repmgr_state_0': 'failed,FAILED,FF0000',
-      'repmgr_state_1': 'master,master,00FF00',
-      'repmgr_state_2': 'standby,standby,FFFF00',
+      'repmgr_state_0': 'failed,FAILED,FF0000,1,2',
+      'repmgr_state_1': 'master,master,00FF00,-1,2',
+      'repmgr_state_2': 'standby,standby,FFFF00,-1,-1',
     })
     return inherit_env
        
@@ -45,11 +45,15 @@ class Repmgr(Plugin):
     print 'graph_args --base 1000'
     print 'graph_vlabel number'
     print "graph_category %s"%self.getenv('group')
-    for id,lab,col in self.populate_vals():
+    for id,lab,col,w,c in self.populate_vals():
       print "%s.label %s" %(id,lab)
       print "%s.draw AREASTACK"%id
       print "%s.colour %s"%(id,col)
-          
+      if int(w)>-1:
+        print "%s.warning %s"%(id,w)
+      if int(c)>-1:
+        print "%s.critical %s"%(id,c)
+                
   def main(self,argv=None, **kw):     
     if self.check_config(argv):
       self.print_config()
@@ -60,7 +64,7 @@ class Repmgr(Plugin):
         sys.stderr.write('Not configured: see documentation\n')
       else:
         counters=Counter()
-        for id,lab,col in vals:
+        for id,lab,col,w,c in vals:
           counters[id]=0
         try:
           out=subprocess.check_output(["repmgr","cluster","show","-f",conf],stderr=subprocess.STDOUT)
