@@ -74,13 +74,17 @@ class Processes(Plugin):
     
     for cl in analyzer_classes:
       sensor=cl(sys_prev,sys_curr)
-
+      negs=sensor._negatives()
+      sensor_order=sensor._order()
+      
       print "multigraph processes_%s"%cl.__name__
       if is_config:
         print "graph_title %s %s"%(title,sensor.getenv('subtitle'))    
         print "graph_args --base 1000"
         print "graph_vlabel %s"%sensor.getenv('label')
         print "graph_category %s"%group
+        if (sensor_order is not None):
+          print "graph_order %s"%','.join(sensor_order)
       
       graph=sensor.graphType()
       for name,pd in ps_cache.items():  
@@ -88,7 +92,7 @@ class Processes(Plugin):
         curr_value=getattr(pd,sensor.proc_mtd,lambda : None)()    
         
         res=sensor.calculate(name,curr_value)
-
+                
         if isinstance(res,int) or isinstance(res,float):
           printer(id=ids,
                   value=res,
@@ -96,10 +100,22 @@ class Processes(Plugin):
                   draw=graph)
         elif isinstance(res,list) or isinstance(res,deque) or isinstance(res,set):
           for fd,row in res:
-            printer(id='%s-%s'%(ids,fd),
+            lab='%s %s '%(name,fd)
+            ref=negs.get(fd,None)                      
+            neg=None
+            if ref is not None:
+              neg='%s__%s'%(ids,ref)
+              lab=name
+            
+            gr=None  
+            if fd in negs.values():
+              gr='no'                          
+            printer(id='%s__%s'%(ids,fd),
                     value=row,
-                    label='%s %s '%(name,fd),
-                    draw=graph)        
+                    label=lab,
+                    draw=graph,
+                    graph=gr,
+                    negative=neg)        
       if not is_config:        
         sensor.store_in_cache()
 
