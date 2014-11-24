@@ -127,7 +127,6 @@ class Apache(Plugin):
   def main(self,argv=None, **kw):    
     files=self.get_files()
     
-    import pdb; pdb.set_trace()
     is_config=self.check_config(argv)
     title=self.getenv('title')
     limit=self.getlimit(self.getenv('minutes'))
