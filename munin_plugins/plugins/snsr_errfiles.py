@@ -39,6 +39,12 @@ class Errfiles(Plugin):
       'filter_0':"(.*)(ERROR|error)(.*)",
       'date_filter_0':'^(\w{3}\s(\s|\d)\d\s+\d{2}:\d{2}:\d{2})',
       'date_converter_0':"%b %d %H:%M:%S",
+      
+      'file_1':"/var/log/munin/munin-node.log",
+      'filter_1':"(.*)(timed\sout)(.*)",
+      'date_filter_1':'^(\d{4}/\d{2}/\d{2}\s+\d{2}:\d{2}:\d{2})',
+      'date_converter_1':"%Y/%m/%d %H:%M:%S",
+            
       'warning_0':100,
       'critical_0':1000,
     })
@@ -54,7 +60,7 @@ class Errfiles(Plugin):
     return [(ff,filters.get(id,'undef'),df.get(id,None),dc.get(id,None),w.get(id,0),c.get(id,0)) for id,ff in files]    
   
   def _fn_to_id(self,fn):
-    return fn.strip().replace(' ','_').replace('/','_')
+    return fn.strip().replace(' ','_').replace('/','_').replace('.','_')
   
   def _fix_year(self,dt):
     ty=datetime.now().year    
@@ -92,10 +98,14 @@ class Errfiles(Plugin):
           try:                        
             with open(ff,'r') as fi:
               for row in fi:
-                ds=dmatcher.search(row).group()
-                dt=self._fix_year(datetime.strptime(ds,dc))                                
-                if dt>limit and matcher.match(row):
-                  count+=1
+                try:
+                  ds=dmatcher.search(row).group()
+                  dt=self._fix_year(datetime.strptime(ds,dc))
+                  if dt>limit and matcher.match(row):
+                    count+=1
+                except AttributeError:
+                  #This happen when row doesn't contain a date
+                  pass
           except IOError:
             sys.stderr.write('NotExists: file %s not exists!\n'%filename)
           print "%s.value %s"%(id,count)
