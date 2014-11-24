@@ -39,14 +39,15 @@ class Errfiles(Plugin):
       'filter_0':"(.*)(ERROR|error)(.*)",
       'date_filter_0':'^(\w{3}\s(\s|\d)\d\s+\d{2}:\d{2}:\d{2})',
       'date_converter_0':"%b %d %H:%M:%S",
+      'warning_0':100,
+      'critical_0':1000,
       
       'file_1':"/var/log/munin/munin-node.log",
       'filter_1':"(.*)(exited\swith\sstatus\s1/0)(.*)",
       'date_filter_1':'^(\d{4}/\d{2}/\d{2}\s+\d{2}:\d{2}:\d{2})',
       'date_converter_1':"%Y/%m/%d %H:%M:%S",
-            
-      'warning_0':100,
-      'critical_0':1000,
+      'warning_1':100,
+      'critical_1':1000,
     })
     return inherit_env
   
