@@ -16,12 +16,11 @@ from os import makedirs
 from os.path import exists
 from os.path import join
 
-from munin_plugins.env import SYS_VAR_PATH
+from munin_plugins.env import CACHE
 
 def check(log,err):  
-  dest=join(SYS_VAR_PATH,'cache')
-  if not exists(dest):
-    makedirs(dest) 
-    log("Cache is ok (created) [%s]"%dest)
+  if not exists(CACHE):
+    makedirs(CACHE) 
+    log("Cache is ok (created) [%s]"%CACHE)
   else:
-    log("Cache is ok [%s]"%dest)
+    log("Cache is ok [%s]"%CACHE)

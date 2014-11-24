@@ -17,6 +17,7 @@ __license__ = 'GPL Version 2.0'
 import subprocess
 import re
 import sys
+import os
 from collections import deque
 
 from munin_plugins.utils import ApacheRowParser
@@ -65,6 +66,8 @@ class Apache(Plugin):
         if vh not in parsed:
           to_create=self._parse_title_and_customlog(vh)
           for title,access_log in to_create:
+            while not os.path.isfile(access_log):
+              raw_input('File %s not exists! Please insert a correct file: '%access_log)            
             inherit_env['title_%s'%a_file_no]=title
             inherit_env['access_%s'%a_file_no]=access_log
             a_file_no+=1

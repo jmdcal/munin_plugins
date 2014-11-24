@@ -24,7 +24,6 @@ from collections import Counter
 
 from munin_plugins.plugins.plugin import Plugin
 from munin_plugins.utils import CacheCounter
-from munin_plugins.env import CACHE
 
 class Errfiles(Plugin):
   _prefix_name='snsr_errfiles'
