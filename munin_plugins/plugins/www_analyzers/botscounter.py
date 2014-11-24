@@ -22,6 +22,7 @@ from munin_plugins.plugins.www_analyzers.base import BaseCounter
 
 class BotsCounter(BaseCounter):
   id='botscounter'
+  bot_map={}
   
   @property
   def _env(self):
@@ -43,8 +44,9 @@ class BotsCounter(BaseCounter):
     if str(datas.get_int_code()) in codes:
       agent=datas.get_agent()
       if 'bot' in agent:
-        agent=get_short_agent(agent)
-        self.counter[agent]=1+self.counter[agent]
+        short=get_short_agent(agent)
+        self.bot_map[short]=agent
+        self.counter[short]=1+self.counter[short]
       
   def print_data(self, printer, w=10,c=30):
     if len(self.counter.items())>0:
@@ -54,6 +56,7 @@ class BotsCounter(BaseCounter):
                 label=l,
                 warning=w,
                 critical=c,
+                info=self.bot_map.get(l,l)
                 )
     else:
       printer(id='none',
@@ -61,12 +64,11 @@ class BotsCounter(BaseCounter):
               label='none',
               warning=w,
               critical=c,
+              info='no bot requests',
               )
       
-
   def update_cache(self):
     self.counter.store_in_cache()
-
 
 def get_short_agent(agent):
   res=''
