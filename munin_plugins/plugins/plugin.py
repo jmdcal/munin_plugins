@@ -109,9 +109,11 @@ class Plugin(MuninConfiguration,_PluginUtils):
       
       #Trying to store sub-plugins config
       try:          
-        for name in self._env.get('enabled',None).split(','):
+        enabled=self._env.get('enabled',None)
+        spf=self._env.get('sub_plugins_folder')
+        for name in enabled.split(','):
           try:
-            sub=self.get_sub_plugin(self._env.get('sub_plugins_folder'),name)
+            sub=self.get_sub_plugin(spf,name)
           except (KeyError,ImportError,TypeError) as e:        
             pass
           else:

@@ -16,7 +16,7 @@ __license__ = 'GPL Version 2.0'
 
 import sys
 import re
-
+import os
 from collections import deque
 
 from os import listdir
@@ -30,6 +30,8 @@ from munin_plugins.plugins.plugin import Plugin
        
 class Nginx(Plugin):
   _prefix_name='snsr_nginx'
+  
+  _fixed_files={}
   
   @property
   def _env(self):
@@ -63,8 +65,20 @@ class Nginx(Plugin):
         if isfile(fpath) and vh not in parsed:
           to_create=self._parse_title_and_customlog(fpath)
           for title,access_log in to_create:
+            orig=None
             while not os.path.isfile(access_log):
-              raw_input('File %s not exists! Please insert a correct file: '%access_log)            
+              if orig is None:
+                #we save the original access_log only if it not exists
+                orig=access_log
+              
+              if access_log in self._fixed_files:
+                access_log=self._fixed_files.get(access_log)
+              else:  
+                access_log=raw_input('File %s (%s) not exists! Please insert a correct file: '%(access_log,title))            
+            
+            if orig is not None:
+              self._fixed_files[orig]=access_log
+              
             inherit_env['title_%s'%n_file_no]=title
             inherit_env['access_%s'%n_file_no]=access_log
             n_file_no+=1
