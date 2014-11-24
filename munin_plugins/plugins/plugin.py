@@ -149,10 +149,14 @@ class Plugin(MuninConfiguration,_PluginUtils):
         label=l,
         draw=args.get('draw',None),
         type=args.get('type',None),
+        graph=args.get('graph',None),
         warning=args.get('warning',None),
         critical=args.get('critical',None),
         colour=args.get('color',None),
-        line=args.get('line',None),)
+        line=args.get('line',None),
+        info=args.get('info',None),
+        negative=args.get('negative',None),
+        cdef=args.get('cdef',None),)
 
   def mkoutput(self,**argv):
     id=argv.get('id',None)
@@ -184,5 +188,9 @@ class SubPlugin(MuninSubConfiguration,_PluginUtils):
       'label':'Undefined Label', 
     }
 
-
+  def _order(self):
+    return []
+    
+  def _negatives(self):
+    return {}
   
