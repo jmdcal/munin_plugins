@@ -24,7 +24,7 @@ class io_counters_snsr(sensor):
     inherit_env=super(io_counters_snsr,self)._env
     inherit_env.update({
       'subtitle':'I/O bytes',
-      'label':'bytes',
+      'label':'bytes read (-) / write (+)',
       'cache':'%s/processesiosbytes'%CACHE,      
     })
     return inherit_env
@@ -39,6 +39,14 @@ class io_counters_snsr(sensor):
       
     return res
 
+  def _order(self):
+    return ('write_bytes','read_bytes')
+
+  def _negatives(self):
+    return {'read_bytes':'write_bytes'}
+
+
+
 class io_counters_abs_snsr(sensor):
   sys_mtd='iocounters'
   proc_mtd='get_io_counters'
@@ -47,8 +55,8 @@ class io_counters_abs_snsr(sensor):
   def _env(self):
     inherit_env=super(io_counters_abs_snsr,self)._env
     inherit_env.update({
-      'subtitle':'I/O request',
-      'label':'number',      
+      'subtitle':'I/O requests',
+      'label':'number read (-) / write (+)',      
       'cache':'%s/processesiosbytes'%CACHE
     })
     return inherit_env
@@ -63,5 +71,9 @@ class io_counters_abs_snsr(sensor):
       
     return res
 
-  
+  def _order(self):
+    return ('read_count','write_count',)
+
+  def _negatives(self):
+    return {'write_count':'read_count'}
   
